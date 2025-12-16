@@ -1,0 +1,67 @@
+name: plant_diagnosis_app
+description: تطبيق تشخيص النباتات
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.3.2
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.1.0
+  image_picker: ^1.0.7
+  file_picker: ^10.2.0
+  sqflite: ^2.3.0
+  sqflite_common_ffi_web: ^0.4.2
+  sqflite_common_ffi: ^2.0.0
+  google_sign_in: ^6.1.0
+  geolocator: ^10.1.0
+  intl: ^0.20.0
+  device_info_plus: ^10.1.0
+  flutter_image_compress: ^2.2.0
+  cached_network_image: ^3.3.1
+
+  
+  path: ^1.8.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+ # flutter_lints: ^2.0.0
+  path_provider: ^2.0.15
+ # dio: ^6.1.2
+  flutter_cache_manager: ^3.3.0
+  cached_network_image: ^3.2.3
+
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/images/soil.jpg
+    - assets/images/protection.jpg
+    - assets/images/pests.jpg
+    - assets/images/diseases.jpg
+    - assets/images/seasons.jpg
+    - assets/images/books.jpg
+    - assets/images/support.jpg
+   
+    
+    # ========== Database & JSON ==========
+    - assets/plantix_final.db
+    - assets/plant_relational.json
+    - assets/crops_ar.json
+    - assets/diseases_all.json
+    
+    # logo 
+    - assets/logo.png
+
+    # ========== image folders ==========
+    - assets/disease_images/
+    - assets/plantix_icons/
+
+
+
