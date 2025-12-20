@@ -35,8 +35,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:uuid/uuid.dart';
 
 class AppConstants {
-  static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
-  //static const String baseUrl = "http://localhost:8000";
+   static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
+ //  static const String baseUrl = "http://localhost:8000";
 }
 
 
