@@ -35,8 +35,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:uuid/uuid.dart';
 
 class AppConstants {
-  static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
+  //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
  // static const String baseUrl = "http://localhost:8000";
+  //static const String baseUrl = "https://mohashaher-plant-diag-final-server.hf.space";
+  static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
 }
 
 
@@ -682,7 +684,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       if (response.statusCode != 200) throw Exception('Failed to diagnose');
 
       final data = json.decode(respStr);
-      final diseaseId = data['disease_id'];
+      final diseaseId = data['disease_name'];
       final confidence = data['confidence'];
 
       final diseaseMap = LocalizationHelper.getDiseaseMap(context);
