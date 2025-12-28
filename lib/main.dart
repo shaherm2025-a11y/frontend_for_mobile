@@ -1610,20 +1610,13 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
       setState(() => _loading = false);
     }
   }
-
-  Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
+Widget _buildQuestionCard(Map<String, dynamic> q,
+    {bool answered = false}) {
   final loc = AppLocalizations.of(context)!;
-  Uint8List? imageBytes;
-  try {
-    if (q['image'] != null && q['image'].toString().isNotEmpty) {
-      imageBytes = base64Decode(q['image']);
-    }
-  } catch (e) {
-    print("? Error decoding image: $e");
-  }
 
   final questionText = q['question'] ?? "";
   final answerText = q['answer'] ?? "";
+  final questionId = q['id'];
 
   return Card(
     color: answered ? Colors.green[50] : Colors.white,
@@ -1644,20 +1637,20 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
             ),
           ),
 
-          // ====== «·’Ê—… (≈‰ ÊÃœ ) ======
-          if (imageBytes != null) ...[
-            const SizedBox(height: 6),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.memory(
-                imageBytes,
-                height: 120,
-                fit: BoxFit.cover,
-              ),
+          // ====== «·’Ê—… ======
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              "${AppConstants.baseUrl}/expert_question_image/$questionId",
+              height: 120,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+                  const SizedBox.shrink(), // ·Ê „« ›Ì ’Ê—…
             ),
-          ],
+          ),
 
-          // ====== «·≈Ã«»… (≈‰ ﬂ«‰  „ÊÃÊœ…) ======
+          // ====== «·≈Ã«»… ======
           if (answered && answerText.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
