@@ -69,88 +69,218 @@
   "selectimages": "Select Image",
 
 
-  "scab": "scab",
-  "scab_treatment": "Use resistant varieties, apply fungicides, and prune infected leaves.",
-  "black_rot": "Apple Black Rot",
-  "black_rot_treatment": "Remove mummified fruit, apply fungicides, and improve air circulation.\n Thiofluzamid 30% SC+Methyl",
-  "cedar_rust": "Cedar Rust",
-  "cedar_rust_treatment": "Remove nearby cedar trees, use resistant cultivars, and apply fungicides.",
-  "healthy": "Healthy plant",
+  "algal_leaf_spot_jackfruit": "Algal leaf spot on jackfruit",
+  "algal_leaf_spot_jackfruit_treatment": "Remove infected leaves and improve air circulation.",
 
- 
-  
+  "anthracnose_mango": "Anthracnose on mango",
+  "anthracnose_mango_treatment": "Apply copper-based fungicide and prune infected parts.",
 
- 
-  "powdery_mildew": "Powdery Mildew",
-  "powdery_mildew_treatment": "Apply sulfur-based fungicides, prune affected parts, and ensure proper spacing.",
-  
+  "aphids_cotton": "Aphids on cotton",
+  "aphids_cotton_treatment": "Use neem oil or a suitable insecticide.",
 
+  "apple_scab_apple": "Apple scab",
+  "apple_scab_apple_treatment": "Apply preventive fungicide sprays.",
 
-  "gray_leaf_spot": " Gray Leaf Spot",
-  "gray_leaf_spot_treatment": "Use resistant hybrids, rotate crops, and apply fungicides.",
-  "common_rust": "Corn Common Rust",
-  "common_rust_treatment": "Plant resistant varieties, monitor crops, and apply fungicides if severe.\n difenoconazol",
-  "northern_leaf_blight": "Northern Leaf Blight",
-  "northern_leaf_blight_treatment": "Rotate crops, apply fungicides, and avoid continuous corn planting.",
+  "bacterial_blight_cotton": "Bacterial blight on cotton",
+  "bacterial_blight_cotton_treatment": "Use resistant varieties and avoid overhead irrigation.",
 
+  "bacterial_canker_mango": "Bacterial canker on mango",
+  "bacterial_canker_mango_treatment": "Prune infected branches and apply copper spray.",
 
- 
-  "black_rot": "Black Rot",
-  "black_rot_treatment": "Remove infected parts, apply fungicides, and ensure good ventilation.",
-  "esca": "Esca (Black Measles)",
-  "esca_treatment": "Prune infected vines, avoid wounding, and remove diseased plants.",
-  "leaf_blight": "Leaf Blight",
-  "leaf_blight_treatment": "Use fungicides and remove infected leaves.",
+  "bacterial_leaf_spot_pumpkin": "Bacterial leaf spot on pumpkin",
+  "bacterial_leaf_spot_pumpkin_treatment": "Remove infected plants and rotate crops.",
 
+  "bacterial_spot_peach": "Bacterial spot on peach",
+  "bacterial_spot_peach_treatment": "Apply bactericide and remove infected leaves.",
 
-  "bacrerial_spot": "Bacterial Spot",
-  "bacrerial_spot_treatment": "Apply copper sprays and use resistant varieties.",
+  "bacterial_spot_pepper_bell": "Bacterial spot on bell pepper",
+  "bacterial_spot_pepper_bell_treatment": "Use clean seeds and copper-based sprays.",
 
+  "bacterial_spot_tomato": "Bacterial spot on tomato",
+  "bacterial_spot_tomato_treatment": "Avoid wetting leaves and apply copper spray.",
 
+  "black_rot_cauliflower": "Black rot on cauliflower",
+  "black_rot_cauliflower_treatment": "Remove infected plants and improve drainage.",
 
-  "early_blight": "Early Blight",
-  "early_blight_treatment": "Use resistant varieties, rotate crops, and apply fungicides.",
-  "late_blight": "Late Blight",
-  "late_blight_treatment": "Destroy infected plants, avoid overhead watering, and apply fungicides.",
+  "black_spot_jackfruit": "Black spot on jackfruit",
+  "black_spot_jackfruit_treatment": "Remove infected leaves and apply fungicide.",
 
+  "black_rot_apple": "Black rot on apple",
+  "black_rot_apple_treatment": "Prune infected parts and apply fungicide.",
 
-  
+  "black_rot_grape": "Black rot on grape",
+  "black_rot_grape_treatment": "Remove infected clusters and apply fungicide.",
 
-  "leaf_mold": "Leaf Mold",
-  "leaf_mold_treatment": "Provide ventilation, avoid overhead watering, and use fungicides.",
-  "tomato_septoria_leaf_spot": "Septoria Leaf Spot",
-  "tomato_septoria_leaf_spot_treatment": "Rotate crops, remove infected leaves, and apply fungicides.",
-  "spider_mites": "Spider Mites",
-  "spider_mites_treatment": "Spray miticides, encourage natural predators, and irrigate properly.",
-  "target_spot": "Target Spot",
-  "target_spot_treatment": "Use fungicides and remove infected plant debris.",
-  "yellow_leaf_curl": " Yellow Leaf Curl Virus",
-  "yellow_leaf_curl_treatment": "Control whiteflies, use resistant varieties, and apply neem oil.",
-  "mosaic_virus": " Mosaic Virus",
-  "mosaic_virus_treatment": "Remove infected plants, disinfect tools, and control aphids.",
+  "brown_spot_rice": "Brown spot on rice",
+  "brown_spot_rice_treatment": "Balanced fertilization and fungicide application.",
 
+  "cedar_apple_rust_apple": "Cedar apple rust",
+  "cedar_apple_rust_apple_treatment": "Remove nearby hosts and apply fungicide.",
 
-  
- 
-  "orange_hlb": "Orange Citrus Greening (HLB)",
-  "orange_hlb_treatment": "Control psyllid insects, remove infected trees, and use resistant rootstocks.",
+  "cercospora_leaf_spot_gray_leaf_spot_corn_maize": "Cercospora leaf spot / Gray leaf spot on maize",
+  "cercospora_leaf_spot_gray_leaf_spot_corn_maize_treatment": "Plant resistant varieties and apply fungicide.",
 
-  
-  "strawberry_leaf_scorch": "Strawberry Leaf Scorch",
-  "strawberry_leaf_scorch_treatment": "Remove infected leaves, irrigate properly, and apply fungicides.",
- 
-  "algal": "algal",
-  "algal_treatment": "1. Remove the infected parts – prune the heavily infected branches – remove the severely damaged leaves – dispose of them outside the farm.",
-  
-  "anthracnose": "Anthracnose",
-  "anthracnose_treatment": "1- Remove infected leaves and branches \n 2- Improve air circulation \n 3- Avoid overhead irrigation \n Cymoxanil 30%+famoxadon 22%WG",
-  
-   
-  "brown_blight": "Brown Blight",
-  "brown_blight_treatment": "- Remove severely infected parts - Reduce humidity - Increase ventilation",
-  
-  "gray_blight": "Gray Blight",
-  "gray_blight_treatment": "- Remove infected leaves - Improve ventilation and avoid excessive irrigation - Clean plant debris around the base",
+  "common_rust_corn_maize": "Common rust on maize",
+  "common_rust_corn_maize_treatment": "Use resistant hybrids.",
+
+  "cutting_weevil_mango": "Cutting weevil on mango",
+  "cutting_weevil_mango_treatment": "Remove infected branches and apply insecticide.",
+
+  "die_back_mango": "Dieback on mango",
+  "die_back_mango_treatment": "Prune affected parts and improve nutrition.",
+
+  "downy_mildew_pumpkin": "Downy mildew on pumpkin",
+  "downy_mildew_pumpkin_treatment": "Improve ventilation and apply fungicide.",
+
+  "early_blight_potato": "Early blight on potato",
+  "early_blight_potato_treatment": "Remove infected leaves and apply fungicide.",
+
+  "early_blight_tomato": "Early blight on tomato",
+  "early_blight_tomato_treatment": "Use mulch and preventive spraying.",
+
+  "esca_black_measles_grape": "Esca (Black measles) on grape",
+  "esca_black_measles_grape_treatment": "Remove infected vines and protect pruning wounds.",
+
+  "gall_midge_mango": "Gall midge on mango",
+  "gall_midge_mango_treatment": "Apply insecticide during flowering.",
+
+  "haunglongbing_citrus_greening_orange": "Citrus greening (HLB) on orange",
+  "haunglongbing_citrus_greening_orange_treatment": "Remove infected trees and control insect vectors.",
+
+  "healthy_cauliflower": "Healthy cauliflower plant",
+  "healthy_cauliflower_treatment": "No treatment needed.",
+
+  "healthy_cotton": "Healthy cotton plant",
+  "healthy_cotton_treatment": "No treatment needed.",
+
+  "healthy_jackfruit": "Healthy jackfruit plant",
+  "healthy_jackfruit_treatment": "No treatment needed.",
+
+  "healthy_mango": "Healthy mango plant",
+  "healthy_mango_treatment": "No treatment needed.",
+
+  "healthy_rice": "Healthy rice plant",
+  "healthy_rice_treatment": "No treatment needed.",
+
+  "healthy_sugarcane": "Healthy sugarcane plant",
+  "healthy_sugarcane_treatment": "No treatment needed.",
+
+  "healthy_leaf_pumpkin": "Healthy pumpkin leaf",
+  "healthy_leaf_pumpkin_treatment": "No treatment needed.",
+
+  "hispa_rice": "Rice hispa insect",
+  "hispa_rice_treatment": "Apply recommended insecticide.",
+
+  "late_blight_potato": "Late blight on potato",
+  "late_blight_potato_treatment": "Remove infected plants and apply fungicide.",
+
+  "late_blight_tomato": "Late blight on tomato",
+  "late_blight_tomato_treatment": "Avoid overhead irrigation and apply fungicide.",
+
+  "leaf_mold_tomato": "Leaf mold on tomato",
+  "leaf_mold_tomato_treatment": "Reduce humidity and improve ventilation.",
+
+  "leaf_blight_isariopsis_leaf_spot_grape": "Leaf blight on grape",
+  "leaf_blight_isariopsis_leaf_spot_grape_treatment": "Remove infected leaves and apply fungicide.",
+
+  "leaf_scorch_strawberry": "Leaf scorch on strawberry",
+  "leaf_scorch_strawberry_treatment": "Improve fertilization and remove infected leaves.",
+
+  "leaf_blast_rice": "Leaf blast on rice",
+  "leaf_blast_rice_treatment": "Plant resistant varieties and apply fungicide.",
+
+  "mosaic_sugarcane": "Mosaic disease on sugarcane",
+  "mosaic_sugarcane_treatment": "Use healthy planting material.",
+
+  "mosaic_disease_pumpkin": "Mosaic disease on pumpkin",
+  "mosaic_disease_pumpkin_treatment": "Control aphids and remove infected plants.",
+
+  "northern_leaf_blight_corn_maize": "Northern leaf blight on maize",
+  "northern_leaf_blight_corn_maize_treatment": "Plant resistant hybrids and apply fungicide.",
+
+  "powdery_mildew_cotton": "Powdery mildew on cotton",
+  "powdery_mildew_cotton_treatment": "Apply sulfur-based fungicide.",
+
+  "powdery_mildew_mango": "Powdery mildew on mango",
+  "powdery_mildew_mango_treatment": "Spray fungicide during flowering.",
+
+  "powdery_mildew_pumpkin": "Powdery mildew on pumpkin",
+  "powdery_mildew_pumpkin_treatment": "Improve ventilation and spray fungicide.",
+
+  "powdery_mildew_qaad": "Powdery mildew",
+  "powdery_mildew_qaad_treatment": "Apply suitable fungicide.",
+
+  "powdery_mildew_cherry_sour": "Powdery mildew on cherry",
+  "powdery_mildew_cherry_sour_treatment": "Prune infected parts and spray fungicide.",
+
+  "red_rot_sugarcane": "Red rot on sugarcane",
+  "red_rot_sugarcane_treatment": "Use resistant varieties.",
+
+  "rust_sugarcane": "Rust on sugarcane",
+  "rust_sugarcane_treatment": "Apply fungicide and improve field hygiene.",
+
+  "septoria_leaf_spot_tomato": "Septoria leaf spot on tomato",
+  "septoria_leaf_spot_tomato_treatment": "Remove infected leaves and apply fungicide.",
+
+  "sooty_mould_mango": "Sooty mould on mango",
+  "sooty_mould_mango_treatment": "Control honeydew-producing insects.",
+
+  "spider_mites_two_spotted_spider_mite_tomato": "Two-spotted spider mites on tomato",
+  "spider_mites_two_spotted_spider_mite_tomato_treatment": "Apply acaricide.",
+
+  "target_spot_tomato": "Target spot on tomato",
+  "target_spot_tomato_treatment": "Remove infected leaves and apply fungicide.",
+
+  "target_spot_cotton": "Target spot on cotton",
+  "target_spot_cotton_treatment": "Crop rotation and fungicide application.",
+
+  "tomato_yellow_leaf_curl_virus_tomato": "Tomato yellow leaf curl virus",
+  "tomato_yellow_leaf_curl_virus_tomato_treatment": "Control whiteflies.",
+
+  "tomato_mosaic_virus_tomato": "Tomato mosaic virus",
+  "tomato_mosaic_virus_tomato_treatment": "Disinfect tools and remove infected plants.",
+
+  "yellow_sugarcane": "Yellowing disease of sugarcane",
+  "yellow_sugarcane_treatment": "Improve fertilization and drainage.",
+
+  "healthy_apple": "Healthy apple plant",
+  "healthy_apple_treatment": "No treatment needed.",
+
+  "healthy_blueberry": "Healthy blueberry plant",
+  "healthy_blueberry_treatment": "No treatment needed.",
+
+  "healthy_cherry_sour": "Healthy cherry plant",
+  "healthy_cherry_sour_treatment": "No treatment needed.",
+
+  "healthy_corn_maize": "Healthy maize plant",
+  "healthy_corn_maize_treatment": "No treatment needed.",
+
+  "healthy_grape": "Healthy grape plant",
+  "healthy_grape_treatment": "No treatment needed.",
+
+  "healthy_peach": "Healthy peach plant",
+  "healthy_peach_treatment": "No treatment needed.",
+
+  "healthy_pepper_bell": "Healthy bell pepper plant",
+  "healthy_pepper_bell_treatment": "No treatment needed.",
+
+  "healthy_potato": "Healthy potato plant",
+  "healthy_potato_treatment": "No treatment needed.",
+
+  "healthy_raspberry": "Healthy raspberry plant",
+  "healthy_raspberry_treatment": "No treatment needed.",
+
+  "healthy_soybean": "Healthy soybean plant",
+  "healthy_soybean_treatment": "No treatment needed.",
+
+  "healthy_strawberry": "Healthy strawberry plant",
+  "healthy_strawberry_treatment": "No treatment needed.",
+
+  "healthy_tomato": "Healthy tomato plant",
+  "healthy_tomato_treatment": "No treatment needed.",
+
+  "unknown_disease": "Unknown disease / non-plant image",
+  "unknown_disease_treatment": "Please capture a clear plant leaf image with good lighting.",
   
   "diagnosis_failed": "Diagnosis failed",
   "pestsDiseases": "Pests & Diseases",

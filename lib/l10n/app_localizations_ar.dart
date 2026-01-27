@@ -197,176 +197,506 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectimages => 'اختيار صورة';
 
   @override
-  String get scab => 'جرب النبات';
+  String get algal_leaf_spot_jackfruit => 'تبقع الأوراق الطحلبي في الجاك فروت';
 
   @override
-  String get scab_treatment =>
-      'استخدم أصناف مقاومة، رش المبيدات الفطرية، واقص الأوراق المصابة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يرجى الرجوع إلى صفحة الخبراء.';
+  String get algal_leaf_spot_jackfruit_treatment =>
+      'إزالة الأوراق المصابة وتحسين التهوية.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get black_rot => 'العفن الاسود';
+  String get anthracnose_mango => 'الأنثراكنوز في المانجو';
 
   @override
-  String get black_rot_treatment =>
-      'إزالة الثمار الجافة، استخدام مبيدات فطرية، وتحسين التهوية.\n Thiofluzamid 30% SC+Methyl\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get anthracnose_mango_treatment =>
+      'الرش بمبيد فطري نحاسي وتقليم الأجزاء المصابة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get cedar_rust => 'صداء الارز';
+  String get aphids_cotton => 'حشرات المن في القطن';
 
   @override
-  String get cedar_rust_treatment =>
-      'إزالة أشجار الأرز المجاورة، استخدام أصناف مقاومة، ورش مبيدات.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get aphids_cotton_treatment =>
+      'استخدام زيت النيم أو مبيد حشري مناسب.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get healthy =>
-      'نباتات سليم \nملاحظة: للتأكد من دقة وسلامة التشخيص يرجى الرجوع إلى صفحة الخبراء.';
+  String get apple_scab_apple => 'جرب التفاح';
 
   @override
-  String get powdery_mildew => 'البياض الدقيقي';
+  String get apple_scab_apple_treatment =>
+      'الرش الوقائي بمبيدات فطرية.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get powdery_mildew_treatment =>
-      'رش الكبريت، تقليم الأجزاء المصابة، وتوفير مسافات مناسبة. 1- كبريت مكروني (كوزافيت)+ ماكسفون 2- كربندازيم (بريمو + الصاخب) 3- ازوكسي استر وبين (القوس+ادريس)  4- مايكلوبيوتانيل ( كاربتار+ الهرم )\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get bacterial_blight_cotton => 'اللفحة البكتيرية في القطن';
 
   @override
-  String get gray_leaf_spot => 'تبقع أوراق الذرة الرمادي';
+  String get bacterial_blight_cotton_treatment =>
+      'استخدام أصناف مقاومة وتجنب الري بالرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get gray_leaf_spot_treatment =>
-      'زراعة أصناف مقاومة، تناوب المحاصيل، واستخدام المبيدات الفطرية.\n pyroclostrobin + dimethomorph\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get bacterial_canker_mango => 'التقرح البكتيري في المانجو';
 
   @override
-  String get common_rust => 'الصداء الشائع';
+  String get bacterial_canker_mango_treatment =>
+      'تقليم الأفرع المصابة والرش بالنحاس.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get common_rust_treatment =>
-      'زراعة أصناف مقاومة، متابعة الحقل، واستخدام مبيدات عند الحاجة.\n difenoconazol \nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get bacterial_leaf_spot_pumpkin => 'التبقع البكتيري في القرع';
 
   @override
-  String get northern_leaf_blight => 'لفحة الاوراق الشمالية';
+  String get bacterial_leaf_spot_pumpkin_treatment =>
+      'إزالة النباتات المصابة وتدوير المحاصيل.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get northern_leaf_blight_treatment =>
-      'تناوب المحاصيل، استخدام المبيدات، وتجنب الزراعة المستمرة للذرة. \nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get bacterial_spot_peach => 'التبقع البكتيري في الخوخ';
 
   @override
-  String get esca => 'إسكا (الحصبة السوداء)';
+  String get bacterial_spot_peach_treatment =>
+      'الرش بمبيدات بكتيرية وإزالة الأوراق المصابة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get esca_treatment =>
-      'تقليم الكروم المصابة، تجنب الجروح، وإزالة النباتات المريضة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get bacterial_spot_pepper_bell => 'التبقع البكتيري في الفلفل';
 
   @override
-  String get leaf_blight => 'لفحة الاوراق';
+  String get bacterial_spot_pepper_bell_treatment =>
+      'استخدام بذور سليمة والرش بالنحاس.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get leaf_blight_treatment =>
-      'استخدام المبيدات وإزالة الأوراق المصابة.\n coppe oxychlorid 39.75 + cymoxanil 4.3% WP\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get bacterial_spot_tomato => 'التبقع البكتيري في الطماطم';
 
   @override
-  String get bacrerial_spot => 'تبقع بكتيري';
+  String get bacterial_spot_tomato_treatment =>
+      'تجنب بلل الأوراق واستخدام مبيد نحاسي.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get bacrerial_spot_treatment =>
-      'رش النحاس، استخدام أصناف مقاومة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get black_rot_cauliflower => 'العفن الأسود في القرنبيط';
 
   @override
-  String get early_blight => 'اللفحةالمبكرة';
+  String get black_rot_cauliflower_treatment =>
+      'إزالة النباتات المصابة وتحسين الصرف.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get early_blight_treatment =>
-      'إزالة الأوراق المصابة، تناوب المحاصيل، واستخدام المبيدات ازوكسيستروبين +دايفنكونازول (ماكسفون + الفظول ) كربندازيم ( بريمو +الصاخب ابروديون (ريد ور)\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get black_spot_jackfruit => 'البقعة السوداء في الجاك فروت';
 
   @override
-  String get late_blight => 'اللفحةالمتاخرة';
+  String get black_spot_jackfruit_treatment =>
+      'إزالة الأوراق المصابة والرش الفطري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get late_blight_treatment =>
-      'إتلاف النباتات المصابة، تجنب الري العلوي، واستخدام المبيدات. و تنص التوصيات على عدم تكرار الرش لاكثر من رشتين خلال الموسم ثم يتم تغير الي مبيد اخر ( 1- ميتالاكسيل +نحاس  2- سيموكاسنيل + نحاس  3- فاموكسادون 4- بروباموكارب هيدروكلورايد  5- ميتالاكسيل +دينيكونازول ) \nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get black_rot_apple => 'العفن الأسود في التفاح';
 
   @override
-  String get leaf_mold => 'عفن الاوراق';
+  String get black_rot_apple_treatment =>
+      'تقليم الأجزاء المصابة والرش الفطري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get leaf_mold_treatment =>
-      'تحسين التهوية، تجنب الري العلوي، واستخدام المبيدات.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get black_rot_grape => 'العفن الأسود في العنب';
 
   @override
-  String get tomato_septoria_leaf_spot => 'تبقع الاوراق (سبتوريا)';
+  String get black_rot_grape_treatment =>
+      'إزالة العناقيد المصابة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get tomato_septoria_leaf_spot_treatment =>
-      'تناوب المحاصيل، إزالة الأوراق المصابة، ورش المبيدات.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get brown_spot_rice => 'البقعة البنية في الأرز';
 
   @override
-  String get spider_mites => 'العناكب الحمراء';
+  String get brown_spot_rice_treatment =>
+      'التسميد المتوازن والرش الفطري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get spider_mites_treatment =>
-      'تشجيع الأعداء الحيوية، والري الجيد رش مبيدات ، .1- ابامكتين +بيردابين (ميشال) 2- ابامكتين (سلو مكتين) 3-  بيردابين (دبون _فاكرون _ترمنتك )\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get cedar_apple_rust_apple => 'صدأ التفاح';
 
   @override
-  String get target_spot => 'تبقع الهدف';
+  String get cedar_apple_rust_apple_treatment =>
+      'إزالة العوائل القريبة والرش الفطري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get target_spot_treatment =>
-      'استخدام المبيدات وإزالة بقايا النباتات المصابة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get cercospora_leaf_spot_gray_leaf_spot_corn_maize =>
+      'تبقع السركسبورا / البقعة الرمادية في الذرة';
 
   @override
-  String get yellow_leaf_curl => 'فيروس تجعد ألاوراق الصفراء';
+  String get cercospora_leaf_spot_gray_leaf_spot_corn_maize_treatment =>
+      'زراعة أصناف مقاومة والرش الفطري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get yellow_leaf_curl_treatment =>
-      'مكافحة الذباب الأبيض، زراعة أصناف مقاومة، واستخدام زيت النيم.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get common_rust_corn_maize => 'الصدأ الشائع في الذرة';
 
   @override
-  String get mosaic_virus => 'فيروس موزاييك ';
+  String get common_rust_corn_maize_treatment =>
+      'زراعة هجن مقاومة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get mosaic_virus_treatment =>
-      'إزالة النباتات المصابة، تعقيم الأدوات، ومكافحة المن.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get cutting_weevil_mango => 'سوسة القطع في المانجو';
 
   @override
-  String get orange_hlb => 'التدهور السريع (HLB) في البرتقال';
+  String get cutting_weevil_mango_treatment =>
+      'إزالة الأفرع المصابة واستخدام مبيد حشري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get orange_hlb_treatment =>
-      'مكافحة حشرة البسيلا، إزالة الأشجار المصابة، واستخدام أصول مقاومة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get die_back_mango => 'موت الأفرع في المانجو';
 
   @override
-  String get strawberry_leaf_scorch => 'احتراق أوراق الفراولة';
+  String get die_back_mango_treatment =>
+      'تقليم الأجزاء المصابة وتحسين التغذية.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get strawberry_leaf_scorch_treatment =>
-      'إزالة الأوراق المصابة، الري المناسب، واستخدام المبيدات.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get downy_mildew_pumpkin => 'البياض الزغبي في القرع';
 
   @override
-  String get algal => 'الصدأ الطحلبي الأحمر';
+  String get downy_mildew_pumpkin_treatment =>
+      'تحسين التهوية والرش الفطري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get algal_treatment =>
-      '1. إزالة الأجزاء المصابة - قص الفروع الشديدة الإصابة - إزالة الأوراق المتضررة جدًا - التخلص منها خارج المزرعة\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get early_blight_potato => 'اللفحة المبكرة في البطاطس';
 
   @override
-  String get anthracnose => 'لفحة الأنثراكنوز';
+  String get early_blight_potato_treatment =>
+      'إزالة الأوراق المصابة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get anthracnose_treatment =>
-      'إزالة الأوراق والفروع المصابة - تحسين التهوية وتقليل الرطوبة - تجنب الري على الأوراق و استخدام ( 1- كربندازيم (بريمو) 2- كوبراوكسي كلوبرايد 3- ازكي استروبين (اديس))\n Cymoxanil 30%+famoxadon 22%WG\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get early_blight_tomato => 'اللفحة المبكرة في الطماطم';
 
   @override
-  String get brown_blight => 'التبقع البني';
+  String get early_blight_tomato_treatment =>
+      'استخدام المهاد والرش الوقائي.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get brown_blight_treatment =>
-      'إزالة الأجزاء شديدة الإصابة - تقليل الرطوبة - تعزيز التهوية واستخدام  (1- ابروديون (ريدور) 2- كربندازيم (بريمو)) \nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get esca_black_measles_grape => 'الإسكا (الحصبة السوداء) في العنب';
 
   @override
-  String get gray_blight => 'اللفحة الرماديةأو التبقع الرمادي';
+  String get esca_black_measles_grape_treatment =>
+      'إزالة الكروم المصابة وحماية أماكن التقليم.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
-  String get gray_blight_treatment =>
-      '- إزالة الأوراق المصابة - تحسين التهوية وتقليل الري الزائد - تنظيف بقايا النبات حول الجذع\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+  String get gall_midge_mango => 'ذبابة المرارة في المانجو';
+
+  @override
+  String get gall_midge_mango_treatment =>
+      'استخدام مبيد حشري أثناء الإزهار.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get haunglongbing_citrus_greening_orange =>
+      'اخضرار الحمضيات في البرتقال';
+
+  @override
+  String get haunglongbing_citrus_greening_orange_treatment =>
+      'إزالة الأشجار المصابة ومكافحة الحشرة الناقلة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_cauliflower => 'نبات قرنبيط سليم';
+
+  @override
+  String get healthy_cauliflower_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_cotton => 'نبات قطن سليم';
+
+  @override
+  String get healthy_cotton_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_jackfruit => 'نبات جاك فروت سليم';
+
+  @override
+  String get healthy_jackfruit_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_mango => 'نبات مانجو سليم';
+
+  @override
+  String get healthy_mango_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_rice => 'نبات أرز سليم';
+
+  @override
+  String get healthy_rice_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_sugarcane => 'نبات قصب السكر سليم';
+
+  @override
+  String get healthy_sugarcane_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_leaf_pumpkin => 'ورقة قرع سليمة';
+
+  @override
+  String get healthy_leaf_pumpkin_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get hispa_rice => 'حشرة الهيسبا في الأرز';
+
+  @override
+  String get hispa_rice_treatment =>
+      'استخدام مبيد حشري موصى به.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get late_blight_potato => 'اللفحة المتأخرة في البطاطس';
+
+  @override
+  String get late_blight_potato_treatment =>
+      'إزالة النباتات المصابة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get late_blight_tomato => 'اللفحة المتأخرة في الطماطم';
+
+  @override
+  String get late_blight_tomato_treatment =>
+      'تجنب الري بالرش والرش الوقائي.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get leaf_mold_tomato => 'عفن أوراق الطماطم';
+
+  @override
+  String get leaf_mold_tomato_treatment =>
+      'تقليل الرطوبة وتحسين التهوية.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get leaf_blight_isariopsis_leaf_spot_grape => 'لفحة أوراق العنب';
+
+  @override
+  String get leaf_blight_isariopsis_leaf_spot_grape_treatment =>
+      'إزالة الأوراق المصابة والرش الفطري.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get leaf_scorch_strawberry => 'احتراق أوراق الفراولة';
+
+  @override
+  String get leaf_scorch_strawberry_treatment =>
+      'تحسين التسميد وإزالة الأوراق المصابة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get leaf_blast_rice => 'لفحة أوراق الأرز';
+
+  @override
+  String get leaf_blast_rice_treatment =>
+      'زراعة أصناف مقاومة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get mosaic_sugarcane => 'مرض الفسيفساء في قصب السكر';
+
+  @override
+  String get mosaic_sugarcane_treatment =>
+      'استخدام شتلات سليمة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get mosaic_disease_pumpkin => 'مرض الفسيفساء في القرع';
+
+  @override
+  String get mosaic_disease_pumpkin_treatment =>
+      'مكافحة المن وإزالة النباتات المصابة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get northern_leaf_blight_corn_maize =>
+      'لفحة الأوراق الشمالية في الذرة';
+
+  @override
+  String get northern_leaf_blight_corn_maize_treatment =>
+      'زراعة هجن مقاومة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get powdery_mildew_cotton => 'البياض الدقيقي في القطن';
+
+  @override
+  String get powdery_mildew_cotton_treatment =>
+      'استخدام مبيد فطري كبريتي.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get powdery_mildew_mango => 'البياض الدقيقي في المانجو';
+
+  @override
+  String get powdery_mildew_mango_treatment =>
+      'الرش أثناء الإزهار.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get powdery_mildew_pumpkin => 'البياض الدقيقي في القرع';
+
+  @override
+  String get powdery_mildew_pumpkin_treatment =>
+      'تحسين التهوية والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get powdery_mildew_qaad => 'البياض الدقيقي';
+
+  @override
+  String get powdery_mildew_qaad_treatment =>
+      'استخدام مبيد فطري مناسب.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get powdery_mildew_cherry_sour => 'البياض الدقيقي في الكرز';
+
+  @override
+  String get powdery_mildew_cherry_sour_treatment =>
+      'تقليم الأجزاء المصابة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get red_rot_sugarcane => 'العفن الأحمر في قصب السكر';
+
+  @override
+  String get red_rot_sugarcane_treatment =>
+      'استخدام أصناف مقاومة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get rust_sugarcane => 'الصدأ في قصب السكر';
+
+  @override
+  String get rust_sugarcane_treatment =>
+      'الرش الفطري وتحسين النظافة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get septoria_leaf_spot_tomato => 'تبقع أوراق السيبتوريا في الطماطم';
+
+  @override
+  String get septoria_leaf_spot_tomato_treatment =>
+      'إزالة الأوراق المصابة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get sooty_mould_mango => 'العفن الأسود الهبابي في المانجو';
+
+  @override
+  String get sooty_mould_mango_treatment =>
+      'مكافحة الحشرات المفرزة للعسل الندي.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get spider_mites_two_spotted_spider_mite_tomato =>
+      'العنكبوت الأحمر في الطماطم';
+
+  @override
+  String get spider_mites_two_spotted_spider_mite_tomato_treatment =>
+      'استخدام مبيد أكاروسي.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get target_spot_tomato => 'تبقع الهدف في الطماطم';
+
+  @override
+  String get target_spot_tomato_treatment =>
+      'إزالة الأوراق المصابة والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get target_spot_cotton => 'تبقع الهدف في القطن';
+
+  @override
+  String get target_spot_cotton_treatment =>
+      'تدوير المحاصيل والرش.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get tomato_yellow_leaf_curl_virus_tomato =>
+      'فيروس تجعد واصفرار أوراق الطماطم';
+
+  @override
+  String get tomato_yellow_leaf_curl_virus_tomato_treatment =>
+      'مكافحة الذبابة البيضاء.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get tomato_mosaic_virus_tomato => 'فيروس موزاييك الطماطم';
+
+  @override
+  String get tomato_mosaic_virus_tomato_treatment =>
+      'تعقيم الأدوات وإزالة النباتات المصابة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get yellow_sugarcane => 'اصفرار قصب السكر';
+
+  @override
+  String get yellow_sugarcane_treatment =>
+      'تحسين التسميد والصرف.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_apple => 'نبات تفاح سليم';
+
+  @override
+  String get healthy_apple_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_blueberry => 'نبات توت أزرق سليم';
+
+  @override
+  String get healthy_blueberry_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_cherry_sour => 'نبات كرز سليم';
+
+  @override
+  String get healthy_cherry_sour_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_corn_maize => 'نبات ذرة سليم';
+
+  @override
+  String get healthy_corn_maize_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_grape => 'نبات عنب سليم';
+
+  @override
+  String get healthy_grape_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_peach => 'نبات خوخ سليم';
+
+  @override
+  String get healthy_peach_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_pepper_bell => 'نبات فلفل سليم';
+
+  @override
+  String get healthy_pepper_bell_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_potato => 'نبات بطاطس سليم';
+
+  @override
+  String get healthy_potato_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_raspberry => 'نبات توت العليق سليم';
+
+  @override
+  String get healthy_raspberry_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_soybean => 'نبات فول صويا سليم';
+
+  @override
+  String get healthy_soybean_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_strawberry => 'نبات فراولة سليم';
+
+  @override
+  String get healthy_strawberry_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get healthy_tomato => 'نبات طماطم سليم';
+
+  @override
+  String get healthy_tomato_treatment =>
+      'لا يحتاج إلى علاج.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
+
+  @override
+  String get unknown_disease => 'مرض غير معروف / صورة غير نباتية';
+
+  @override
+  String get unknown_disease_treatment =>
+      'يرجى تصوير ورقة نبات واضحة بإضاءة جيدة.\nملاحظة: للتأكد من دقة وسلامة التشخيص يمكنك الرجوع إلى صفحة الخبراء.';
 
   @override
   String get diagnosis_failed => 'فشل التشخيص.';

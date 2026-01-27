@@ -200,175 +200,479 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectimages => 'Select Image';
 
   @override
-  String get scab => 'scab';
+  String get algal_leaf_spot_jackfruit => 'Algal leaf spot on jackfruit';
 
   @override
-  String get scab_treatment =>
-      'Use resistant varieties, apply fungicides, and prune infected leaves.';
+  String get algal_leaf_spot_jackfruit_treatment =>
+      'Remove infected leaves and improve air circulation.';
 
   @override
-  String get black_rot => 'Black Rot';
+  String get anthracnose_mango => 'Anthracnose on mango';
 
   @override
-  String get black_rot_treatment =>
-      'Remove infected parts, apply fungicides, and ensure good ventilation.';
+  String get anthracnose_mango_treatment =>
+      'Apply copper-based fungicide and prune infected parts.';
 
   @override
-  String get cedar_rust => 'Cedar Rust';
+  String get aphids_cotton => 'Aphids on cotton';
 
   @override
-  String get cedar_rust_treatment =>
-      'Remove nearby cedar trees, use resistant cultivars, and apply fungicides.';
+  String get aphids_cotton_treatment =>
+      'Use neem oil or a suitable insecticide.';
 
   @override
-  String get healthy => 'Healthy plant';
+  String get apple_scab_apple => 'Apple scab';
 
   @override
-  String get powdery_mildew => 'Powdery Mildew';
+  String get apple_scab_apple_treatment => 'Apply preventive fungicide sprays.';
 
   @override
-  String get powdery_mildew_treatment =>
-      'Apply sulfur-based fungicides, prune affected parts, and ensure proper spacing.';
+  String get bacterial_blight_cotton => 'Bacterial blight on cotton';
 
   @override
-  String get gray_leaf_spot => ' Gray Leaf Spot';
+  String get bacterial_blight_cotton_treatment =>
+      'Use resistant varieties and avoid overhead irrigation.';
 
   @override
-  String get gray_leaf_spot_treatment =>
-      'Use resistant hybrids, rotate crops, and apply fungicides.';
+  String get bacterial_canker_mango => 'Bacterial canker on mango';
 
   @override
-  String get common_rust => 'Corn Common Rust';
+  String get bacterial_canker_mango_treatment =>
+      'Prune infected branches and apply copper spray.';
 
   @override
-  String get common_rust_treatment =>
-      'Plant resistant varieties, monitor crops, and apply fungicides if severe.\n difenoconazol';
+  String get bacterial_leaf_spot_pumpkin => 'Bacterial leaf spot on pumpkin';
 
   @override
-  String get northern_leaf_blight => 'Northern Leaf Blight';
+  String get bacterial_leaf_spot_pumpkin_treatment =>
+      'Remove infected plants and rotate crops.';
 
   @override
-  String get northern_leaf_blight_treatment =>
-      'Rotate crops, apply fungicides, and avoid continuous corn planting.';
+  String get bacterial_spot_peach => 'Bacterial spot on peach';
 
   @override
-  String get esca => 'Esca (Black Measles)';
+  String get bacterial_spot_peach_treatment =>
+      'Apply bactericide and remove infected leaves.';
 
   @override
-  String get esca_treatment =>
-      'Prune infected vines, avoid wounding, and remove diseased plants.';
+  String get bacterial_spot_pepper_bell => 'Bacterial spot on bell pepper';
 
   @override
-  String get leaf_blight => 'Leaf Blight';
+  String get bacterial_spot_pepper_bell_treatment =>
+      'Use clean seeds and copper-based sprays.';
 
   @override
-  String get leaf_blight_treatment =>
-      'Use fungicides and remove infected leaves.';
+  String get bacterial_spot_tomato => 'Bacterial spot on tomato';
 
   @override
-  String get bacrerial_spot => 'Bacterial Spot';
+  String get bacterial_spot_tomato_treatment =>
+      'Avoid wetting leaves and apply copper spray.';
 
   @override
-  String get bacrerial_spot_treatment =>
-      'Apply copper sprays and use resistant varieties.';
+  String get black_rot_cauliflower => 'Black rot on cauliflower';
 
   @override
-  String get early_blight => 'Early Blight';
+  String get black_rot_cauliflower_treatment =>
+      'Remove infected plants and improve drainage.';
 
   @override
-  String get early_blight_treatment =>
-      'Use resistant varieties, rotate crops, and apply fungicides.';
+  String get black_spot_jackfruit => 'Black spot on jackfruit';
 
   @override
-  String get late_blight => 'Late Blight';
+  String get black_spot_jackfruit_treatment =>
+      'Remove infected leaves and apply fungicide.';
 
   @override
-  String get late_blight_treatment =>
-      'Destroy infected plants, avoid overhead watering, and apply fungicides.';
+  String get black_rot_apple => 'Black rot on apple';
 
   @override
-  String get leaf_mold => 'Leaf Mold';
+  String get black_rot_apple_treatment =>
+      'Prune infected parts and apply fungicide.';
 
   @override
-  String get leaf_mold_treatment =>
-      'Provide ventilation, avoid overhead watering, and use fungicides.';
+  String get black_rot_grape => 'Black rot on grape';
 
   @override
-  String get tomato_septoria_leaf_spot => 'Septoria Leaf Spot';
+  String get black_rot_grape_treatment =>
+      'Remove infected clusters and apply fungicide.';
 
   @override
-  String get tomato_septoria_leaf_spot_treatment =>
-      'Rotate crops, remove infected leaves, and apply fungicides.';
+  String get brown_spot_rice => 'Brown spot on rice';
 
   @override
-  String get spider_mites => 'Spider Mites';
+  String get brown_spot_rice_treatment =>
+      'Balanced fertilization and fungicide application.';
 
   @override
-  String get spider_mites_treatment =>
-      'Spray miticides, encourage natural predators, and irrigate properly.';
+  String get cedar_apple_rust_apple => 'Cedar apple rust';
 
   @override
-  String get target_spot => 'Target Spot';
+  String get cedar_apple_rust_apple_treatment =>
+      'Remove nearby hosts and apply fungicide.';
 
   @override
-  String get target_spot_treatment =>
-      'Use fungicides and remove infected plant debris.';
+  String get cercospora_leaf_spot_gray_leaf_spot_corn_maize =>
+      'Cercospora leaf spot / Gray leaf spot on maize';
 
   @override
-  String get yellow_leaf_curl => ' Yellow Leaf Curl Virus';
+  String get cercospora_leaf_spot_gray_leaf_spot_corn_maize_treatment =>
+      'Plant resistant varieties and apply fungicide.';
 
   @override
-  String get yellow_leaf_curl_treatment =>
-      'Control whiteflies, use resistant varieties, and apply neem oil.';
+  String get common_rust_corn_maize => 'Common rust on maize';
 
   @override
-  String get mosaic_virus => ' Mosaic Virus';
+  String get common_rust_corn_maize_treatment => 'Use resistant hybrids.';
 
   @override
-  String get mosaic_virus_treatment =>
-      'Remove infected plants, disinfect tools, and control aphids.';
+  String get cutting_weevil_mango => 'Cutting weevil on mango';
 
   @override
-  String get orange_hlb => 'Orange Citrus Greening (HLB)';
+  String get cutting_weevil_mango_treatment =>
+      'Remove infected branches and apply insecticide.';
 
   @override
-  String get orange_hlb_treatment =>
-      'Control psyllid insects, remove infected trees, and use resistant rootstocks.';
+  String get die_back_mango => 'Dieback on mango';
 
   @override
-  String get strawberry_leaf_scorch => 'Strawberry Leaf Scorch';
+  String get die_back_mango_treatment =>
+      'Prune affected parts and improve nutrition.';
 
   @override
-  String get strawberry_leaf_scorch_treatment =>
-      'Remove infected leaves, irrigate properly, and apply fungicides.';
+  String get downy_mildew_pumpkin => 'Downy mildew on pumpkin';
 
   @override
-  String get algal => 'algal';
+  String get downy_mildew_pumpkin_treatment =>
+      'Improve ventilation and apply fungicide.';
 
   @override
-  String get algal_treatment =>
-      '1. Remove the infected parts – prune the heavily infected branches – remove the severely damaged leaves – dispose of them outside the farm.';
+  String get early_blight_potato => 'Early blight on potato';
 
   @override
-  String get anthracnose => 'Anthracnose';
+  String get early_blight_potato_treatment =>
+      'Remove infected leaves and apply fungicide.';
 
   @override
-  String get anthracnose_treatment =>
-      '1- Remove infected leaves and branches \n 2- Improve air circulation \n 3- Avoid overhead irrigation \n Cymoxanil 30%+famoxadon 22%WG';
+  String get early_blight_tomato => 'Early blight on tomato';
 
   @override
-  String get brown_blight => 'Brown Blight';
+  String get early_blight_tomato_treatment =>
+      'Use mulch and preventive spraying.';
 
   @override
-  String get brown_blight_treatment =>
-      '- Remove severely infected parts - Reduce humidity - Increase ventilation';
+  String get esca_black_measles_grape => 'Esca (Black measles) on grape';
 
   @override
-  String get gray_blight => 'Gray Blight';
+  String get esca_black_measles_grape_treatment =>
+      'Remove infected vines and protect pruning wounds.';
 
   @override
-  String get gray_blight_treatment =>
-      '- Remove infected leaves - Improve ventilation and avoid excessive irrigation - Clean plant debris around the base';
+  String get gall_midge_mango => 'Gall midge on mango';
+
+  @override
+  String get gall_midge_mango_treatment =>
+      'Apply insecticide during flowering.';
+
+  @override
+  String get haunglongbing_citrus_greening_orange =>
+      'Citrus greening (HLB) on orange';
+
+  @override
+  String get haunglongbing_citrus_greening_orange_treatment =>
+      'Remove infected trees and control insect vectors.';
+
+  @override
+  String get healthy_cauliflower => 'Healthy cauliflower plant';
+
+  @override
+  String get healthy_cauliflower_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_cotton => 'Healthy cotton plant';
+
+  @override
+  String get healthy_cotton_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_jackfruit => 'Healthy jackfruit plant';
+
+  @override
+  String get healthy_jackfruit_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_mango => 'Healthy mango plant';
+
+  @override
+  String get healthy_mango_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_rice => 'Healthy rice plant';
+
+  @override
+  String get healthy_rice_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_sugarcane => 'Healthy sugarcane plant';
+
+  @override
+  String get healthy_sugarcane_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_leaf_pumpkin => 'Healthy pumpkin leaf';
+
+  @override
+  String get healthy_leaf_pumpkin_treatment => 'No treatment needed.';
+
+  @override
+  String get hispa_rice => 'Rice hispa insect';
+
+  @override
+  String get hispa_rice_treatment => 'Apply recommended insecticide.';
+
+  @override
+  String get late_blight_potato => 'Late blight on potato';
+
+  @override
+  String get late_blight_potato_treatment =>
+      'Remove infected plants and apply fungicide.';
+
+  @override
+  String get late_blight_tomato => 'Late blight on tomato';
+
+  @override
+  String get late_blight_tomato_treatment =>
+      'Avoid overhead irrigation and apply fungicide.';
+
+  @override
+  String get leaf_mold_tomato => 'Leaf mold on tomato';
+
+  @override
+  String get leaf_mold_tomato_treatment =>
+      'Reduce humidity and improve ventilation.';
+
+  @override
+  String get leaf_blight_isariopsis_leaf_spot_grape => 'Leaf blight on grape';
+
+  @override
+  String get leaf_blight_isariopsis_leaf_spot_grape_treatment =>
+      'Remove infected leaves and apply fungicide.';
+
+  @override
+  String get leaf_scorch_strawberry => 'Leaf scorch on strawberry';
+
+  @override
+  String get leaf_scorch_strawberry_treatment =>
+      'Improve fertilization and remove infected leaves.';
+
+  @override
+  String get leaf_blast_rice => 'Leaf blast on rice';
+
+  @override
+  String get leaf_blast_rice_treatment =>
+      'Plant resistant varieties and apply fungicide.';
+
+  @override
+  String get mosaic_sugarcane => 'Mosaic disease on sugarcane';
+
+  @override
+  String get mosaic_sugarcane_treatment => 'Use healthy planting material.';
+
+  @override
+  String get mosaic_disease_pumpkin => 'Mosaic disease on pumpkin';
+
+  @override
+  String get mosaic_disease_pumpkin_treatment =>
+      'Control aphids and remove infected plants.';
+
+  @override
+  String get northern_leaf_blight_corn_maize => 'Northern leaf blight on maize';
+
+  @override
+  String get northern_leaf_blight_corn_maize_treatment =>
+      'Plant resistant hybrids and apply fungicide.';
+
+  @override
+  String get powdery_mildew_cotton => 'Powdery mildew on cotton';
+
+  @override
+  String get powdery_mildew_cotton_treatment => 'Apply sulfur-based fungicide.';
+
+  @override
+  String get powdery_mildew_mango => 'Powdery mildew on mango';
+
+  @override
+  String get powdery_mildew_mango_treatment =>
+      'Spray fungicide during flowering.';
+
+  @override
+  String get powdery_mildew_pumpkin => 'Powdery mildew on pumpkin';
+
+  @override
+  String get powdery_mildew_pumpkin_treatment =>
+      'Improve ventilation and spray fungicide.';
+
+  @override
+  String get powdery_mildew_qaad => 'Powdery mildew';
+
+  @override
+  String get powdery_mildew_qaad_treatment => 'Apply suitable fungicide.';
+
+  @override
+  String get powdery_mildew_cherry_sour => 'Powdery mildew on cherry';
+
+  @override
+  String get powdery_mildew_cherry_sour_treatment =>
+      'Prune infected parts and spray fungicide.';
+
+  @override
+  String get red_rot_sugarcane => 'Red rot on sugarcane';
+
+  @override
+  String get red_rot_sugarcane_treatment => 'Use resistant varieties.';
+
+  @override
+  String get rust_sugarcane => 'Rust on sugarcane';
+
+  @override
+  String get rust_sugarcane_treatment =>
+      'Apply fungicide and improve field hygiene.';
+
+  @override
+  String get septoria_leaf_spot_tomato => 'Septoria leaf spot on tomato';
+
+  @override
+  String get septoria_leaf_spot_tomato_treatment =>
+      'Remove infected leaves and apply fungicide.';
+
+  @override
+  String get sooty_mould_mango => 'Sooty mould on mango';
+
+  @override
+  String get sooty_mould_mango_treatment =>
+      'Control honeydew-producing insects.';
+
+  @override
+  String get spider_mites_two_spotted_spider_mite_tomato =>
+      'Two-spotted spider mites on tomato';
+
+  @override
+  String get spider_mites_two_spotted_spider_mite_tomato_treatment =>
+      'Apply acaricide.';
+
+  @override
+  String get target_spot_tomato => 'Target spot on tomato';
+
+  @override
+  String get target_spot_tomato_treatment =>
+      'Remove infected leaves and apply fungicide.';
+
+  @override
+  String get target_spot_cotton => 'Target spot on cotton';
+
+  @override
+  String get target_spot_cotton_treatment =>
+      'Crop rotation and fungicide application.';
+
+  @override
+  String get tomato_yellow_leaf_curl_virus_tomato =>
+      'Tomato yellow leaf curl virus';
+
+  @override
+  String get tomato_yellow_leaf_curl_virus_tomato_treatment =>
+      'Control whiteflies.';
+
+  @override
+  String get tomato_mosaic_virus_tomato => 'Tomato mosaic virus';
+
+  @override
+  String get tomato_mosaic_virus_tomato_treatment =>
+      'Disinfect tools and remove infected plants.';
+
+  @override
+  String get yellow_sugarcane => 'Yellowing disease of sugarcane';
+
+  @override
+  String get yellow_sugarcane_treatment =>
+      'Improve fertilization and drainage.';
+
+  @override
+  String get healthy_apple => 'Healthy apple plant';
+
+  @override
+  String get healthy_apple_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_blueberry => 'Healthy blueberry plant';
+
+  @override
+  String get healthy_blueberry_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_cherry_sour => 'Healthy cherry plant';
+
+  @override
+  String get healthy_cherry_sour_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_corn_maize => 'Healthy maize plant';
+
+  @override
+  String get healthy_corn_maize_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_grape => 'Healthy grape plant';
+
+  @override
+  String get healthy_grape_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_peach => 'Healthy peach plant';
+
+  @override
+  String get healthy_peach_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_pepper_bell => 'Healthy bell pepper plant';
+
+  @override
+  String get healthy_pepper_bell_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_potato => 'Healthy potato plant';
+
+  @override
+  String get healthy_potato_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_raspberry => 'Healthy raspberry plant';
+
+  @override
+  String get healthy_raspberry_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_soybean => 'Healthy soybean plant';
+
+  @override
+  String get healthy_soybean_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_strawberry => 'Healthy strawberry plant';
+
+  @override
+  String get healthy_strawberry_treatment => 'No treatment needed.';
+
+  @override
+  String get healthy_tomato => 'Healthy tomato plant';
+
+  @override
+  String get healthy_tomato_treatment => 'No treatment needed.';
+
+  @override
+  String get unknown_disease => 'Unknown disease / non-plant image';
+
+  @override
+  String get unknown_disease_treatment =>
+      'Please capture a clear plant leaf image with good lighting.';
 
   @override
   String get diagnosis_failed => 'Diagnosis failed';
