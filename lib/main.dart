@@ -25,6 +25,11 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:just_audio/just_audio.dart';
+import 'package:record/record.dart';
+import 'package:just_audio/just_audio.dart';
+
+
 
 
 
@@ -35,7 +40,7 @@ import 'package:uuid/uuid.dart';
 
 class AppConstants {
   //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
- //static const String baseUrl = "http://localhost:8000";
+//static const String baseUrl = "http://localhost:8000";
   //static const String baseUrl = "https://mohashaher-plant-diag-final-server.hf.space";
  static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
 }
@@ -1517,6 +1522,8 @@ class AwarenessPage extends StatelessWidget {
 
 // ================== Experts Page ==================
 // ================== Farmer Questions Page (Final - With Unanswered Section) ==================
+// ================== Experts Page ==================
+// ================== Farmer Questions Page (Final - With Unanswered Section) ==================
 class FarmerQuestionsPage extends StatefulWidget {
   const FarmerQuestionsPage({Key? key}) : super(key: key);
 
@@ -1527,6 +1534,12 @@ class FarmerQuestionsPage extends StatefulWidget {
 class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   File? _imageFile;
   Uint8List? _webImage;
+  
+  File? _audioQuestionFile;   // ’Ê  «·„“«—⁄
+  bool _recording = false;
+  final AudioRecorder _recorder = AudioRecorder();
+  final AudioPlayer _audioPlayer = AudioPlayer(); //  ‘€Ì· ’Ê  «·Œ»Ì—
+  
   bool _loading = false;
   final picker = ImagePicker();
   final TextEditingController _questionController = TextEditingController();
@@ -1587,96 +1600,184 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
         _imageFile = File(pickedFile.path);
     });
   }
+  
+   // ================= AUDIO =================
+Future<void> _startRecording() async {
+  final hasPermission = await _recorder.hasPermission();
+  if (!hasPermission) return;
 
-  Future<void> _sendQuestion() async {
-    final loc = AppLocalizations.of(context)!;
-    if (_questionController.text.trim().isEmpty) return;
-    if (_farmerId == null) return;
-    if (_imageFile == null && _webImage == null) return;
+ if (kIsWeb) {
+  await _recorder.start(
+    const RecordConfig(
+      encoder: AudioEncoder.opus,
+    ),
+    path: 'audio.webm',
+  );
+}
+else {
+    // ===== Android / iOS =====
+    final dir = await getTemporaryDirectory();
+    final filePath =
+        '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
-    Uint8List imageBytes;
-    String filename = "question_image.png";
-
-    if (kIsWeb) {
-      imageBytes = _webImage!;
-    } else {
-      imageBytes = await _imageFile!.readAsBytes();
-      filename = _imageFile!.path.split("/").last;
-    }
-
-    setState(() => _loading = true);
-
-    try {
-      final uri = Uri.parse("${AppConstants.baseUrl}/send_question");
-      final request = http.MultipartRequest('POST', uri);
-      request.fields['farmer_id'] = _farmerId.toString();
-      request.fields['question'] = _questionController.text.trim();
-      request.files.add(http.MultipartFile.fromBytes('file', imageBytes, filename: filename));
-
-      final response = await request.send();
-      if (response.statusCode == 200) {
-        _questionController.clear();
-        setState(() {
-          _imageFile = null;
-          _webImage = null;
-        });
-        await _fetchQuestions();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(loc.snackbar_question_sent)),
-        );
-      }
-    } catch (e) {
-      print("? Error sending question: $e");
-    } finally {
-      setState(() => _loading = false);
-    }
+    await _recorder.start(
+      const RecordConfig(
+        encoder: AudioEncoder.aacLc,
+        bitRate: 128000,
+        sampleRate: 44100,
+      ),
+      path: filePath,
+    );
   }
-Widget _buildQuestionCard(Map<String, dynamic> q,
-    {bool answered = false}) {
+
+  setState(() {
+    _recording = true;
+  });
+}
+Future<void> _stopRecording() async {
+  final path = await _recorder.stop();
+
+  if (kIsWeb) {
+    // ⁄·Ï Web Ì—Ã⁄ blob url
+    // Ì„ﬂ‰ﬂ Õ›ŸÂ „ƒﬁ « ≈–« √—œ 
+  } else if (path != null) {
+    _audioQuestionFile = File(path);
+  }
+
+  setState(() {
+    _recording = false;
+  });
+}
+
+Future<void> _sendQuestion() async {
   final loc = AppLocalizations.of(context)!;
 
-  final questionText = q['question'] ?? "";
-  final answerText = q['answer'] ?? "";
-  final questionId = q['id'];
+  if (_questionController.text.trim().isEmpty) return;
+  if (_farmerId == null) return;
+  if (_imageFile == null && _webImage == null) return;
+
+  Uint8List imageBytes;
+  String imageName = "question_image.png";
+
+  if (kIsWeb) {
+    imageBytes = _webImage!;
+  } else {
+    imageBytes = await _imageFile!.readAsBytes();
+    imageName = _imageFile!.path.split("/").last;
+  }
+
+  setState(() => _loading = true);
+
+  try {
+    final uri = Uri.parse("${AppConstants.baseUrl}/send_question");
+    final request = http.MultipartRequest("POST", uri);
+
+    request.fields["farmer_id"] = _farmerId.toString();
+    request.fields["question"] = _questionController.text.trim();
+
+    request.files.add(
+      http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
+    );
+
+    // ?? ’Ê  «·„“«—⁄ («Œ Ì«—Ì)
+    if (_audioQuestionFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          "audio_question",
+          _audioQuestionFile!.path,
+        ),
+      );
+    }
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      _questionController.clear();
+      setState(() {
+        _imageFile = null;
+        _webImage = null;
+        _audioQuestionFile = null;
+      });
+
+      await _fetchQuestions();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(loc.snackbar_question_sent)),
+      );
+    }
+  } finally {
+    setState(() => _loading = false);
+  }
+}
+
+
+Future<void> _playExpertAudio(int questionId) async {
+  final url =
+      "${AppConstants.baseUrl}/expert_answer_audio/$questionId";
+
+  await _audioPlayer.setUrl(url);
+  await _audioPlayer.play();
+}
+
+Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
+  final loc = AppLocalizations.of(context)!;
+
+  final questionId = q["id"];
+  final questionText = q["question"] ?? "";
+  final answerText = q["answer"] ?? "";
 
   return Card(
-    color: answered ? Colors.green[50] : Colors.white,
     elevation: 3,
-    margin: const EdgeInsets.only(bottom: 10),
+    margin: const EdgeInsets.only(bottom: 12),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     child: Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ====== «·”ƒ«· ======
+          // ===== «·”ƒ«· =====
           Text(
             "${loc.label_question} $questionText",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: answered ? Colors.green[800] : Colors.black87,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
 
-          // ====== «·’Ê—… ======
           const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              "${AppConstants.baseUrl}/expert_question_image/$questionId",
-              height: 120,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  const SizedBox.shrink(), // ·Ê „« ›Ì ’Ê—…
-            ),
+
+          // ===== ’Ê—… «·”ƒ«· =====
+          Image.network(
+            "${AppConstants.baseUrl}/expert_question_image/$questionId",
+            height: 130,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
           ),
 
-          // ====== «·≈Ã«»… ======
+          const SizedBox(height: 6),
+
+          // ===== ’Ê  «·„“«—⁄ =====
+          IconButton(
+            icon: const Icon(Icons.volume_up),
+            tooltip: loc.label_play_question_audio,
+            onPressed: () async {
+              final url =
+                  "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+              await _audioPlayer.setUrl(url);
+              await _audioPlayer.play();
+            },
+          ),
+
+          // ===== —œ «·Œ»Ì— =====
           if (answered && answerText.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
               "${loc.label_answer} $answerText",
-              style: const TextStyle(color: Colors.blue, fontSize: 14),
+              style: const TextStyle(color: Colors.green),
+            ),
+
+            // ?? ’Ê  «·Œ»Ì—
+            IconButton(
+              icon: const Icon(Icons.play_circle_fill),
+              tooltip: loc.label_play_answer_audio,
+              onPressed: () => _playExpertAudio(questionId),
             ),
           ],
         ],
@@ -1749,6 +1850,33 @@ Widget _buildQuestionCard(Map<String, dynamic> q,
                             minimumSize: const Size(double.infinity, 50),
                           ),
                         ),
+						const SizedBox(height: 10),
+
+                // ================= “—  ”ÃÌ· «·’Ê  =================
+                        ElevatedButton.icon(
+                        onPressed: _recording ? _stopRecording : _startRecording,
+                        icon: Icon(_recording ? Icons.stop : Icons.mic),
+                        label: Text(
+                        _recording
+                        ? loc.button_stop_recording
+                        : loc.button_record_audio,
+                         ),
+                       style: ElevatedButton.styleFrom(
+                         backgroundColor: Colors.orange,
+                         foregroundColor: Colors.white,
+                         minimumSize: const Size(double.infinity, 50),
+                        ),
+                        ),
+
+                       // ⁄—÷ —”«·… ⁄‰œ ÊÃÊœ  ”ÃÌ·
+                       if (_audioQuestionFile != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                         loc.label_audio_attached,
+                         style: const TextStyle(color: Colors.green),
+                        ),
+                          ],
+
                         const SizedBox(height: 10),
                         if (_imageFile != null || _webImage != null)
                           ClipRRect(

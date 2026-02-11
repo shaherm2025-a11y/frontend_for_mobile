@@ -324,7 +324,12 @@
   "label_write_question": "اكتب السؤال هنا",
   "button_pick_image": "اختر صورة",
   "button_send_question": "إرسال السؤال",
-  "snackbar_question_sent": "تم إرسال السؤال ✅"
+  "snackbar_question_sent": "تم إرسال السؤال ✅",
+  "button_record_audio": "تسجيل صوتي",
+  "button_stop_recording": "إيقاف التسجيل",
+  "label_audio_attached": "تم إرفاق تسجيل صوتي",
+  "label_play_question_audio":"سماع السؤال",
+  "label_play_answer_audio": "سماع الرد"
 
 
 }

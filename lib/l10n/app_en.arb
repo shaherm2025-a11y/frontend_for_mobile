@@ -330,8 +330,13 @@
   "snackbar_question_sent": "Your question has been sent successfully!",
   "noPreviousDiagnoses": "No items to display currently",
   "label_question": "Question:",
-  "label_answer": "Answer:"
-
+  "label_answer": "Answer:",
+  "button_record_audio": "Record Audio",
+  "button_stop_recording": "Stop Recording",
+  "label_audio_attached": "Audio attached",
+  "label_play_question_audio": "play question audio",
+  "label_play_answer_audio": "play answer audio"
+  
 
 
 }

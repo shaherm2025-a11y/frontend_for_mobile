@@ -782,4 +782,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pendingQuestions => 'Pending Questions';
+
+  @override
+  String get button_record_audio => 'Record Audio';
+
+  @override
+  String get button_stop_recording => 'Stop Recording';
+
+  @override
+  String get label_audio_attached => 'Audio attached';
+
+  @override
+  String get label_play_question_audio => 'play question audio';
+
+  @override
+  String get label_play_answer_audio => 'play answer audio';
 }

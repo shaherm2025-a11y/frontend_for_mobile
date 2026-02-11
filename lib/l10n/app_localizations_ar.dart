@@ -805,4 +805,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pendingQuestions => 'الأسئلة قيد الانتظار';
+
+  @override
+  String get button_record_audio => 'تسجيل صوتي';
+
+  @override
+  String get button_stop_recording => 'إيقاف التسجيل';
+
+  @override
+  String get label_audio_attached => 'تم إرفاق تسجيل صوتي';
+
+  @override
+  String get label_play_question_audio => 'سماع السؤال';
+
+  @override
+  String get label_play_answer_audio => 'سماع الرد';
 }

@@ -1537,6 +1537,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending Questions'**
   String get pendingQuestions;
+
+  /// No description provided for @button_record_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Audio'**
+  String get button_record_audio;
+
+  /// No description provided for @button_stop_recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Recording'**
+  String get button_stop_recording;
+
+  /// No description provided for @label_audio_attached.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio attached'**
+  String get label_audio_attached;
+
+  /// No description provided for @label_play_question_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'play question audio'**
+  String get label_play_question_audio;
+
+  /// No description provided for @label_play_answer_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'play answer audio'**
+  String get label_play_answer_audio;
 }
 
 class _AppLocalizationsDelegate
