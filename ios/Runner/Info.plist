@@ -47,6 +47,9 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
     <string>نحتاج إلى موقعك لعرض حالة الطقس.</string>
+	<key>NSMicrophoneUsageDescription</key>
+    <string>نحتاج الميكروفون لتسجيل السؤال الصوتي</string>
+
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>نحتاج إلى موقعك لعرض الطقس حتى أثناء استخدام التطبيق.</string>
 </dict>
