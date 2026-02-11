@@ -25,8 +25,8 @@ dependencies:
   flutter_image_compress: ^2.2.0
   cached_network_image: ^3.3.1
   record: ^5.0.4
-  record_linux: 0.5.0
-  record_platform_interface: 1.5.0
+  record_linux: 0.7.2
+  record_platform_interface: ^1.5.0
   path_provider: ^2.1.2
   just_audio: ^0.9.36
 

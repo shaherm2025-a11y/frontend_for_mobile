@@ -745,10 +745,10 @@ packages:
     dependency: "direct main"
     description:
       name: record_linux
-      sha256: "3dd8ae62a2cdb2d2100a0f37447f11f540c67adc59b629704c603e0d9288adc5"
+      sha256: "74d41a9ebb1eb498a38e9a813dd524e8f0b4fdd627270bda9756f437b110a3e3"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.0"
+    version: "0.7.2"
   record_platform_interface:
     dependency: "direct main"
     description:
