@@ -1522,8 +1522,7 @@ class AwarenessPage extends StatelessWidget {
 
 // ================== Experts Page ==================
 // ================== Farmer Questions Page (Final - With Unanswered Section) ==================
-// ================== Experts Page ==================
-// ================== Farmer Questions Page (Final - With Unanswered Section) ==================
+
 class FarmerQuestionsPage extends StatefulWidget {
   const FarmerQuestionsPage({Key? key}) : super(key: key);
 
@@ -1683,7 +1682,7 @@ Future<void> _sendQuestion() async {
     if (_audioQuestionFile != null) {
       request.files.add(
         await http.MultipartFile.fromPath(
-          "audio_question",
+          "question_audio",
           _audioQuestionFile!.path,
         ),
       );

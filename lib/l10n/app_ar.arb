@@ -316,7 +316,7 @@
   "pendingQuestions": "الأسئلة قيد الانتظار",
   "label_write_question": "اكتب سؤالك هنا",
   "button_pick_image": "اختر صورة",
-  "button_send_question": "إرسال السؤال",
+  "button_send_question": "ارسال الاستفسار",
   "snackbar_question_sent": "تم إرسال سؤالك بنجاح!",
   "noPreviousDiagnoses": "لا توجد عناصر لعرضها حاليًا",
   "label_question": "السؤال:",

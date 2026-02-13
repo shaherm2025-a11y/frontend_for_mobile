@@ -314,7 +314,7 @@
   "tab_answered": "answerd question",
   "label_write_question": "Write your question here",
   "button_pick_image": "Choose Image",
-  "button_send_question": "Send Question",
+  "button_send_question": "Send Query",
   "snackbar_question_sent": "Question sent successfully ✅",
   "label_question": "Question: {question}",
   "label_answer": "Answer: {answer}",
