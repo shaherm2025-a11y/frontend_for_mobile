@@ -771,7 +771,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get previousDiagnos => 'التشخيصات السابقة';
 
   @override
-  String get farmer_page_title => 'أسئلة المزارعين';
+  String get farmer_page_title => 'واجهة المزارع';
 
   @override
   String get tab_unanswered => 'الاستشارات التي لم يتم الرد عليها';
@@ -786,10 +786,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get button_pick_image => 'اختر صورة';
 
   @override
-  String get button_send_question => 'إرسال السؤال';
+  String get button_send_question => 'ارسال الاستفسار';
 
   @override
-  String get snackbar_question_sent => 'تم إرسال السؤال ✅';
+  String get snackbar_question_sent => 'تم ارسال الاستفسار ✅';
 
   @override
   String get label_question => 'السؤال:';

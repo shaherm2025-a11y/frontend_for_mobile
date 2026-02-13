@@ -25,10 +25,11 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
-//import 'package:just_audio/just_audio.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:record/record.dart';
+import 'package:just_audio/just_audio.dart';
 
-import 'package:audioplayers/audioplayers.dart';
+
 
 
 
@@ -1635,15 +1636,11 @@ else {
 Future<void> _stopRecording() async {
   final path = await _recorder.stop();
 
-  if (!kIsWeb && path != null) {
-    final dir = await getApplicationDocumentsDirectory();
-
-    final savedPath =
-        '${dir.path}/temp_question_audio.m4a';
-
-    final savedFile = await File(path).copy(savedPath);
-
-    _audioQuestionFile = savedFile;
+  if (kIsWeb) {
+    // ⁄·Ï Web Ì—Ã⁄ blob url
+    // Ì„ﬂ‰ﬂ Õ›ŸÂ „ƒﬁ « ≈–« √—œ 
+  } else if (path != null) {
+    _audioQuestionFile = File(path);
   }
 
   setState(() {
@@ -1700,31 +1697,6 @@ Future<void> _sendQuestion() async {
         _webImage = null;
         _audioQuestionFile = null;
       });
-	  
-	  if (_audioQuestionFile != null) {
-         final responseBody =
-         await response.stream.bytesToString();
-         final data = json.decode(responseBody);
-
-         final questionId = data["id"]; //  √ﬂœ √‰ backend Ì—Ã⁄ id
-
-      if (questionId != null) {
-         final dir =
-        await getApplicationDocumentsDirectory();
-        final newPath =
-          '${dir.path}/question_$questionId.m4a';
-
-        final newFile =
-        await _audioQuestionFile!.copy(newPath);
-
-        final prefs =
-          await SharedPreferences.getInstance();
-         await prefs.setString(
-         "question_audio_$questionId",
-         newFile.path);
-       }
-       }
-
 
       await _fetchQuestions();
 
@@ -1736,63 +1708,15 @@ Future<void> _sendQuestion() async {
     setState(() => _loading = false);
   }
 }
-Future<String?> _getLocalAnswerAudioPath(int questionId) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString("answer_audio_$questionId");
-}
-
-Future<void> _saveAnswerAudioLocally(
-    int questionId, Uint8List bytes) async {
-
-  final dir = await getApplicationDocumentsDirectory();
-  final filePath = '${dir.path}/answer_$questionId.m4a';
-
-  final file = File(filePath);
-  await file.writeAsBytes(bytes);
-
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString("answer_audio_$questionId", filePath);
-}
 
 
 Future<void> _playExpertAudio(int questionId) async {
   final url =
       "${AppConstants.baseUrl}/expert_answer_audio/$questionId";
 
-  // ===== WEB =====
-  if (kIsWeb) {
-    await _audioPlayer.stop();
-    await _audioPlayer.play(UrlSource(url));
-    return;
-  }
-
-  // ===== ANDROID / IOS =====
-  final localPath = await _getLocalAnswerAudioPath(questionId);
-
-  // ≈–« «·’Ê  „ÊÃÊœ „Õ·Ì«
-  if (localPath != null && await File(localPath).exists()) {
-    await _audioPlayer.stop();
-    await _audioPlayer.play(DeviceFileSource(localPath));
-    return;
-  }
-
-  // ≈–« €Ì— „ÊÃÊœ Õ„·Â Ê«Õ›ŸÂ
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    await _saveAnswerAudioLocally(questionId, response.bodyBytes);
-
-    final savedPath =
-        await _getLocalAnswerAudioPath(questionId);
-
-    if (savedPath != null &&
-        await File(savedPath).exists()) {
-      await _audioPlayer.stop();
-      await _audioPlayer.play(DeviceFileSource(savedPath));
-    }
-  }
+  await _audioPlayer.setUrl(url);
+  await _audioPlayer.play();
 }
-
 
 Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
   final loc = AppLocalizations.of(context)!;
@@ -1829,62 +1753,16 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
           const SizedBox(height: 6),
 
           // ===== ’Ê  «·„“«—⁄ =====
-IconButton(
-  icon: const Icon(Icons.volume_up),
-  tooltip: loc.label_play_question_audio,
-onPressed: () async {
-
-  final prefs = await SharedPreferences.getInstance();
-  final localPath =
-      prefs.getString("question_audio_$questionId");
-
-  // ===== WEB =====
-  if (kIsWeb) {
-    final url =
-        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
-
-    await _audioPlayer.stop();
-    await _audioPlayer.play(UrlSource(url));
-    return;
-  }
-
-  // ===== ANDROID / IOS =====
-  if (localPath != null &&
-      await File(localPath).exists()) {
-
-    await _audioPlayer.stop();
-    await _audioPlayer.play(DeviceFileSource(localPath));
-
-  } else {
-
-    final url =
-        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
-
-    final response =
-        await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-
-      final dir =
-          await getApplicationDocumentsDirectory();
-
-      final filePath =
-          '${dir.path}/question_$questionId.m4a';
-
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
-
-      await prefs.setString(
-          "question_audio_$questionId",
-          filePath);
-
-      await _audioPlayer.stop();
-      await _audioPlayer.play(DeviceFileSource(filePath));
-    }
-  }
-},
-
-),
+          IconButton(
+            icon: const Icon(Icons.volume_up),
+            tooltip: loc.label_play_question_audio,
+            onPressed: () async {
+              final url =
+                  "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+              await _audioPlayer.setUrl(url);
+              await _audioPlayer.play();
+            },
+          ),
 
           // ===== —œ «·Œ»Ì— =====
           if (answered && answerText.isNotEmpty) ...[

@@ -762,11 +762,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get button_pick_image => 'Pick an Image';
 
   @override
-  String get button_send_question => 'Send Question';
+  String get button_send_question => 'Send Query';
 
   @override
-  String get snackbar_question_sent =>
-      'Your question has been sent successfully!';
+  String get snackbar_question_sent => 'Your Query has been sent successfully!';
 
   @override
   String get label_question => 'Question:';

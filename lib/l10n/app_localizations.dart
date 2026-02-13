@@ -1499,13 +1499,13 @@ abstract class AppLocalizations {
   /// No description provided for @button_send_question.
   ///
   /// In en, this message translates to:
-  /// **'Send Question'**
+  /// **'Send Query'**
   String get button_send_question;
 
   /// No description provided for @snackbar_question_sent.
   ///
   /// In en, this message translates to:
-  /// **'Your question has been sent successfully!'**
+  /// **'Your Query has been sent successfully!'**
   String get snackbar_question_sent;
 
   /// No description provided for @label_question.

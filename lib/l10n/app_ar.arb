@@ -311,20 +311,20 @@
   "tab_unanswered": "الاستشارات التي لم يتم الرد عليها",
   "tab_answered": "الاستشارات التي تم الرد عليها",
   
-  "farmer_page_title": "أسئلة المزارعين",
+  
   "previousQuestions": "الأسئلة المجابة سابقًا",
   "pendingQuestions": "الأسئلة قيد الانتظار",
-  "label_write_question": "اكتب سؤالك هنا",
-  "button_pick_image": "اختر صورة",
-  "button_send_question": "ارسال الاستفسار",
-  "snackbar_question_sent": "تم إرسال سؤالك بنجاح!",
+  
+
+ 
+ 
   "noPreviousDiagnoses": "لا توجد عناصر لعرضها حاليًا",
   "label_question": "السؤال:",
   "label_answer": "الإجابة:",
   "label_write_question": "اكتب السؤال هنا",
   "button_pick_image": "اختر صورة",
-  "button_send_question": "إرسال السؤال",
-  "snackbar_question_sent": "تم إرسال السؤال ✅",
+  "button_send_question": "ارسال الاستفسار",
+  "snackbar_question_sent": "تم ارسال الاستفسار ✅",
   "button_record_audio": "تسجيل صوتي",
   "button_stop_recording": "إيقاف التسجيل",
   "label_audio_attached": "تم إرفاق تسجيل صوتي",
