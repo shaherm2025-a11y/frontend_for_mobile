@@ -29,7 +29,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:record/record.dart';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'local_db.dart';
 
 
 
@@ -1558,77 +1557,34 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     _farmerId = prefs.getInt('farmer_id') ?? 0;
     await _fetchQuestions();
   }
-  
 
-Future<void> _fetchQuestions() async {
+  Future<void> _fetchQuestions() async {
+    if (_farmerId == null) return;
 
-  // ? «ﬁ—√ „‰ «·„Õ·Ì √Ê·« (⁄—÷ ”—Ì⁄)
-  final localData = await LocalDB.getQuestions();
+    try {
+      final uri = Uri.parse("${AppConstants.baseUrl}/get_farmer_questions/$_farmerId");
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body);
+        print("Response code: ${response.statusCode}");
+        print("Response body: ${response.body}");
 
-  setState(() {
-    answered = localData
-        .where((q) => q['status'] == 1)
-        .toList();
+        setState(() {
+          answered = data
+              .where((q) => q['status'] == 1)
+              .map((e) => e as Map<String, dynamic>)
+              .toList();
 
-    unanswered = localData
-        .where((q) => q['status'] == 0)
-        .toList();
-  });
-
-  // ? »⁄œÂ« Õ«Ê·  ÕœÌÀ „‰ «·”Ì—›—
-  if (_farmerId == null) return;
-
-  try {
-    final uri = Uri.parse(
-        "${AppConstants.baseUrl}/get_farmer_questions/$_farmerId");
-
-    final response = await http.get(uri);
-
-    if (response.statusCode == 200) {
-
-      final List data = json.decode(response.body);
-
-      for (var q in data) {
-
-        // «Õ›Ÿ «·»Ì«‰«  «·√”«”Ì… √Ê·«
-        await LocalDB.insertQuestion({
-          "id": q["id"],
-          "question": q["question"],
-          "answer": q["answer"],
-          "image_path": null,
-          "question_audio_path": null,
-          "answer_audio_path": null,
-          "status": q["status"]
+          unanswered = data
+              .where((q) => q['status'] == 0)
+              .map((e) => e as Map<String, dynamic>)
+              .toList();
         });
-
-        // ?  Õﬁﬁ ≈‰ ﬂ«‰  «·’Ê—… €Ì— „Õ›ÊŸ… „Õ·Ì«
-        final existing =
-            await LocalDB.getQuestionById(q["id"]);
-
-        if (existing == null ||
-            existing["image_path"] == null) {
-
-          await _downloadQuestionImage(q["id"]);
-        }
       }
-
-      // ?  ÕœÌÀ «·Ê«ÃÂ… »⁄œ «·„“«„‰…
-      final updatedLocal = await LocalDB.getQuestions();
-
-      setState(() {
-        answered = updatedLocal
-            .where((q) => q['status'] == 1)
-            .toList();
-
-        unanswered = updatedLocal
-            .where((q) => q['status'] == 0)
-            .toList();
-      });
+    } catch (e) {
+      print("? Error fetching questions: $e");
     }
-  } catch (_) {
-    // ›Ì Õ«· ·« ÌÊÃœ «‰ —‰  Ì»ﬁÏ Ì⁄„· ⁄·Ï «·„Õ·Ì
   }
-}
 
   Future<void> _pickImage() async {
     XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -1796,103 +1752,45 @@ Future<void> _saveAnswerAudioLocally(
 
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString("answer_audio_$questionId", filePath);
-  
-  // ?? Õ›Ÿ «·„”«— √Ì÷« ›Ì ﬁ«⁄œ… «·»Ì«‰«  «·„Õ·Ì…
-  await LocalDB.updateAnswer(
-    questionId,
-    "",        // ·« ‰€Ì¯— ‰’ «·—œ
-    filePath,  // „”«— «·’Ê 
-  );
 }
 
 
 Future<void> _playExpertAudio(int questionId) async {
-
-  // ===== WEB =====
-  if (kIsWeb) {
-    final url =
-        "${AppConstants.baseUrl}/expert_answer_audio/$questionId";
-
-    await _audioPlayer.stop();
-    await _audioPlayer.setSource(UrlSource(url));
-    await _audioPlayer.resume();
-    return;
-  }
-
-  // ===== ANDROID =====
-
-  // ? «ﬁ—√ „‰ SQLite
-  final local = await LocalDB.getQuestions();
-  final question =
-      local.firstWhere((q) => q['id'] == questionId);
-
-  final path = question['answer_audio_path'];
-
-  // ? ≈–« „ÊÃÊœ „Õ·Ì« ‘€·Â „»«‘—…
-  if (path != null && await File(path).exists()) {
-    await _audioPlayer.stop();
-    await _audioPlayer.setSource(DeviceFileSource(path));
-    await _audioPlayer.resume();
-    return;
-  }
-
-  // ? ≈–« €Ì— „ÊÃÊœ Õ„·Â „‰ «·”Ì—›—
   final url =
       "${AppConstants.baseUrl}/expert_answer_audio/$questionId";
 
+  // ===== WEB =====
+  if (kIsWeb) {
+    await _audioPlayer.stop();
+    await _audioPlayer.play(UrlSource(url));
+    return;
+  }
+
+  // ===== ANDROID / IOS =====
+  final localPath = await _getLocalAnswerAudioPath(questionId);
+
+  // ≈–« «·’Ê  „ÊÃÊœ „Õ·Ì«
+  if (localPath != null && await File(localPath).exists()) {
+    await _audioPlayer.stop();
+    await _audioPlayer.play(DeviceFileSource(localPath));
+    return;
+  }
+
+  // ≈–« €Ì— „ÊÃÊœ Õ„·Â Ê«Õ›ŸÂ
   final response = await http.get(Uri.parse(url));
 
   if (response.statusCode == 200) {
+    await _saveAnswerAudioLocally(questionId, response.bodyBytes);
 
-    // «Õ›ŸÂ „Õ·Ì«
-    await _saveAnswerAudioLocally(
-        questionId,
-        response.bodyBytes);
+    final savedPath =
+        await _getLocalAnswerAudioPath(questionId);
 
-    // ‘€·Â »⁄œ «·Õ›Ÿ
-    final updated =
-        await LocalDB.getQuestions();
-
-    final updatedQuestion =
-        updated.firstWhere((q) => q['id'] == questionId);
-
-    final newPath =
-        updatedQuestion['answer_audio_path'];
-
-    if (newPath != null &&
-        await File(newPath).exists()) {
-
+    if (savedPath != null &&
+        await File(savedPath).exists()) {
       await _audioPlayer.stop();
-      await _audioPlayer.setSource(
-          DeviceFileSource(newPath));
-      await _audioPlayer.resume();
+      await _audioPlayer.play(DeviceFileSource(savedPath));
     }
   }
-}
-
-Future<String?> _downloadQuestionImage(int questionId) async {
-  final url =
-      "${AppConstants.baseUrl}/expert_question_image/$questionId";
-
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-
-    final dir = await getApplicationDocumentsDirectory();
-    final imagePath =
-        '${dir.path}/question_$questionId.png';
-
-    await File(imagePath).writeAsBytes(response.bodyBytes);
-
-    await LocalDB.insertQuestion({
-      "id": questionId,
-      "image_path": imagePath,
-    });
-
-    return imagePath;
-  }
-
-  return null;
 }
 
 
@@ -1921,26 +1819,12 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
           const SizedBox(height: 6),
 
           // ===== ’Ê—… «·”ƒ«· =====
-          FutureBuilder<String?>(
-            future: LocalDB.getImagePath(questionId),
-            builder: (context, snapshot) {
-
-           if (snapshot.hasData && snapshot.data != null) {
-             return Image.file(
-             File(snapshot.data!),
-             height: 130,
-             fit: BoxFit.cover,
-             );
-             }
-
-         return Image.network(
+          Image.network(
             "${AppConstants.baseUrl}/expert_question_image/$questionId",
             height: 130,
-           fit: BoxFit.cover,
-           );
-          },
-         ),
-
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+          ),
 
           const SizedBox(height: 6),
 
