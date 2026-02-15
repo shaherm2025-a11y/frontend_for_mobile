@@ -35,14 +35,32 @@ class LocalDB {
     );
   }
 
-  static Future<void> insertQuestion(Map<String, dynamic> data) async {
-    final db = await database;
-    await db.insert(
+ static Future<void> insertQuestion(Map<String, dynamic> data) async {
+  final db = await database;
+
+  final existing = await db.query(
+    "questions",
+    where: "id = ?",
+    whereArgs: [data["id"]],
+  );
+
+  if (existing.isEmpty) {
+    // إدخال جديد فقط
+    await db.insert("questions", data);
+  } else {
+    // تحديث فقط النصوص بدون لمس الملفات
+    await db.update(
       "questions",
-      data,
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      {
+        "question": data["question"],
+        "answer": data["answer"],
+        "status": data["status"],
+      },
+      where: "id = ?",
+      whereArgs: [data["id"]],
     );
   }
+}
 
   static Future<List<Map<String, dynamic>>> getQuestions() async {
     final db = await database;

@@ -1763,9 +1763,11 @@ Future<void> _sendQuestion() async {
 
         final prefs =
           await SharedPreferences.getInstance();
-         await prefs.setString(
-         "question_audio_$questionId",
-         newFile.path);
+        await LocalDB.updateQuestionAudioPath(
+          questionId,
+          newFile.path,
+        );
+
        }
        }
 
