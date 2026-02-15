@@ -1700,11 +1700,9 @@ Future<void> _stopRecording() async {
     _recording = false;
   });
 }
-
 Future<void> _sendQuestion() async {
   final loc = AppLocalizations.of(context)!;
 
- // if (_questionController.text.trim().isEmpty) return;
   if (_farmerId == null) return;
   if (_imageFile == null && _webImage == null) return;
 
@@ -1731,13 +1729,18 @@ Future<void> _sendQuestion() async {
       http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
     );
 
-    if (_audioQuestionFile != null) {
+    // ? √÷› «·’Ê  ≈‰ ÊÃœ
+    if (_audioQuestionFile != null &&
+        await _audioQuestionFile!.exists()) {
+
       request.files.add(
         await http.MultipartFile.fromPath(
           "question_audio",
           _audioQuestionFile!.path,
         ),
       );
+
+      debugPrint("Audio file attached: ${_audioQuestionFile!.path}");
     }
 
     final response = await request.send();
@@ -1746,45 +1749,48 @@ Future<void> _sendQuestion() async {
       final responseBody = await response.stream.bytesToString();
       final data = json.decode(responseBody);
 
-      final questionId = data["id"]; // ÌÃ» √‰ Ì—Ã⁄ «·”Ì—›— ID
+      final questionId = data["id"];
 
       if (questionId != null) {
+
         final dir = await getApplicationDocumentsDirectory();
 
-       // ===== Õ›Ÿ «·’Ê—… =====
-       final imagePath = '${dir.path}/question_$questionId.png';
-       await File(imagePath).writeAsBytes(imageBytes);
+        // ===== Õ›Ÿ «·’Ê—… =====
+        final imagePath = '${dir.path}/question_$questionId.png';
+        await File(imagePath).writeAsBytes(imageBytes);
 
-      // ===== Õ›Ÿ ’Ê  «·”ƒ«· =====
-       String? audioPath;
+        // ===== Õ›Ÿ ’Ê  «·”ƒ«· =====
+        String? audioPath;
 
-       if (_audioQuestionFile != null &&
-          await _audioQuestionFile!.exists()) {
+        if (_audioQuestionFile != null &&
+            await _audioQuestionFile!.exists()) {
 
-         final newAudioPath =
-           '${dir.path}/question_$questionId.m4a';
+          final newAudioPath =
+              '${dir.path}/question_$questionId.m4a';
 
-        final newFile =
-        await _audioQuestionFile!.copy(newAudioPath);
+          final newFile =
+              await _audioQuestionFile!.copy(newAudioPath);
 
-        audioPath = newFile.path;
+          audioPath = newFile.path;
 
-        debugPrint("Audio saved to: $audioPath");
-       }
+          debugPrint("Audio saved locally: $audioPath");
+        } else {
+          debugPrint("No audio file to save");
+        }
 
-       // ===== Õ›Ÿ ›Ì SQLite =====
-       await LocalDB.insertQuestion({
-       "id": questionId,
-       "question": _questionController.text.trim(),
-       "answer": "",
-       "image_path": imagePath,
-       "question_audio_path": audioPath,
-       "answer_audio_path": null,
-       "status": 0
-       });
+        // ===== Õ›Ÿ ›Ì ﬁ«⁄œ… «·»Ì«‰«  =====
+        await LocalDB.insertQuestion({
+          "id": questionId,
+          "question": _questionController.text.trim(),
+          "answer": "",
+          "image_path": imagePath,
+          "question_audio_path": audioPath,
+          "answer_audio_path": null,
+          "status": 0
+        });
       }
 
-      //  ‰ŸÌ› «·Ê«ÃÂ… »⁄œ «·Õ›Ÿ
+      //  ‰ŸÌ› «·Ê«ÃÂ…
       _questionController.clear();
 
       setState(() {
@@ -1802,8 +1808,9 @@ Future<void> _sendQuestion() async {
   } finally {
     setState(() => _loading = false);
   }
-  
-}Future<String?> _getLocalAnswerAudioPath(int questionId) async {
+}
+
+Future<String?> _getLocalAnswerAudioPath(int questionId) async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString("answer_audio_$questionId");
 }
@@ -2000,29 +2007,36 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
   } else {
 
     final url =
-        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+    "${AppConstants.baseUrl}/expert_question_audio/$questionId";
 
-    final response =
-        await http.get(Uri.parse(url));
+final response =
+    await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
+if (response.statusCode == 200) {
 
-      final dir =
-          await getApplicationDocumentsDirectory();
+  final dir =
+      await getApplicationDocumentsDirectory();
 
-      final filePath =
-          '${dir.path}/question_$questionId.m4a';
+  final filePath =
+      '${dir.path}/question_$questionId.m4a';
 
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
+  final file = File(filePath);
+  await file.writeAsBytes(response.bodyBytes);
 
-      await prefs.setString(
-          "question_audio_$questionId",
-          filePath);
+  // ? Õ›Ÿ ›Ì SharedPreferences («Œ Ì«—Ì)
+  await prefs.setString(
+      "question_audio_$questionId",
+      filePath);
 
-      await _audioPlayer.stop();
-      await _audioPlayer.play(DeviceFileSource(filePath));
-    }
+  // ?? «·„Â„: Õ›Ÿ ›Ì ﬁ«⁄œ… «·»Ì«‰« 
+  await LocalDB.updateQuestionAudioPath(
+      questionId,
+      filePath,
+  );
+
+  await _audioPlayer.stop();
+  await _audioPlayer.play(DeviceFileSource(filePath));
+}
   }
 },
 
