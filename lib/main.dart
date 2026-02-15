@@ -1676,19 +1676,24 @@ else {
     _recording = true;
   });
 }
+
 Future<void> _stopRecording() async {
   final path = await _recorder.stop();
 
   if (!kIsWeb && path != null) {
-    // ?? „Ã·œ œ«∆„ ·« ÌıÕ–›
+
     final dir = await getApplicationDocumentsDirectory();
 
     final savedPath =
-        '${dir.path}/question_temp_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        '${dir.path}/question_audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
     final savedFile = await File(path).copy(savedPath);
 
+    // ? Õ›ŸÂ ›Ì «·„ €Ì—
     _audioQuestionFile = savedFile;
+
+    // ? „Â„ Ãœ«: «ÿ»⁄ «·„”«— ·· √ﬂœ
+    debugPrint("Saved audio path: ${savedFile.path}");
   }
 
   setState(() {
@@ -1699,7 +1704,7 @@ Future<void> _stopRecording() async {
 Future<void> _sendQuestion() async {
   final loc = AppLocalizations.of(context)!;
 
-  if (_questionController.text.trim().isEmpty) return;
+ // if (_questionController.text.trim().isEmpty) return;
   if (_farmerId == null) return;
   if (_imageFile == null && _webImage == null) return;
 
@@ -1746,33 +1751,37 @@ Future<void> _sendQuestion() async {
       if (questionId != null) {
         final dir = await getApplicationDocumentsDirectory();
 
-        // ================= Õ›Ÿ «·’Ê—… „Õ·Ì« =================
-        final imagePath = '${dir.path}/question_$questionId.png';
-        await File(imagePath).writeAsBytes(imageBytes);
+       // ===== Õ›Ÿ «·’Ê—… =====
+       final imagePath = '${dir.path}/question_$questionId.png';
+       await File(imagePath).writeAsBytes(imageBytes);
 
-        // ================= Õ›Ÿ ’Ê  «·”ƒ«· „Õ·Ì« =================
-        String? audioPath;
+      // ===== Õ›Ÿ ’Ê  «·”ƒ«· =====
+       String? audioPath;
 
-        if (_audioQuestionFile != null) {
-          final newAudioPath =
-              '${dir.path}/question_$questionId.m4a';
+       if (_audioQuestionFile != null &&
+          await _audioQuestionFile!.exists()) {
 
-          final newFile =
-              await _audioQuestionFile!.copy(newAudioPath);
+         final newAudioPath =
+           '${dir.path}/question_$questionId.m4a';
 
-          audioPath = newFile.path;
-        }
+        final newFile =
+        await _audioQuestionFile!.copy(newAudioPath);
 
-        // ================= ≈œŒ«· «·”ƒ«· ›Ì SQLite =================
-        await LocalDB.insertQuestion({
-          "id": questionId,
-          "question": _questionController.text.trim(),
-          "answer": "",
-          "image_path": imagePath,
-          "question_audio_path": audioPath,
-          "answer_audio_path": null,
-          "status": 0
-        });
+        audioPath = newFile.path;
+
+        debugPrint("Audio saved to: $audioPath");
+       }
+
+       // ===== Õ›Ÿ ›Ì SQLite =====
+       await LocalDB.insertQuestion({
+       "id": questionId,
+       "question": _questionController.text.trim(),
+       "answer": "",
+       "image_path": imagePath,
+       "question_audio_path": audioPath,
+       "answer_audio_path": null,
+       "status": 0
+       });
       }
 
       //  ‰ŸÌ› «·Ê«ÃÂ… »⁄œ «·Õ›Ÿ
