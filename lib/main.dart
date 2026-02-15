@@ -1680,10 +1680,11 @@ Future<void> _stopRecording() async {
   final path = await _recorder.stop();
 
   if (!kIsWeb && path != null) {
+    // ?? „Ã·œ œ«∆„ ·« ÌıÕ–›
     final dir = await getApplicationDocumentsDirectory();
 
     final savedPath =
-        '${dir.path}/temp_question_audio.m4a';
+        '${dir.path}/question_temp_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
     final savedFile = await File(path).copy(savedPath);
 
