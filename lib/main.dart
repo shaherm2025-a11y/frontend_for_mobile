@@ -1761,12 +1761,17 @@ Future<void> _sendQuestion() async {
         final newFile =
         await _audioQuestionFile!.copy(newPath);
 
-        final prefs =
-          await SharedPreferences.getInstance();
-        await LocalDB.updateQuestionAudioPath(
-          questionId,
-          newFile.path,
+        //final prefs =
+         // await SharedPreferences.getInstance();
+        //await LocalDB.updateQuestionAudioPath(
+          //questionId,
+          //newFile.path,
+        //);
+		await LocalDB.updateQuestionAudioPath(
+        questionId,
+        newFile.path,
         );
+
 
        }
        }
@@ -1947,14 +1952,20 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
           const SizedBox(height: 6),
 
           // ===== ’Ê  «·„“«—⁄ =====
-IconButton(
-  icon: const Icon(Icons.volume_up),
-  tooltip: loc.label_play_question_audio,
-onPressed: () async {
+        IconButton(
+         icon: const Icon(Icons.volume_up),
+         tooltip: loc.label_play_question_audio,
+         onPressed: () async {
 
-  final prefs = await SharedPreferences.getInstance();
-  final localPath =
-      prefs.getString("question_audio_$questionId");
+        final prefs = await SharedPreferences.getInstance();
+  //final localPath =
+    //  prefs.getString("question_audio_$questionId");
+  
+        final question =
+        await LocalDB.getQuestionById(questionId);
+
+        final localPath =
+        question?['question_audio_path'];
 
   // ===== WEB =====
   if (kIsWeb) {
