@@ -1725,7 +1725,6 @@ Future<void> _sendQuestion() async {
       http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
     );
 
-    // ?? ’Ê  «·„“«—⁄ («Œ Ì«—Ì)
     if (_audioQuestionFile != null) {
       request.files.add(
         await http.MultipartFile.fromPath(
@@ -1738,44 +1737,51 @@ Future<void> _sendQuestion() async {
     final response = await request.send();
 
     if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final data = json.decode(responseBody);
+
+      final questionId = data["id"]; // ÌÃ» √‰ Ì—Ã⁄ «·”Ì—›— ID
+
+      if (questionId != null) {
+        final dir = await getApplicationDocumentsDirectory();
+
+        // ================= Õ›Ÿ «·’Ê—… „Õ·Ì« =================
+        final imagePath = '${dir.path}/question_$questionId.png';
+        await File(imagePath).writeAsBytes(imageBytes);
+
+        // ================= Õ›Ÿ ’Ê  «·”ƒ«· „Õ·Ì« =================
+        String? audioPath;
+
+        if (_audioQuestionFile != null) {
+          final newAudioPath =
+              '${dir.path}/question_$questionId.m4a';
+
+          final newFile =
+              await _audioQuestionFile!.copy(newAudioPath);
+
+          audioPath = newFile.path;
+        }
+
+        // ================= ≈œŒ«· «·”ƒ«· ›Ì SQLite =================
+        await LocalDB.insertQuestion({
+          "id": questionId,
+          "question": _questionController.text.trim(),
+          "answer": "",
+          "image_path": imagePath,
+          "question_audio_path": audioPath,
+          "answer_audio_path": null,
+          "status": 0
+        });
+      }
+
+      //  ‰ŸÌ› «·Ê«ÃÂ… »⁄œ «·Õ›Ÿ
       _questionController.clear();
+
       setState(() {
         _imageFile = null;
         _webImage = null;
         _audioQuestionFile = null;
       });
-	  
-	  if (_audioQuestionFile != null) {
-         final responseBody =
-         await response.stream.bytesToString();
-         final data = json.decode(responseBody);
-
-         final questionId = data["id"]; //  √ﬂœ √‰ backend Ì—Ã⁄ id
-
-      if (questionId != null) {
-         final dir =
-        await getApplicationDocumentsDirectory();
-        final newPath =
-          '${dir.path}/question_$questionId.m4a';
-
-        final newFile =
-        await _audioQuestionFile!.copy(newPath);
-
-        //final prefs =
-         // await SharedPreferences.getInstance();
-        //await LocalDB.updateQuestionAudioPath(
-          //questionId,
-          //newFile.path,
-        //);
-		await LocalDB.updateQuestionAudioPath(
-        questionId,
-        newFile.path,
-        );
-
-
-       }
-       }
-
 
       await _fetchQuestions();
 
@@ -1786,8 +1792,8 @@ Future<void> _sendQuestion() async {
   } finally {
     setState(() => _loading = false);
   }
-}
-Future<String?> _getLocalAnswerAudioPath(int questionId) async {
+  
+}Future<String?> _getLocalAnswerAudioPath(int questionId) async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString("answer_audio_$questionId");
 }
@@ -1884,24 +1890,21 @@ Future<String?> _downloadQuestionImage(int questionId) async {
   final response = await http.get(Uri.parse(url));
 
   if (response.statusCode == 200) {
-
     final dir = await getApplicationDocumentsDirectory();
     final imagePath =
         '${dir.path}/question_$questionId.png';
 
     await File(imagePath).writeAsBytes(response.bodyBytes);
 
-    await LocalDB.insertQuestion({
-      "id": questionId,
-      "image_path": imagePath,
-    });
+    //  ÕœÌÀ ›ﬁÿ Ê·Ì” ≈œŒ«· ÃœÌœ
+    await LocalDB.updateQuestionImagePath(
+        questionId, imagePath);
 
     return imagePath;
   }
 
   return null;
 }
-
 
 Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
   final loc = AppLocalizations.of(context)!;
