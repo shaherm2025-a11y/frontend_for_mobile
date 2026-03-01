@@ -1970,76 +1970,82 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
           const SizedBox(height: 6),
 
           // ===== ÕæÊ ÇáãÒÇÑÚ =====
+     Row(
+       children: [
+        const Text(
+        "ÇáÇÓÊÝÓÇÑ",
+        style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(width: 8),
+
         IconButton(
-         icon: const Icon(Icons.volume_up),
-         tooltip: loc.label_play_question_audio,
-         onPressed: () async {
+        icon: const Icon(Icons.volume_up),
+        tooltip: loc.label_play_question_audio,
+        onPressed: () async {
 
-        final prefs = await SharedPreferences.getInstance();
-  //final localPath =
-    //  prefs.getString("question_audio_$questionId");
-  
-        final question =
-        await LocalDB.getQuestionById(questionId);
+          final prefs = await SharedPreferences.getInstance();
 
-        final localPath =
-        question?['question_audio_path'];
+          final question =
+            await LocalDB.getQuestionById(questionId);
 
-  // ===== WEB =====
-  if (kIsWeb) {
-    final url =
-        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+          final localPath =
+            question?['question_audio_path'];
 
-    await _audioPlayer.stop();
-    await _audioPlayer.play(UrlSource(url));
-    return;
-  }
+          // ===== WEB =====
+          if (kIsWeb) {
+            final url =
+              "${AppConstants.baseUrl}/expert_question_audio/$questionId";
 
-  // ===== ANDROID / IOS =====
-  if (localPath != null &&
-      await File(localPath).exists()) {
+            await _audioPlayer.stop();
+            await _audioPlayer.play(UrlSource(url));
+            return;
+          }
 
-    await _audioPlayer.stop();
-    await _audioPlayer.play(DeviceFileSource(localPath));
+           // ===== ANDROID / IOS =====
+           if (localPath != null &&
+             await File(localPath).exists()) {
 
-  } else {
+             await _audioPlayer.stop();
+             await _audioPlayer.play(DeviceFileSource(localPath));
 
-    final url =
-    "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+            } else {
 
-final response =
-    await http.get(Uri.parse(url));
+              final url =
+              "${AppConstants.baseUrl}/expert_question_audio/$questionId";
 
-if (response.statusCode == 200) {
+              final response =
+              await http.get(Uri.parse(url));
 
-  final dir =
-      await getApplicationDocumentsDirectory();
+             if (response.statusCode == 200) {
 
-  final filePath =
-      '${dir.path}/question_$questionId.m4a';
+               final dir =
+                await getApplicationDocumentsDirectory();
 
-  final file = File(filePath);
-  await file.writeAsBytes(response.bodyBytes);
+                final filePath =
+                '${dir.path}/question_$questionId.m4a';
 
-  // ? ÍÝÙ Ýí SharedPreferences (ÇÎÊíÇÑí)
-  await prefs.setString(
-      "question_audio_$questionId",
-      filePath);
+                final file = File(filePath);
+                await file.writeAsBytes(response.bodyBytes);
 
-  // ?? Çáãåã: ÍÝÙ Ýí ÞÇÚÏÉ ÇáÈíÇäÇÊ
-  await LocalDB.updateQuestionAudioPath(
-      questionId,
-      filePath,
-  );
+               // ÍÝÙ ÇÎÊíÇÑí
+                  await prefs.setString(
+                  "question_audio_$questionId",
+                  filePath);
 
-  await _audioPlayer.stop();
-  await _audioPlayer.play(DeviceFileSource(filePath));
-}
-  }
-},
+              // ÍÝÙ Ýí ÞÇÚÏÉ ÇáÈíÇäÇÊ
+               await LocalDB.updateQuestionAudioPath(
+                questionId,
+                filePath,
+              );
 
-),
-
+              await _audioPlayer.stop();
+              await _audioPlayer.play(DeviceFileSource(filePath));
+            }
+          }
+        },
+      ),
+    ],
+  ),
           // ===== ÑÏ ÇáÎÈíÑ =====
           if (answered && answerText.isNotEmpty) ...[
             const SizedBox(height: 6),
@@ -2049,10 +2055,22 @@ if (response.statusCode == 200) {
             ),
 
             // ?? ÕæÊ ÇáÎÈíÑ
-            IconButton(
+            Row(
+             children: [
+              const Text(
+               "ÑÏ ÇáÎÈíÑ",
+               style: TextStyle(
+               fontWeight: FontWeight.bold,
+               color: Colors.green,
+              ),
+             ),
+              const SizedBox(width: 8),
+              IconButton(
               icon: const Icon(Icons.play_circle_fill),
               tooltip: loc.label_play_answer_audio,
               onPressed: () => _playExpertAudio(questionId),
+             ),
+            ],
             ),
           ],
         ],
