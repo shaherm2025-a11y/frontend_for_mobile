@@ -1591,19 +1591,17 @@ Future<void> _fetchQuestions() async {
       for (var q in data) {
 
         // «Õ›Ÿ «·»Ì«‰«  «·√”«”Ì… √Ê·«
-        await LocalDB.insertQuestion({
-          "id": q["id"],
-          "question": q["question"],
-          "answer": q["answer"],
-          "image_path": null,
-          "question_audio_path": null,
-          "answer_audio_path": null,
-          "status": q["status"]
-        });
+        final existing = await LocalDB.getQuestionById(q["id"]);
 
-        // ?  Õﬁﬁ ≈‰ ﬂ«‰  «·’Ê—… €Ì— „Õ›ÊŸ… „Õ·Ì«
-        final existing =
-            await LocalDB.getQuestionById(q["id"]);
+        await LocalDB.insertQuestion({
+        "id": q["id"],
+        "question": q["question"],
+        "answer": q["answer"],
+        "image_path": existing?["image_path"],              // ?? «Õ ›Ÿ »Â«
+        "question_audio_path": existing?["question_audio_path"],
+        "answer_audio_path": existing?["answer_audio_path"],
+        "status": q["status"]
+        });
 
         if (existing == null ||
             existing["image_path"] == null) {
