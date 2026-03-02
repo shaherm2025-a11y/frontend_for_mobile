@@ -329,7 +329,10 @@
   "button_stop_recording": "إيقاف التسجيل",
   "label_audio_attached": "تم إرفاق تسجيل صوتي",
   "label_play_question_audio":"سماع السؤال",
-  "label_play_answer_audio": "سماع الرد"
+  "label_play_answer_audio": "سماع الرد",
+  "label_question_audio": "الاستفسار",
+  "label_answer_audio": "رد الخبير",
+  "label_no_image": "لا توجد صورة"
 
 
 }

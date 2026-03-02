@@ -335,7 +335,10 @@
   "button_stop_recording": "Stop Recording",
   "label_audio_attached": "Audio attached",
   "label_play_question_audio": "play question audio",
-  "label_play_answer_audio": "play answer audio"
+  "label_play_answer_audio": "play answer audio",
+  "label_question_audio": "الاستفسار",
+  "label_answer_audio": "رد الخبير",
+  "label_no_image": "لا توجد صورة"
   
 
 

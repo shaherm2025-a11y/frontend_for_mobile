@@ -1567,6 +1567,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'play answer audio'**
   String get label_play_answer_audio;
+
+  /// No description provided for @label_question_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'الاستفسار'**
+  String get label_question_audio;
+
+  /// No description provided for @label_answer_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'رد الخبير'**
+  String get label_answer_audio;
+
+  /// No description provided for @label_no_image.
+  ///
+  /// In en, this message translates to:
+  /// **'لا توجد صورة'**
+  String get label_no_image;
 }
 
 class _AppLocalizationsDelegate

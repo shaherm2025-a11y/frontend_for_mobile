@@ -1628,6 +1628,48 @@ Future<void> _fetchQuestions() async {
   }
 }
 
+Future<String?> _getOrDownloadImage(int questionId) async {
+
+  //  Õﬁﬁ „‰ ﬁ«⁄œ… «·»Ì«‰«  √Ê·«
+  final localPath = await LocalDB.getImagePath(questionId);
+
+  if (localPath != null && await File(localPath).exists()) {
+    return localPath;
+  }
+
+  try {
+
+    final url =
+        "${AppConstants.baseUrl}/expert_question_image/$questionId";
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+
+      final dir = await getApplicationDocumentsDirectory();
+
+      final filePath = '${dir.path}/question_$questionId.jpg';
+
+      final file = File(filePath);
+
+      await file.writeAsBytes(response.bodyBytes);
+
+      // ?? «Õ›Ÿ «·„”«— ›Ì ﬁ«⁄œ… «·»Ì«‰« 
+      await LocalDB.updateQuestionImagePath(
+        questionId,
+        filePath,
+      );
+
+      return filePath;
+    }
+
+  } catch (e) {
+    print("Image download error: $e");
+  }
+
+  return null;
+}
+
   Future<void> _pickImage() async {
     XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile == null) return;
@@ -1931,12 +1973,15 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
   return Card(
     elevation: 3,
     margin: const EdgeInsets.only(bottom: 12),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
     child: Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
           // ===== «·”ƒ«· =====
           Text(
             "${loc.label_question} $questionText",
@@ -1947,138 +1992,150 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
           // ===== ’Ê—… «·”ƒ«· =====
           FutureBuilder<String?>(
-            future: LocalDB.getImagePath(questionId),
+            future: _getOrDownloadImage(questionId),
             builder: (context, snapshot) {
 
-           if (snapshot.hasData && snapshot.data != null) {
-             return Image.file(
-             File(snapshot.data!),
-             height: 130,
-             fit: BoxFit.cover,
-             );
-             }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                  height: 130,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
 
-         return Image.network(
-            "${AppConstants.baseUrl}/expert_question_image/$questionId",
-            height: 130,
-           fit: BoxFit.cover,
-           );
-          },
-         ),
+              if (snapshot.hasData && snapshot.data != null) {
+                return Image.file(
+                  File(snapshot.data!),
+                  height: 130,
+                  fit: BoxFit.cover,
+                );
+              }
 
+              return SizedBox(
+                height: 130,
+                child: Center(
+                  child: Text(loc.label_no_image),
+                ),
+              );
+            },
+          ),
 
           const SizedBox(height: 6),
 
           // ===== ’Ê  «·„“«—⁄ =====
-     Row(
-       children: [
-        const Text(
-        "«·«” ›”«—",
-        style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(width: 8),
+          Row(
+            children: [
+              Text(
+                loc.label_question_audio,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.volume_up),
+                tooltip: loc.label_play_question_audio,
+                onPressed: () async {
 
-        IconButton(
-        icon: const Icon(Icons.volume_up),
-        tooltip: loc.label_play_question_audio,
-        onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
 
-          final prefs = await SharedPreferences.getInstance();
+                  final question =
+                      await LocalDB.getQuestionById(questionId);
 
-          final question =
-            await LocalDB.getQuestionById(questionId);
+                  final localPath =
+                      question?['question_audio_path'];
 
-          final localPath =
-            question?['question_audio_path'];
+                  // ===== WEB =====
+                  if (kIsWeb) {
+                    final url =
+                        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
 
-          // ===== WEB =====
-          if (kIsWeb) {
-            final url =
-              "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+                    await _audioPlayer.stop();
+                    await _audioPlayer.play(UrlSource(url));
+                    return;
+                  }
 
-            await _audioPlayer.stop();
-            await _audioPlayer.play(UrlSource(url));
-            return;
-          }
+                  // ===== ANDROID / IOS =====
+                  if (localPath != null &&
+                      await File(localPath).exists()) {
 
-           // ===== ANDROID / IOS =====
-           if (localPath != null &&
-             await File(localPath).exists()) {
+                    await _audioPlayer.stop();
+                    await _audioPlayer.play(
+                      DeviceFileSource(localPath),
+                    );
 
-             await _audioPlayer.stop();
-             await _audioPlayer.play(DeviceFileSource(localPath));
+                  } else {
 
-            } else {
+                    final url =
+                        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
 
-              final url =
-              "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+                    final response =
+                        await http.get(Uri.parse(url));
 
-              final response =
-              await http.get(Uri.parse(url));
+                    if (response.statusCode == 200) {
 
-             if (response.statusCode == 200) {
+                      final dir =
+                          await getApplicationDocumentsDirectory();
 
-               final dir =
-                await getApplicationDocumentsDirectory();
+                      final filePath =
+                          '${dir.path}/question_$questionId.m4a';
 
-                final filePath =
-                '${dir.path}/question_$questionId.m4a';
+                      final file = File(filePath);
+                      await file.writeAsBytes(response.bodyBytes);
 
-                final file = File(filePath);
-                await file.writeAsBytes(response.bodyBytes);
+                      await prefs.setString(
+                        "question_audio_$questionId",
+                        filePath,
+                      );
 
-               // Õ›Ÿ «Œ Ì«—Ì
-                  await prefs.setString(
-                  "question_audio_$questionId",
-                  filePath);
+                      await LocalDB.updateQuestionAudioPath(
+                        questionId,
+                        filePath,
+                      );
 
-              // Õ›Ÿ ›Ì ﬁ«⁄œ… «·»Ì«‰« 
-               await LocalDB.updateQuestionAudioPath(
-                questionId,
-                filePath,
-              );
+                      await _audioPlayer.stop();
+                      await _audioPlayer.play(
+                        DeviceFileSource(filePath),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
 
-              await _audioPlayer.stop();
-              await _audioPlayer.play(DeviceFileSource(filePath));
-            }
-          }
-        },
-      ),
-    ],
-  ),
           // ===== —œ «·Œ»Ì— =====
           if (answered && answerText.isNotEmpty) ...[
             const SizedBox(height: 6),
+
             Text(
               "${loc.label_answer} $answerText",
               style: const TextStyle(color: Colors.green),
             ),
 
-            // ?? ’Ê  «·Œ»Ì—
             Row(
-             children: [
-              const Text(
-               "—œ «·Œ»Ì—",
-               style: TextStyle(
-               fontWeight: FontWeight.bold,
-               color: Colors.green,
-              ),
-             ),
-              const SizedBox(width: 8),
-              IconButton(
-              icon: const Icon(Icons.play_circle_fill),
-              tooltip: loc.label_play_answer_audio,
-              onPressed: () => _playExpertAudio(questionId),
-             ),
-            ],
+              children: [
+                Text(
+                  loc.label_answer_audio,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.play_circle_fill),
+                  tooltip: loc.label_play_answer_audio,
+                  onPressed: () => _playExpertAudio(questionId),
+                ),
+              ],
             ),
           ],
+
         ],
       ),
     ),
   );
 }
-
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
