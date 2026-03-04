@@ -30,11 +30,12 @@ import 'package:record/record.dart';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'local_db.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 
-
-// ááæíÈ
+// ï¿½ï¿½ï¿½ï¿½ï¿½
 
 import 'package:uuid/uuid.dart';
 
@@ -69,14 +70,14 @@ class DatabaseHelper {
   if (_db != null) return _db!;
   if (kIsWeb) throw Exception("Web uses JSON, not SQLite");
 
-  // ÇáãÓÇÑ ÇáÕÍíÍ áÞÇÚÏÉ ÇáÈíÇäÇÊ Úáì ÃäÏÑæíÏ
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   String dbPath = await getDatabasesPath();
   String path = p.join(dbPath, "plantix_final.db");
 
-  // åá ÇáÞÇÚÏÉ ãæÌæÏÉ¿ ÅÐÇ áÇ ÇäÓÎåÇ ãä assets
+  // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½É¿ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ assets
   bool exists = await File(path).exists();
   if (!exists) {
-    print("? äÓÎ ÞÇÚÏÉ ÇáÈíÇäÇÊ áÃæá ãÑÉ...");
+    print("? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½...");
     await Directory(dbPath).create(recursive: true);
 
     ByteData data = await rootBundle.load("assets/plantix_final.db");
@@ -84,10 +85,10 @@ class DatabaseHelper {
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
     await File(path).writeAsBytes(bytes, flush: true);
-    print("? ÊãÊ äÓÎ ÇáÞÇÚÏÉ ÈäÌÇÍ");
+    print("? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½");
   }
 
-  // ÇÝÊÍ ÇáÞÇÚÏÉ
+  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   _db = await openDatabase(path, readOnly: false);
   return _db!;
 }
@@ -193,11 +194,51 @@ class DatabaseHelper {
 
 }
 
+Future<void> _initFCM() async {
+  final prefs = await SharedPreferences.getInstance();
+  final farmerId = prefs.getInt('farmer_id');
 
+  if (farmerId == null) return;
 
+  await registerFCMToken(farmerId);
+}
 
+Future<void> registerFCMToken(int farmerId) async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-/// ÊÓÌíá ÇáÏÎæá ÇáÊáÞÇÆí Ãæ ÇÓÊÑÌÇÚ ÇáãÓÊÎÏã ÅÐÇ ãæÌæÏ ãÓÈÞðÇ
+  await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  String? token = await messaging.getToken();
+
+  if (token != null) {
+    await http.post(
+      Uri.parse('${AppConstants.baseUrl}/save_fcm_token'),
+      body: {
+        'user_id': farmerId.toString(),
+        'role': 'farmer',
+        'fcm_token': token,
+      },
+    );
+  }
+
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    await http.post(
+      Uri.parse('${AppConstants.baseUrl}/save_fcm_token'),
+      body: {
+        'user_id': farmerId.toString(),
+        'role': 'farmer',
+        'fcm_token': newToken,
+      },
+    );
+  });
+}
+
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Future<int?> ensureAutoLogin() async {
   final prefs = await SharedPreferences.getInstance();
   final existingId = prefs.getInt('farmer_id');
@@ -209,7 +250,7 @@ Future<int?> ensureAutoLogin() async {
   try {
     final deviceId = await getDeviceId();
 	//final deviceId = await DeviceIdHelper.getDeviceId();
-    final uri = Uri.parse('${AppConstants.baseUrl}/auto_login'); // Ãæ ÇÓÊÈÏá ÈÚäæÇä ÎÇÏãß
+    final uri = Uri.parse('${AppConstants.baseUrl}/auto_login'); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     final response = await http.post(uri, body: {'device_id': deviceId});
     print (deviceId);
     if (response.statusCode == 200) {
@@ -219,29 +260,39 @@ Future<int?> ensureAutoLogin() async {
       print("? Farmer registered/logged in automatically: $farmerId");
       return farmerId;
     } else {
-      print("?? ÝÔá ÇáÇÊÕÇá ÈÇáÎÇÏã: ${response.statusCode}");
+      print("?? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: ${response.statusCode}");
       return null;
     }
   } catch (e) {
-    print("? ÎØÃ Ýí autoLogin: $e");
+    print("? ï¿½ï¿½ï¿½ ï¿½ï¿½ autoLogin: $e");
     return null;
   }
 }
 
+
+
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
+  
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+
 
   if (kIsWeb) {
     await DatabaseHelper.loadJson("assets/plant_relational.json");
   } else if (Platform.isWindows || Platform.isLinux) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
-	// ÊåíÆÉ SQLite + ÇÓÊíÑÇÏ JSON ÅÐÇ ßÇäÊ ÇáÞÇÚÏÉ ÝÇÑÛÉ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ SQLite + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ JSON ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     await DatabaseHelper.getDatabase();
   }
    // ====== Android / iOS ======
   else {
-    await DatabaseHelper.getDatabase(); // åÐÇ íÔÛøá ÇáÅäÔÇÁ + ÇáÇÓÊíÑÇÏ
+    await DatabaseHelper.getDatabase(); // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   }
   
   final farmerId = await ensureAutoLogin();
@@ -251,11 +302,13 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   final int? initialFarmerId;
-  const MyApp({Key? key, this.initialFarmerId}) : super(key: key);
+
+  const MyApp({super.key, this.initialFarmerId});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en');
@@ -264,9 +317,56 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    farmerId = widget.initialFarmerId;
+    _initFCM();
+  }
+  Future<void> _initFCM() async {
+
+    final farmerId = widget.initialFarmerId;
+    if (farmerId == null) return;
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    String? token = await messaging.getToken();
+
+    if (token != null) {
+      await _sendTokenToServer(farmerId, token);
+    }
+
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      await _sendTokenToServer(farmerId, newToken);
+    });
+
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              message.notification!.title ?? "ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½",
+            ),
+          ),
+        );
+      }
+    });
   }
 
+  Future<void> _sendTokenToServer(int farmerId, String token) async {
+    await http.post(
+      Uri.parse('${AppConstants.baseUrl}/save_fcm_token'),
+      body: {
+        'user_id': farmerId.toString(),
+        'role': 'farmer',
+        'fcm_token': token,
+      },
+    );
+  }
   void _setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -288,14 +388,20 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: SplashScreen(onLocaleChange: _setLocale),
+      home: SplashScreen(onLocaleChange: _setLocale,initialFarmerId: widget.initialFarmerId),
     );
   }
 }
 // ================== Splash Screen ==================
 class SplashScreen extends StatefulWidget {
   final Function(Locale) onLocaleChange;
-  const SplashScreen({required this.onLocaleChange, Key? key}) : super(key: key);
+  final int? initialFarmerId;
+
+  const SplashScreen({
+    required this.onLocaleChange,
+    required this.initialFarmerId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -309,11 +415,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   late AnimationController _buttonsController;
   late List<Animation<Offset>> _slideAnimations;
+  late int? farmerId;
 
   @override
   void initState() {
     super.initState();
-
     // âœ… Logo Animation
     _logoController =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
@@ -537,17 +643,9 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
     _loadPreviousDiagnoses();
   }
   
-  //Future<Uint8List> _compressImage(Uint8List bytes) async {
-  //return await FlutterImageCompress.compressWithList(
-   // bytes,
-   // minWidth: 512,
-   // minHeight: 512,
-   // quality: 75,
-    //);
-  // }
-  
+ 
   Future<Uint8List> _compressImage(Uint8List bytes) async {
-  // ÊÚØíá ÇáÖÛØ Úáì Windows (ÛíÑ ãÏÚæã)
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Windows (ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½)
   if (kIsWeb || Platform.isWindows) {
     return bytes;
   }
@@ -570,21 +668,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
     }
   }
 
- // Future<void> pickImage() async {
-  //  XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  //  if (pickedFile == null) return;
-//
-  //  Uint8List imageBytes = await pickedFile.readAsBytes();
-    //setState(() {
-      //if (kIsWeb)
-        //_webImage = imageBytes;
-    //  else
-      //  _imageFile = File(pickedFile.path);
-   // });
-
-   // await diagnoseAndSave(imageBytes, pickedFile.name);
-  //}
-  
+ 
    Future<void> pickImage() async {
   try {
     // ============ 1) WEB ============
@@ -610,7 +694,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 
     // ============ 2) ANDROID + iOS ============
     if (Platform.isAndroid || Platform.isIOS) {
-      // äÇÝÐÉ ÇáÇÎÊíÇÑ ãä ÇáßÇãíÑÇ Ãæ ÇáãÚÑÖ
+      // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	  final loc = AppLocalizations.of(context)!;
       final option = await showModalBottomSheet<String>(
         context: context,
@@ -722,7 +806,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   //  } 
 	//catch (e) {
     //  print("?? Error diagnosing or saving: $e");
-    //  setState(() => _disease = "ÍÏË ÎØÃ ÃËäÇÁ ÇáÊÔÎíÕ");
+    //  setState(() => _disease = "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
     //} 
 	}catch (e, st) {
       print("? Diagnose error: $e");
@@ -764,14 +848,14 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ?? æíÏÌÊ ÍÇáÉ ÇáØÞÓ
+            // ?? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
             const WeatherWidget(),
             const SizedBox(height: 20),
 
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ?? ÇáÚãæÏ ÇáÃíÓÑ (ÇáÊÔÎíÕ ÇáÍÇáí)
+                // ?? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
                 Expanded(
                   flex: 2,
                   child: Column(
@@ -815,7 +899,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: _disease!.toLowerCase().contains("ÎØÃ")
+                                        color: _disease!.toLowerCase().contains("ï¿½ï¿½ï¿½")
                                             ? Colors.red
                                             : Colors.green[800])),
                                 const SizedBox(height: 10),
@@ -839,7 +923,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 
                 const SizedBox(width: 20),
 
-                // ?? ÇáÚãæÏ ÇáÃíãä (ÇáÊÔÎíÕÇÊ ÇáÓÇÈÞÉ)
+                // ?? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
                 Expanded(
                   flex: 1,
                   child: Column(
@@ -957,7 +1041,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        setState(() => _description = "ÎÏãÉ ÇáãæÞÚ ÛíÑ ãÝÚøáÉ");
+        setState(() => _description = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
         return;
       }
 
@@ -965,7 +1049,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          setState(() => _description = "Êã ÑÝÖ ÅÐä ÇáãæÞÚ");
+          setState(() => _description = "ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
           return;
         }
       }
@@ -977,7 +1061,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       final lat = position.latitude;
       final lon = position.longitude;
 
-      // ?? ÇááÛÉ ãä ÅÚÏÇÏÇÊ ÇáÊØÈíÞ
+      // ?? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
       final locale = Localizations.localeOf(context).languageCode;
       final langParam = locale == "ar" ? "ar" : "en";
 
@@ -991,7 +1075,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       final data = json.decode(response.body);
 
       final now = DateTime.now();
-      final formatter = DateFormat('EEEE¡ d MMMM', locale == "ar" ? 'ar' : 'en');
+      final formatter = DateFormat('EEEEï¿½ d MMMM', locale == "ar" ? 'ar' : 'en');
       final dateStr = formatter.format(now);
 
       setState(() {
@@ -1004,13 +1088,13 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       });
     } catch (e) {
       setState(() {
-        _description = "ÊÚÐÑ ÌáÈ ÍÇáÉ ÇáØÞÓ";
+        _description = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½";
         _loading = false;
       });
     }
   }
 
-  // ?? ÊÍÏíÏ Çááæä ÍÓÈ ÍÇáÉ ÇáØÞÓ
+  // ?? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
   Color _backgroundColor() {
     switch (_mainWeather.toLowerCase()) {
       case "clear":
@@ -1029,7 +1113,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     }
   }
 
-  // ??? ÃíÞæäÉ ÇáØÞÓ
+  // ??? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
   IconData _weatherIcon() {
     switch (_mainWeather.toLowerCase()) {
       case "clear":
@@ -1062,18 +1146,18 @@ Widget build(BuildContext context) {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // ÇáÊÇÑíÎ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 Text(
                   _dateString,
                   style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
                 const SizedBox(width: 8),
 
-                // ÇáÃíÞæäÉ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 Icon(_weatherIcon(), size: 25, color: Colors.white),
                 const SizedBox(width: 8),
 
-                // ÏÑÌÉ ÇáÍÑÇÑÉ
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                Text(
                  "${_temp.toStringAsFixed(1)}\u00B0C",
                  style: const TextStyle(
@@ -1085,14 +1169,14 @@ Widget build(BuildContext context) {
 
                 const SizedBox(width: 8),
 
-                // ÇáæÕÝ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½
                 Text(
                   _description,
                   style: const TextStyle(fontSize: 14, color: Colors.white),
                 ),
                 const SizedBox(width: 8),
 
-                // ÇáãÏíäÉ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 Text(
                   _city,
                   style: const TextStyle(
@@ -1130,12 +1214,12 @@ class _PestsDiseasesPageState extends State<PestsDiseasesPage> {
   }
 
   Future<void> _initializeData() async {
-    // ÇáåÇÊÝ ÝÞØ: ÇÓÊÎÏÇã SQLite æÇÓÊíÑÇÏ ÇáÈíÇäÇÊ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SQLite ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if (!kIsWeb) {
       await DatabaseHelper.getDatabase();
     }
 
-    // ÊÍãíá ÇáãÍÇÕíá (SQLite Úáì ÇáåÇÊÝ¡ JSON Úáì ÇáæíÈ)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (SQLite ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ý¡ JSON ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½)
     await _loadCrops();
   }
 
@@ -1534,10 +1618,10 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   File? _imageFile;
   Uint8List? _webImage;
   
-  File? _audioQuestionFile;   // ÕæÊ ÇáãÒÇÑÚ
+  File? _audioQuestionFile;   // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   bool _recording = false;
   final AudioRecorder _recorder = AudioRecorder();
-  final AudioPlayer _audioPlayer = AudioPlayer(); // ÊÔÛíá ÕæÊ ÇáÎÈíÑ
+  final AudioPlayer _audioPlayer = AudioPlayer(); // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   
   bool _loading = false;
   final picker = ImagePicker();
@@ -1562,7 +1646,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
 
 Future<void> _fetchQuestions() async {
 
-  // ? ÇÞÑÃ ãä ÇáãÍáí ÃæáÇð (ÚÑÖ ÓÑíÚ)
+  // ? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
   final localData = await LocalDB.getQuestions();
 
   setState(() {
@@ -1575,7 +1659,7 @@ Future<void> _fetchQuestions() async {
         .toList();
   });
 
-  // ? ÈÚÏåÇ ÍÇæá ÊÍÏíË ãä ÇáÓíÑÝÑ
+  // ? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   if (_farmerId == null) return;
 
   try {
@@ -1590,14 +1674,14 @@ Future<void> _fetchQuestions() async {
 
       for (var q in data) {
 
-        // ÇÍÝÙ ÇáÈíÇäÇÊ ÇáÃÓÇÓíÉ ÃæáÇð
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
         final existing = await LocalDB.getQuestionById(q["id"]);
 
         await LocalDB.insertQuestion({
         "id": q["id"],
         "question": q["question"],
         "answer": q["answer"],
-        "image_path": existing?["image_path"],              // ?? ÇÍÊÝÙ ÈåÇ
+        "image_path": existing?["image_path"],              // ?? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         "question_audio_path": existing?["question_audio_path"],
         "answer_audio_path": existing?["answer_audio_path"],
         "status": q["status"]
@@ -1610,7 +1694,7 @@ Future<void> _fetchQuestions() async {
         }
       }
 
-      // ? ÊÍÏíË ÇáæÇÌåÉ ÈÚÏ ÇáãÒÇãäÉ
+      // ? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
       final updatedLocal = await LocalDB.getQuestions();
 
       setState(() {
@@ -1624,13 +1708,13 @@ Future<void> _fetchQuestions() async {
       });
     }
   } catch (_) {
-    // Ýí ÍÇá áÇ íæÌÏ ÇäÊÑäÊ íÈÞì íÚãá Úáì ÇáãÍáí
+    // ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   }
 }
 
 Future<String?> _getOrDownloadImage(int questionId) async {
 
-  // ÊÍÞÞ ãä ÞÇÚÏÉ ÇáÈíÇäÇÊ ÃæáÇð
+  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
   final localPath = await LocalDB.getImagePath(questionId);
 
   if (localPath != null && await File(localPath).exists()) {
@@ -1654,7 +1738,7 @@ Future<String?> _getOrDownloadImage(int questionId) async {
 
       await file.writeAsBytes(response.bodyBytes);
 
-      // ?? ÇÍÝÙ ÇáãÓÇÑ Ýí ÞÇÚÏÉ ÇáÈíÇäÇÊ
+      // ?? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
       await LocalDB.updateQuestionImagePath(
         questionId,
         filePath,
@@ -1729,10 +1813,10 @@ Future<void> _stopRecording() async {
 
     final savedFile = await File(path).copy(savedPath);
 
-    // ? ÍÝÙå Ýí ÇáãÊÛíÑ
+    // ? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     _audioQuestionFile = savedFile;
 
-    // ? ãåã ÌÏÇð: ÇØÈÚ ÇáãÓÇÑ ááÊÃßÏ
+    // ? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     debugPrint("Saved audio path: ${savedFile.path}");
   }
 
@@ -1769,7 +1853,7 @@ Future<void> _sendQuestion() async {
       http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
     );
 
-    // ? ÃÖÝ ÇáÕæÊ Åä æÌÏ
+    // ? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
     if (_audioQuestionFile != null &&
         await _audioQuestionFile!.exists()) {
 
@@ -1795,11 +1879,11 @@ Future<void> _sendQuestion() async {
 
         final dir = await getApplicationDocumentsDirectory();
 
-        // ===== ÍÝÙ ÇáÕæÑÉ =====
+        // ===== ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
         final imagePath = '${dir.path}/question_$questionId.png';
         await File(imagePath).writeAsBytes(imageBytes);
 
-        // ===== ÍÝÙ ÕæÊ ÇáÓÄÇá =====
+        // ===== ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
         String? audioPath;
 
         if (_audioQuestionFile != null &&
@@ -1818,7 +1902,7 @@ Future<void> _sendQuestion() async {
           debugPrint("No audio file to save");
         }
 
-        // ===== ÍÝÙ Ýí ÞÇÚÏÉ ÇáÈíÇäÇÊ =====
+        // ===== ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
         await LocalDB.insertQuestion({
           "id": questionId,
           "question": _questionController.text.trim(),
@@ -1830,7 +1914,7 @@ Future<void> _sendQuestion() async {
         });
       }
 
-      // ÊäÙíÝ ÇáæÇÌåÉ
+      // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
       _questionController.clear();
 
       setState(() {
@@ -1867,11 +1951,11 @@ Future<void> _saveAnswerAudioLocally(
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString("answer_audio_$questionId", filePath);
   
-  // ?? ÍÝÙ ÇáãÓÇÑ ÃíÖðÇ Ýí ÞÇÚÏÉ ÇáÈíÇäÇÊ ÇáãÍáíÉ
+  // ?? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   await LocalDB.updateAnswer(
     questionId,
-    "",        // áÇ äÛíøÑ äÕ ÇáÑÏ
-    filePath,  // ãÓÇÑ ÇáÕæÊ
+    "",        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    filePath,  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
   );
 }
 
@@ -1891,14 +1975,14 @@ Future<void> _playExpertAudio(int questionId) async {
 
   // ===== ANDROID =====
 
-  // ? ÇÞÑÃ ãä SQLite
+  // ? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ SQLite
   final local = await LocalDB.getQuestions();
   final question =
       local.firstWhere((q) => q['id'] == questionId);
 
   final path = question['answer_audio_path'];
 
-  // ? ÅÐÇ ãæÌæÏ ãÍáíÇð ÔÛáå ãÈÇÔÑÉ
+  // ? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   if (path != null && await File(path).exists()) {
     await _audioPlayer.stop();
     await _audioPlayer.setSource(DeviceFileSource(path));
@@ -1906,7 +1990,7 @@ Future<void> _playExpertAudio(int questionId) async {
     return;
   }
 
-  // ? ÅÐÇ ÛíÑ ãæÌæÏ Íãáå ãä ÇáÓíÑÝÑ
+  // ? ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   final url =
       "${AppConstants.baseUrl}/expert_answer_audio/$questionId";
 
@@ -1914,12 +1998,12 @@ Future<void> _playExpertAudio(int questionId) async {
 
   if (response.statusCode == 200) {
 
-    // ÇÍÝÙå ãÍáíÇð
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     await _saveAnswerAudioLocally(
         questionId,
         response.bodyBytes);
 
-    // ÔÛáå ÈÚÏ ÇáÍÝÙ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     final updated =
         await LocalDB.getQuestions();
 
@@ -1953,7 +2037,7 @@ Future<String?> _downloadQuestionImage(int questionId) async {
 
     await File(imagePath).writeAsBytes(response.bodyBytes);
 
-    // ÊÍÏíË ÝÞØ æáíÓ ÅÏÎÇá ÌÏíÏ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     await LocalDB.updateQuestionImagePath(
         questionId, imagePath);
 
@@ -1982,7 +2066,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          // ===== ÇáÓÄÇá =====
+          // ===== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
           Text(
             "${loc.label_question} $questionText",
             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -1990,7 +2074,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
           const SizedBox(height: 6),
 
-          // ===== ÕæÑÉ ÇáÓÄÇá =====
+          // ===== ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
           FutureBuilder<String?>(
             future: _getOrDownloadImage(questionId),
             builder: (context, snapshot) {
@@ -2023,7 +2107,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
           const SizedBox(height: 6),
 
-          // ===== ÕæÊ ÇáãÒÇÑÚ =====
+          // ===== ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
           Row(
             children: [
               Text(
@@ -2103,7 +2187,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
             ],
           ),
 
-          // ===== ÑÏ ÇáÎÈíÑ =====
+          // ===== ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
           if (answered && answerText.isNotEmpty) ...[
             const SizedBox(height: 6),
 
@@ -2153,7 +2237,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ===================== ÇáÚãæÏ ÇáÃíÓÑ (ÇáÃÓÆáÉ ÇáãÌÇÈÉ) =====================
+                  // ===================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) =====================
                   Expanded(
                     flex: 1,
                     child: Column(
@@ -2175,13 +2259,13 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
                   const SizedBox(width: 20),
 
-                  // ===================== ÇáÚãæÏ ÇáÃíãä (ÅÑÓÇá ÓÄÇá ÌÏíÏ + ÇáÃÓÆáÉ ÛíÑ ÇáãÌÇÈÉ) =====================
+                  // ===================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) =====================
                   Expanded(
                     flex: 2,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ========== äãæÐÌ ÅÑÓÇá ÓÄÇá ==========
+                        // ========== ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ==========
                         TextField(
                           controller: _questionController,
                           decoration: InputDecoration(
@@ -2202,7 +2286,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                         ),
 						const SizedBox(height: 10),
 
-                // ================= ÒÑ ÊÓÌíá ÇáÕæÊ =================
+                // ================= ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ =================
                         ElevatedButton.icon(
                         onPressed: _recording ? _stopRecording : _startRecording,
                         icon: Icon(_recording ? Icons.stop : Icons.mic),
@@ -2218,7 +2302,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                         ),
                         ),
 
-                       // ÚÑÖ ÑÓÇáÉ ÚäÏ æÌæÏ ÊÓÌíá
+                       // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
                        if (_audioQuestionFile != null) ...[
                         const SizedBox(height: 6),
                         Text(
@@ -2248,7 +2332,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
                         const SizedBox(height: 30),
 
-                        // ========== ÇáÃÓÆáÉ ÛíÑ ÇáãÌÇÈÉ ==========
+                        // ========== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ==========
                         Text(loc.tab_unanswered,
                             style: TextStyle(
                                 fontSize: 18,
