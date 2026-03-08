@@ -339,7 +339,9 @@
   "label_question_audio": "question",
   "label_answer_audio": "expert reply",
   "label_no_image": "no image found",
-  "enterQuestion": "enter question"
+  "enterQuestion": "enter question",
+   "uploading":"upload file"
+
   
 
 

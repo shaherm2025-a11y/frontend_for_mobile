@@ -808,4 +808,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterQuestion => 'enter question';
+
+  @override
+  String get uploading => 'upload file';
 }

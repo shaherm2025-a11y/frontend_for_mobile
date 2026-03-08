@@ -1624,6 +1624,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   final AudioPlayer _audioPlayer = AudioPlayer(); // ����� ��� ������
   
   bool _loading = false;
+  double _progress = 0;
   final picker = ImagePicker();
   final TextEditingController _questionController = TextEditingController();
 
@@ -1636,6 +1637,33 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     super.initState();
     _loadFarmerIdAndData();
   }
+  
+  void _showUploadProgress() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            title: const Text("Uploading question"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(value: _progress),
+                const SizedBox(height: 15),
+                Text("${(_progress * 100).toStringAsFixed(0)} %"),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
   Future<void> _loadFarmerIdAndData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -1853,6 +1881,7 @@ Future<void> _sendQuestion() async {
   setState(() {
     _loading = true;
     _progress = 0;
+	_showUploadProgress();
   });
 
   // ===== عرض progress dialog =====

@@ -1591,6 +1591,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'enter question'**
   String get enterQuestion;
+
+  /// No description provided for @uploading.
+  ///
+  /// In en, this message translates to:
+  /// **'upload file'**
+  String get uploading;
 }
 
 class _AppLocalizationsDelegate

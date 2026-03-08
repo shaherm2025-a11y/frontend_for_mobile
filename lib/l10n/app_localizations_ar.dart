@@ -831,5 +831,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get label_no_image => 'لا توجد صورة';
 
   @override
-  String get enterQuestion => 'ادخل الاستفسار';
+  String get enterQuestion => 'enter question';
+
+  @override
+  String get uploading => 'يتم رفع الملف';
 }
