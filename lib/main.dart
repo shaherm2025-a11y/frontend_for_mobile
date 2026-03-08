@@ -311,7 +311,7 @@ class MyApp extends StatefulWidget {
 
 
 class _MyAppState extends State<MyApp> {
-  Locale _locale = const Locale('en');
+  Locale _locale = const Locale('ar');
   int? farmerId;
 
   @override
@@ -381,7 +381,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Arial'),
       locale: _locale,
-      supportedLocales: const [Locale('en', ''), Locale('ar', '')],
+      supportedLocales: const [Locale('ar', ''), Locale('en', '')],
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -1828,7 +1828,17 @@ Future<void> _sendQuestion() async {
   final loc = AppLocalizations.of(context)!;
 
   if (_farmerId == null) return;
-  if (_imageFile == null && _webImage == null) return;
+  if (_imageFile == null &&
+    _webImage == null &&
+    _questionController.text.trim().isEmpty &&
+    _audioFile == null) {
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(loc.enterQuestion)),
+  );
+
+  return;
+}
 
   Uint8List imageBytes;
   String imageName = "question_image.png";
