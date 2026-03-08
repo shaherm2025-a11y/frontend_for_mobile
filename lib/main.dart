@@ -1828,17 +1828,17 @@ Future<void> _sendQuestion() async {
   final loc = AppLocalizations.of(context)!;
 
   if (_farmerId == null) return;
+
   if (_imageFile == null &&
-    _webImage == null &&
-    _questionController.text.trim().isEmpty &&
-    _audioFile == null) {
+      _webImage == null &&
+      _questionController.text.trim().isEmpty &&
+      _audioQuestionFile == null) {
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(loc.enterQuestion)),
-  );
-
-  return;
-}
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(loc.enterQuestion)),
+    );
+    return;
+  }
 
   Uint8List imageBytes;
   String imageName = "question_image.png";
@@ -1850,7 +1850,33 @@ Future<void> _sendQuestion() async {
     imageName = _imageFile!.path.split("/").last;
   }
 
-  setState(() => _loading = true);
+  setState(() {
+    _loading = true;
+    _progress = 0;
+  });
+
+  // ===== عرض progress dialog =====
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) {
+      return StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return AlertDialog(
+            title: Text(loc.uploading),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LinearProgressIndicator(value: _progress),
+                const SizedBox(height: 10),
+                Text("${(_progress * 100).toStringAsFixed(0)} %")
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
 
   try {
     final uri = Uri.parse("${AppConstants.baseUrl}/send_question");
@@ -1863,7 +1889,6 @@ Future<void> _sendQuestion() async {
       http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
     );
 
-    // ? ��� ����� �� ���
     if (_audioQuestionFile != null &&
         await _audioQuestionFile!.exists()) {
 
@@ -1873,27 +1898,40 @@ Future<void> _sendQuestion() async {
           _audioQuestionFile!.path,
         ),
       );
-
-      debugPrint("Audio file attached: ${_audioQuestionFile!.path}");
     }
 
-    final response = await request.send();
+    final streamedResponse = await request.send();
 
-    if (response.statusCode == 200) {
-      final responseBody = await response.stream.bytesToString();
+    final total = streamedResponse.contentLength ?? 0;
+    int received = 0;
+
+    streamedResponse.stream.listen(
+      (chunk) {
+        received += chunk.length;
+
+        if (total != 0) {
+          setState(() {
+            _progress = received / total;
+          });
+        }
+      },
+    );
+
+    final responseBody =
+        await streamedResponse.stream.bytesToString();
+
+    if (streamedResponse.statusCode == 200) {
+
       final data = json.decode(responseBody);
-
       final questionId = data["id"];
 
       if (questionId != null) {
 
         final dir = await getApplicationDocumentsDirectory();
 
-        // ===== ��� ������ =====
         final imagePath = '${dir.path}/question_$questionId.png';
         await File(imagePath).writeAsBytes(imageBytes);
 
-        // ===== ��� ��� ������ =====
         String? audioPath;
 
         if (_audioQuestionFile != null &&
@@ -1906,13 +1944,8 @@ Future<void> _sendQuestion() async {
               await _audioQuestionFile!.copy(newAudioPath);
 
           audioPath = newFile.path;
-
-          debugPrint("Audio saved locally: $audioPath");
-        } else {
-          debugPrint("No audio file to save");
         }
 
-        // ===== ��� �� ����� �������� =====
         await LocalDB.insertQuestion({
           "id": questionId,
           "question": _questionController.text.trim(),
@@ -1924,7 +1957,6 @@ Future<void> _sendQuestion() async {
         });
       }
 
-      // ����� �������
       _questionController.clear();
 
       setState(() {
@@ -1939,11 +1971,14 @@ Future<void> _sendQuestion() async {
         SnackBar(content: Text(loc.snackbar_question_sent)),
       );
     }
+
   } finally {
+
+    Navigator.pop(context); // إغلاق progress dialog
+
     setState(() => _loading = false);
   }
 }
-
 Future<String?> _getLocalAnswerAudioPath(int questionId) async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString("answer_audio_$questionId");

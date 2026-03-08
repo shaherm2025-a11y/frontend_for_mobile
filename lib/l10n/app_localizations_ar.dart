@@ -829,4 +829,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get label_no_image => 'لا توجد صورة';
+
+  @override
+  String get enterQuestion => 'ادخل الاستفسار';
 }

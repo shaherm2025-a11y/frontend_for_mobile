@@ -798,11 +798,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get label_play_answer_audio => 'play answer audio';
 
   @override
-  String get label_question_audio => 'الاستفسار';
+  String get label_question_audio => 'question';
 
   @override
-  String get label_answer_audio => 'رد الخبير';
+  String get label_answer_audio => 'expert reply';
 
   @override
-  String get label_no_image => 'لا توجد صورة';
+  String get label_no_image => 'no image found';
+
+  @override
+  String get enterQuestion => 'enter question';
 }

@@ -336,9 +336,10 @@
   "label_audio_attached": "Audio attached",
   "label_play_question_audio": "play question audio",
   "label_play_answer_audio": "play answer audio",
-  "label_question_audio": "الاستفسار",
-  "label_answer_audio": "رد الخبير",
-  "label_no_image": "لا توجد صورة"
+  "label_question_audio": "question",
+  "label_answer_audio": "expert reply",
+  "label_no_image": "no image found",
+  "enterQuestion": "enter question"
   
 
 
