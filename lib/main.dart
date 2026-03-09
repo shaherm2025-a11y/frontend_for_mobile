@@ -1958,8 +1958,7 @@ Future<void> _sendQuestion() async {
       if (questionId != null) {
 
         "image_path": imagePath ?? "",
-
-        final imagePath = '${dir.path}/question_$questionId.png';
+		String? imagePath;
         if (imageBytes != null) {
           imagePath = '${dir.path}/question_$questionId.png';
           await File(imagePath).writeAsBytes(imageBytes);
