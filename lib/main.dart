@@ -1957,10 +1957,13 @@ Future<void> _sendQuestion() async {
 
       if (questionId != null) {
 
-        final dir = await getApplicationDocumentsDirectory();
+        "image_path": imagePath ?? "",
 
         final imagePath = '${dir.path}/question_$questionId.png';
-        await File(imagePath).writeAsBytes(imageBytes);
+        if (imageBytes != null) {
+          imagePath = '${dir.path}/question_$questionId.png';
+          await File(imagePath).writeAsBytes(imageBytes);
+         }
 
         String? audioPath;
 
