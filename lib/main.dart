@@ -1653,7 +1653,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(value: _progress),
+                CircularProgressIndicator(),
                 const SizedBox(height: 15),
                 Text("${(_progress * 100).toStringAsFixed(0)} %"),
               ],
@@ -1868,16 +1868,15 @@ Future<void> _sendQuestion() async {
     return;
   }
 
-  Uint8List imageBytes;
+  Uint8List? imageBytes;
   String imageName = "question_image.png";
 
-  if (kIsWeb) {
+  if (_webImage != null) {
     imageBytes = _webImage!;
-  } else {
+  } else if (_imageFile != null) {
     imageBytes = await _imageFile!.readAsBytes();
     imageName = _imageFile!.path.split("/").last;
   }
-
   setState(() {
     _loading = true;
     _progress = 0;
@@ -1913,10 +1912,12 @@ Future<void> _sendQuestion() async {
 
     request.fields["farmer_id"] = _farmerId.toString();
     request.fields["question"] = _questionController.text.trim();
-
-    request.files.add(
-      http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
+	
+    if (imageBytes != null) {
+     request.files.add(
+     http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
     );
+    }
 
     if (_audioQuestionFile != null &&
         await _audioQuestionFile!.exists()) {
