@@ -32,6 +32,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'local_db.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:dio/dio.dart';
 
 
 
@@ -1638,33 +1639,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     _loadFarmerIdAndData();
   }
   
-  void _showUploadProgress() {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setStateDialog) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            title: const Text("Uploading question"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                const SizedBox(height: 15),
-                Text("${(_progress * 100).toStringAsFixed(0)} %"),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
+  
   Future<void> _loadFarmerIdAndData() async {
     final prefs = await SharedPreferences.getInstance();
     _farmerId = prefs.getInt('farmer_id') ?? 0;
@@ -1877,92 +1852,104 @@ Future<void> _sendQuestion() async {
     imageBytes = await _imageFile!.readAsBytes();
     imageName = _imageFile!.path.split("/").last;
   }
+
   setState(() {
     _loading = true;
     _progress = 0;
-	_showUploadProgress();
   });
 
-  // ===== عرض progress dialog =====
   showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (_) {
+    builder: (context) {
+
       return StatefulBuilder(
         builder: (context, setStateDialog) {
+
           return AlertDialog(
             title: Text(loc.uploading),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                LinearProgressIndicator(value: _progress),
+
+                LinearProgressIndicator(
+                value: _progress,
+                minHeight: 8,
+				  borderRadius: BorderRadius.circular(10),
+                 ),
+
                 const SizedBox(height: 10),
+
                 Text("${(_progress * 100).toStringAsFixed(0)} %")
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
 
-  try {
-    final uri = Uri.parse("${AppConstants.baseUrl}/send_question");
-    final request = http.MultipartRequest("POST", uri);
-
-    request.fields["farmer_id"] = _farmerId.toString();
-    request.fields["question"] = _questionController.text.trim();
-	
-    if (imageBytes != null) {
-     request.files.add(
-     http.MultipartFile.fromBytes("file", imageBytes, filename: imageName),
+            ],
+          ),
+        );
+      },
     );
+  },
+);
+  try {
+
+    final dio = Dio();
+
+    FormData formData = FormData.fromMap({
+      "farmer_id": _farmerId.toString(),
+      "question": _questionController.text.trim(),
+    });
+
+    if (imageBytes != null) {
+      formData.files.add(
+        MapEntry(
+          "file",
+          MultipartFile.fromBytes(
+            imageBytes,
+            filename: imageName,
+          ),
+        ),
+      );
     }
 
     if (_audioQuestionFile != null &&
         await _audioQuestionFile!.exists()) {
 
-      request.files.add(
-        await http.MultipartFile.fromPath(
+      formData.files.add(
+        MapEntry(
           "question_audio",
-          _audioQuestionFile!.path,
+          await MultipartFile.fromFile(
+            _audioQuestionFile!.path,
+          ),
         ),
       );
     }
 
-    final streamedResponse = await request.send();
+    final response = await dio.post(
+      "${AppConstants.baseUrl}/send_question",
+      data: formData,
 
-    final total = streamedResponse.contentLength ?? 0;
-    int received = 0;
-
-    streamedResponse.stream.listen(
-      (chunk) {
-        received += chunk.length;
-
+      onSendProgress: (sent, total) {
         if (total != 0) {
           setState(() {
-            _progress = received / total;
+            _progress = sent / total;
           });
         }
       },
     );
 
-    final responseBody =
-        await streamedResponse.stream.bytesToString();
+    if (response.statusCode == 200) {
 
-    if (streamedResponse.statusCode == 200) {
-
-      final data = json.decode(responseBody);
+      final data = response.data;
       final questionId = data["id"];
 
       if (questionId != null) {
 
-        "image_path": imagePath ?? "",
-		String? imagePath;
+        final dir = await getApplicationDocumentsDirectory();
+        String? imagePath;
+
         if (imageBytes != null) {
           imagePath = '${dir.path}/question_$questionId.png';
           await File(imagePath).writeAsBytes(imageBytes);
-         }
+        }
 
         String? audioPath;
 
@@ -1982,7 +1969,7 @@ Future<void> _sendQuestion() async {
           "id": questionId,
           "question": _questionController.text.trim(),
           "answer": "",
-          "image_path": imagePath,
+          "image_path": imagePath ?? "",
           "question_audio_path": audioPath,
           "answer_audio_path": null,
           "status": 0
@@ -2006,11 +1993,15 @@ Future<void> _sendQuestion() async {
 
   } finally {
 
-    Navigator.pop(context); // إغلاق progress dialog
+    Navigator.pop(context);
 
-    setState(() => _loading = false);
+    setState(() {
+      _loading = false;
+      _progress = 0;
+    });
   }
 }
+
 Future<String?> _getLocalAnswerAudioPath(int questionId) async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString("answer_audio_$questionId");
