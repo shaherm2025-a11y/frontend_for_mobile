@@ -1607,6 +1607,7 @@ class AwarenessPage extends StatelessWidget {
 
 // ================== Experts Page ==================
 // ================== Farmer Questions Page (Final - With Unanswered Section) ==================
+
 class FarmerQuestionsPage extends StatefulWidget {
   const FarmerQuestionsPage({Key? key}) : super(key: key);
 
@@ -1618,10 +1619,10 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   File? _imageFile;
   Uint8List? _webImage;
   
-  File? _audioQuestionFile;
+  File? _audioQuestionFile;   // ��� �������
   bool _recording = false;
   final AudioRecorder _recorder = AudioRecorder();
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer(); // ����� ��� ������
   
   bool _loading = false;
   double _progress = 0;
@@ -1637,63 +1638,99 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     super.initState();
     _loadFarmerIdAndData();
   }
-
+  
+  
   Future<void> _loadFarmerIdAndData() async {
     final prefs = await SharedPreferences.getInstance();
     _farmerId = prefs.getInt('farmer_id') ?? 0;
     await _fetchQuestions();
   }
+  
 
-  Future<void> _fetchQuestions() async {
-    final localData = await LocalDB.getQuestions();
+Future<void> _fetchQuestions() async {
 
-    setState(() {
-      answered = localData.where((q) => q['status'] == 1).toList();
-      unanswered = localData.where((q) => q['status'] == 0).toList();
-    });
+  // ? ���� �� ������ ����� (��� ����)
+  final localData = await LocalDB.getQuestions();
 
-    if (_farmerId == null) return;
+  setState(() {
+    answered = localData
+        .where((q) => q['status'] == 1)
+        .toList();
 
-    try {
-      final uri = Uri.parse("${AppConstants.baseUrl}/get_farmer_questions/$_farmerId");
-      final response = await http.get(uri);
+    unanswered = localData
+        .where((q) => q['status'] == 0)
+        .toList();
+  });
 
-      if (response.statusCode == 200) {
-        final List data = json.decode(response.body);
+  // ? ����� ���� ����� �� �������
+  if (_farmerId == null) return;
 
-        for (var q in data) {
-          final existing = await LocalDB.getQuestionById(q["id"]);
+  try {
+    final uri = Uri.parse(
+        "${AppConstants.baseUrl}/get_farmer_questions/$_farmerId");
 
-          await LocalDB.insertQuestion({
-            "id": q["id"],
-            "question": q["question"],
-            "answer": q["answer"],
-            "image_path": existing?["image_path"],
-            "question_audio_path": existing?["question_audio_path"],
-            "answer_audio_path": existing?["answer_audio_path"],
-            "status": q["status"]
-          });
+    final response = await http.get(uri);
 
-          if (existing == null || existing["image_path"] == null) {
-            await _downloadQuestionImage(q["id"]);
-          }
-        }
+    if (response.statusCode == 200) {
 
-        final updatedLocal = await LocalDB.getQuestions();
-        setState(() {
-          answered = updatedLocal.where((q) => q['status'] == 1).toList();
-          unanswered = updatedLocal.where((q) => q['status'] == 0).toList();
+      final List data = json.decode(response.body);
+
+      for (var q in data) {
+
+        // ���� �������� �������� �����
+        final existing = await LocalDB.getQuestionById(q["id"]);
+
+        await LocalDB.insertQuestion({
+        "id": q["id"],
+        "question": q["question"],
+        "answer": q["answer"],
+        "image_path": existing?["image_path"],              // ?? ����� ���
+        "question_audio_path": existing?["question_audio_path"],
+        "answer_audio_path": existing?["answer_audio_path"],
+        "status": q["status"]
         });
+
+        if (existing == null ||
+            existing["image_path"] == null) {
+
+          await _downloadQuestionImage(q["id"]);
+        }
       }
-    } catch (_) {}
+
+      // ? ����� ������� ��� ��������
+      final updatedLocal = await LocalDB.getQuestions();
+
+      setState(() {
+        answered = updatedLocal
+            .where((q) => q['status'] == 1)
+            .toList();
+
+        unanswered = updatedLocal
+            .where((q) => q['status'] == 0)
+            .toList();
+      });
+    }
+  } catch (_) {
+    // �� ��� �� ���� ������ ���� ���� ��� ������
+  }
+}
+
+Future<String?> _getOrDownloadImage(int questionId) async {
+
+  final localPath = await LocalDB.getImagePath(questionId);
+
+  if (localPath != null && await File(localPath).exists()) {
+    return localPath;
   }
 
-  Future<String?> _getOrDownloadImage(int questionId) async {
-    final localPath = await LocalDB.getImagePath(questionId);
-    if (localPath != null && await File(localPath).exists()) return localPath;
+  final downloadedPath = await _downloadQuestionImage(questionId);
 
-    return await _downloadQuestionImage(questionId);
+  if (downloadedPath != null) {
+    return downloadedPath;
   }
+
+  return null;
+}
 
   Future<void> _pickImage() async {
     XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -1707,68 +1744,95 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
         _imageFile = File(pickedFile.path);
     });
   }
+  
+   // ================= AUDIO =================
+Future<void> _startRecording() async {
+  final hasPermission = await _recorder.hasPermission();
+  if (!hasPermission) return;
 
-  // ================= AUDIO =================
-  Future<void> _startRecording() async {
-    final hasPermission = await _recorder.hasPermission();
-    if (!hasPermission) return;
-
+ if (kIsWeb) {
+  await _recorder.start(
+    const RecordConfig(
+      encoder: AudioEncoder.opus,
+    ),
+    path: 'audio.webm',
+  );
+}
+else {
+    // ===== Android / iOS =====
     final dir = await getTemporaryDirectory();
-    final filePath = kIsWeb
-        ? 'audio.webm'
-        : '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
+    final filePath =
+        '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
     await _recorder.start(
       const RecordConfig(
-        encoder: kIsWeb ? AudioEncoder.opus : AudioEncoder.aacLc,
+        encoder: AudioEncoder.aacLc,
         bitRate: 128000,
         sampleRate: 44100,
       ),
       path: filePath,
     );
-
-    setState(() => _recording = true);
   }
 
-  Future<void> _stopRecording() async {
-    final path = await _recorder.stop();
+  setState(() {
+    _recording = true;
+  });
+}
 
-    if (!kIsWeb && path != null) {
-      final dir = await getApplicationDocumentsDirectory();
-      final savedPath = '${dir.path}/question_audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
-      final savedFile = await File(path).copy(savedPath);
-      _audioQuestionFile = savedFile;
-      debugPrint("Saved audio path: ${savedFile.path}");
-    }
+Future<void> _stopRecording() async {
+  final path = await _recorder.stop();
 
-    setState(() => _recording = false);
+  if (!kIsWeb && path != null) {
+
+    final dir = await getApplicationDocumentsDirectory();
+
+    final savedPath =
+        '${dir.path}/question_audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
+
+    final savedFile = await File(path).copy(savedPath);
+
+    // ? ���� �� �������
+    _audioQuestionFile = savedFile;
+
+    // ? ��� ����: ���� ������ ������
+    debugPrint("Saved audio path: ${savedFile.path}");
   }
 
-  Future<void> _sendQuestion() async {
-    final loc = AppLocalizations.of(context)!;
-    if (_farmerId == null) return;
+  setState(() {
+    _recording = false;
+  });
+}
+Future<void> _sendQuestion() async {
+  final loc = AppLocalizations.of(context)!;
 
-    if (_imageFile == null && _webImage == null && _questionController.text.trim().isEmpty && _audioQuestionFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.enterQuestion)));
-      return;
-    }
+  if (_farmerId == null) return;
 
-    Uint8List? imageBytes;
-    String imageName = "question_image.png";
+  if (_imageFile == null &&
+      _webImage == null &&
+      _questionController.text.trim().isEmpty &&
+      _audioQuestionFile == null) {
 
-    if (_webImage != null) {
-      imageBytes = _webImage!;
-    } else if (_imageFile != null) {
-      imageBytes = await _imageFile!.readAsBytes();
-      imageName = _imageFile!.path.split("/").last;
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(loc.enterQuestion)),
+    );
+    return;
+  }
 
-    setState(() {
-      _loading = true;
-      _progress = 0;
-    });
+  Uint8List? imageBytes;
+  String imageName = "question_image.png";
 
-    showDialog(
+  if (_webImage != null) {
+    imageBytes = _webImage!;
+  } else if (_imageFile != null) {
+    imageBytes = await _imageFile!.readAsBytes();
+    imageName = _imageFile!.path.split("/").last;
+  }
+
+  setState(() {
+    _loading = true;
+    _progress = 0;
+  });
+showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
@@ -1791,243 +1855,631 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
         });
       },
     );
+  try {
 
-    try {
-      final dio = Dio();
-      FormData formData = FormData.fromMap({
-        "farmer_id": _farmerId.toString(),
-        "question": _questionController.text.trim(),
-      });
+    final dio = Dio();
 
-      if (imageBytes != null) {
-        formData.files.add(MapEntry("file", MultipartFile.fromBytes(imageBytes, filename: imageName)));
-      }
+    FormData formData = FormData.fromMap({
+      "farmer_id": _farmerId.toString(),
+      "question": _questionController.text.trim(),
+    });
 
-      if (_audioQuestionFile != null && await _audioQuestionFile!.exists()) {
-        formData.files.add(MapEntry("question_audio", await MultipartFile.fromFile(_audioQuestionFile!.path)));
-      }
-
-      final response = await dio.post(
-        "${AppConstants.baseUrl}/send_question",
-        data: formData,
-        onSendProgress: (sent, total) {
-          if (total != 0) setState(() => _progress = sent / total);
-        },
+    if (imageBytes != null) {
+      formData.files.add(
+        MapEntry(
+          "file",
+          MultipartFile.fromBytes(
+            imageBytes,
+            filename: imageName,
+          ),
+        ),
       );
+    }
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final questionId = data["id"];
-        if (questionId != null) {
-          final dir = await getApplicationDocumentsDirectory();
-          String? imagePath;
-          if (imageBytes != null) {
-            imagePath = '${dir.path}/question_$questionId.png';
-            await File(imagePath).writeAsBytes(imageBytes);
-          }
-          String? audioPath;
-          if (_audioQuestionFile != null && await _audioQuestionFile!.exists()) {
-            final newAudioPath = '${dir.path}/question_$questionId.m4a';
-            final newFile = await _audioQuestionFile!.copy(newAudioPath);
-            audioPath = newFile.path;
-          }
+    if (_audioQuestionFile != null &&
+        await _audioQuestionFile!.exists()) {
 
-          await LocalDB.insertQuestion({
-            "id": questionId,
-            "question": _questionController.text.trim(),
-            "answer": "",
-            "image_path": imagePath ?? "",
-            "question_audio_path": audioPath,
-            "answer_audio_path": null,
-            "status": 0
+      formData.files.add(
+        MapEntry(
+          "question_audio",
+          await MultipartFile.fromFile(
+            _audioQuestionFile!.path,
+          ),
+        ),
+      );
+    }
+
+    final response = await dio.post(
+      "${AppConstants.baseUrl}/send_question",
+      data: formData,
+
+      onSendProgress: (sent, total) {
+        if (total != 0) {
+          setState(() {
+            _progress = sent / total;
           });
         }
+      },
+    );
 
-        _questionController.clear();
-        setState(() {
-          _imageFile = null;
-          _webImage = null;
-          _audioQuestionFile = null;
+    if (response.statusCode == 200) {
+
+      final data = response.data;
+      final questionId = data["id"];
+
+      if (questionId != null) {
+
+        final dir = await getApplicationDocumentsDirectory();
+        String? imagePath;
+
+        if (imageBytes != null) {
+          imagePath = '${dir.path}/question_$questionId.png';
+          await File(imagePath).writeAsBytes(imageBytes);
+        }
+
+        String? audioPath;
+
+        if (_audioQuestionFile != null &&
+            await _audioQuestionFile!.exists()) {
+
+          final newAudioPath =
+              '${dir.path}/question_$questionId.m4a';
+
+          final newFile =
+              await _audioQuestionFile!.copy(newAudioPath);
+
+          audioPath = newFile.path;
+        }
+
+        await LocalDB.insertQuestion({
+          "id": questionId,
+          "question": _questionController.text.trim(),
+          "answer": "",
+          "image_path": imagePath ?? "",
+          "question_audio_path": audioPath,
+          "answer_audio_path": null,
+          "status": 0
         });
-
-        await _fetchQuestions();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.snackbar_question_sent)));
       }
-    } finally {
-      Navigator.pop(context);
+
+      _questionController.clear();
+
       setState(() {
-        _loading = false;
-        _progress = 0;
+        _imageFile = null;
+        _webImage = null;
+        _audioQuestionFile = null;
       });
+
+      await _fetchQuestions();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(loc.snackbar_question_sent)),
+      );
     }
+
+  } finally {
+
+    Navigator.pop(context);
+
+    setState(() {
+      _loading = false;
+      _progress = 0;
+    });
+  }
+}
+
+Future<String?> _getLocalAnswerAudioPath(int questionId) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString("answer_audio_$questionId");
+}
+
+Future<void> _saveAnswerAudioLocally(
+    int questionId, Uint8List bytes) async {
+
+  final dir = await getApplicationDocumentsDirectory();
+  final filePath = '${dir.path}/answer_$questionId.m4a';
+
+  final file = File(filePath);
+  await file.writeAsBytes(bytes);
+
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("answer_audio_$questionId", filePath);
+  
+  // ?? ��� ������ ����� �� ����� �������� �������
+  await LocalDB.updateAnswer(
+    questionId,
+    "",        // �� ����� �� ����
+    filePath,  // ���� �����
+  );
+}
+
+
+Future<void> _playExpertAudio(int questionId) async {
+
+  // ===== WEB =====
+  if (kIsWeb) {
+    final url =
+        "${AppConstants.baseUrl}/expert_answer_audio/$questionId";
+
+    await _audioPlayer.stop();
+    await _audioPlayer.setSource(UrlSource(url));
+    await _audioPlayer.resume();
+    return;
   }
 
-  // ======================= BUILD QUESTION CARD =======================
-  Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
-    final loc = AppLocalizations.of(context)!;
-    final questionId = q["id"];
-    final questionText = q["question"] ?? "";
-    final answerText = q["answer"] ?? "";
+  // ===== ANDROID =====
 
-    return Card(
-      elevation: 3,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("${loc.label_question} $questionText", style: const TextStyle(fontWeight: FontWeight.bold)),
+  // ? ���� �� SQLite
+  final local = await LocalDB.getQuestions();
+  final question =
+      local.firstWhere((q) => q['id'] == questionId);
+
+  final path = question['answer_audio_path'];
+
+  // ? ��� ����� ������ ���� ������
+  if (path != null && await File(path).exists()) {
+    await _audioPlayer.stop();
+    await _audioPlayer.setSource(DeviceFileSource(path));
+    await _audioPlayer.resume();
+    return;
+  }
+
+  // ? ��� ��� ����� ���� �� �������
+  final url =
+      "${AppConstants.baseUrl}/expert_answer_audio/$questionId";
+
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode != 200 || response.bodyBytes.isEmpty) {
+    debugPrint("No answer audio for $questionId");
+    return;
+   }
+
+
+    // ����� ������
+    await _saveAnswerAudioLocally(
+        questionId,
+        response.bodyBytes);
+
+    // ���� ��� �����
+    final updated =
+        await LocalDB.getQuestions();
+
+    final updatedQuestion =
+        updated.firstWhere((q) => q['id'] == questionId);
+
+    final newPath =
+        updatedQuestion['answer_audio_path'];
+
+    if (newPath != null &&
+        await File(newPath).exists()) {
+
+      await _audioPlayer.stop();
+      await _audioPlayer.setSource(
+          DeviceFileSource(newPath));
+      await _audioPlayer.resume();
+    }
+  
+}
+
+Future<String?> _downloadQuestionImage(int questionId) async {
+  try {
+    final url =
+        "${AppConstants.baseUrl}/expert_question_image/$questionId";
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode != 200) {
+      debugPrint("No image for question $questionId");
+      return null;
+    }
+
+    if (response.bodyBytes.isEmpty) {
+      debugPrint("Empty image for question $questionId");
+      return null;
+    }
+
+    final dir = await getApplicationDocumentsDirectory();
+    final imagePath = '${dir.path}/question_$questionId.jpg';
+
+    final file = File(imagePath);
+    await file.writeAsBytes(response.bodyBytes);
+
+    await LocalDB.updateQuestionImagePath(
+      questionId,
+      imagePath,
+    );
+
+    return imagePath;
+
+  } catch (e) {
+    debugPrint("Image download error: $e");
+    return null;
+  }
+}
+Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
+  final loc = AppLocalizations.of(context)!;
+
+  final questionId = q["id"];
+  final questionText = q["question"] ?? "";
+  final answerText = q["answer"] ?? "";
+
+  return Card(
+    elevation: 3,
+    margin: const EdgeInsets.only(bottom: 12),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          Text(
+            "${loc.label_question} $questionText",
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 6),
+
+          FutureBuilder<String?>(
+            future: _getOrDownloadImage(questionId),
+            builder: (context, snapshot) {
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                  height: 130,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              if (snapshot.hasData && snapshot.data != null) {
+                return Image.file(
+                  File(snapshot.data!),
+                  height: 130,
+                  fit: BoxFit.cover,
+                );
+              }
+
+              return SizedBox(
+                height: 130,
+                child: Center(
+                  child: Text(loc.label_no_image),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 6),
+
+          Row(
+            children: [
+              Text(
+                loc.label_question_audio,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(width: 8),
+
+              IconButton(
+                icon: const Icon(Icons.volume_up),
+                tooltip: loc.label_play_question_audio,
+                onPressed: () async {
+
+                  final prefs = await SharedPreferences.getInstance();
+
+                  final question =
+                      await LocalDB.getQuestionById(questionId);
+
+                  final localPath =
+                      question?['question_audio_path'];
+
+                  if (kIsWeb) {
+
+                    final url =
+                        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+
+                    await _audioPlayer.stop();
+                    await _audioPlayer.play(UrlSource(url));
+                    return;
+
+                  } else {
+
+                    if (localPath != null &&
+                        await File(localPath).exists()) {
+
+                      await _audioPlayer.stop();
+                      await _audioPlayer.play(
+                        DeviceFileSource(localPath),
+                      );
+
+                    } else {
+
+                      final url =
+                          "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+
+                      final response = await http.get(Uri.parse(url));
+
+                      if (response.statusCode != 200 ||
+                          response.bodyBytes.isEmpty) {
+
+                        debugPrint("No question audio for $questionId");
+                        return;
+                      }
+
+                      final dir =
+                          await getApplicationDocumentsDirectory();
+
+                      final filePath =
+                          '${dir.path}/question_$questionId.m4a';
+
+                      final file = File(filePath);
+                      await file.writeAsBytes(response.bodyBytes);
+
+                      await prefs.setString(
+                        "question_audio_$questionId",
+                        filePath,
+                      );
+
+                      await LocalDB.updateQuestionAudioPath(
+                        questionId,
+                        filePath,
+                      );
+
+                      await _audioPlayer.stop();
+                      await _audioPlayer.play(
+                        DeviceFileSource(filePath),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+
+          if (answered && answerText.isNotEmpty) ...[
+
             const SizedBox(height: 6),
-            FutureBuilder<String?>(
-              future: _getOrDownloadImage(questionId),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox(height: 130, child: Center(child: CircularProgressIndicator()));
-                }
-                if (snapshot.hasData && snapshot.data != null) {
-                  return Image.file(File(snapshot.data!), height: 130, fit: BoxFit.cover);
-                }
-                return SizedBox(height: 130, child: Center(child: Text(loc.label_no_image)));
-              },
+
+            Text(
+              "${loc.label_answer} $answerText",
+              style: const TextStyle(color: Colors.green),
             ),
-            const SizedBox(height: 6),
-            // Question Audio Row
+
             Row(
               children: [
-                Text(loc.label_question_audio, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  loc.label_answer_audio,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+
                 const SizedBox(width: 8),
+
                 IconButton(
-                  icon: const Icon(Icons.volume_up),
-                  tooltip: loc.label_play_question_audio,
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    final question = await LocalDB.getQuestionById(questionId);
-                    final localPath = question?['question_audio_path'];
-
-                    if (kIsWeb) {
-                      final url = "${AppConstants.baseUrl}/expert_question_audio/$questionId";
-                      await _audioPlayer.stop();
-                      await _audioPlayer.play(UrlSource(url));
-                      return;
-                    }
-
-                    if (localPath != null && await File(localPath).exists()) {
-                      await _audioPlayer.stop();
-                      await _audioPlayer.play(DeviceFileSource(localPath));
-                      return;
-                    }
-
-                    final url = "${AppConstants.baseUrl}/expert_question_audio/$questionId";
-                    final response = await http.get(Uri.parse(url));
-                    if (response.statusCode != 200 || response.bodyBytes.isEmpty) return;
-
-                    final dir = await getApplicationDocumentsDirectory();
-                    final filePath = '${dir.path}/question_$questionId.m4a';
-                    await File(filePath).writeAsBytes(response.bodyBytes);
-                    await prefs.setString("question_audio_$questionId", filePath);
-                    await LocalDB.updateQuestionAudioPath(questionId, filePath);
-                    await _audioPlayer.stop();
-                    await _audioPlayer.play(DeviceFileSource(filePath));
-                  },
+                  icon: const Icon(Icons.play_circle_fill),
+                  tooltip: loc.label_play_answer_audio,
+                  onPressed: () => _playExpertAudio(questionId),
                 ),
               ],
             ),
-            // Answer section
-            if (answered && answerText.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text("${loc.label_answer} $answerText", style: const TextStyle(color: Colors.green)),
-              Row(
-                children: [
-                  Text(loc.label_answer_audio, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-                  const SizedBox(width: 8),
-                  IconButton(icon: const Icon(Icons.play_circle_fill), tooltip: loc.label_play_answer_audio, onPressed: () => _playExpertAudio(questionId)),
-                ],
-              ),
-            ],
           ],
-        ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
+@override
+Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(title: Text(loc.farmer_page_title), backgroundColor: Colors.green[700]),
-      backgroundColor: Colors.grey[100],
-      body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Colors.green))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Answered questions
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(loc.tab_answered, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green[700])),
-                        const SizedBox(height: 10),
-                        if (answered.isEmpty) Text(loc.noPreviousDiagnoses, style: TextStyle(color: Colors.grey[600])),
-                        ...answered.map((q) => _buildQuestionCard(q, answered: true)).toList(),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  // Unanswered / New question
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextField(controller: _questionController, decoration: InputDecoration(labelText: loc.label_write_question, border: const OutlineInputBorder())),
-                        const SizedBox(height: 10),
-                        ElevatedButton.icon(
-                          onPressed: _pickImage,
-                          icon: const Icon(Icons.add_a_photo),
-                          label: Text(loc.button_pick_image),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green[600], foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50)),
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton.icon(
-                          onPressed: _recording ? _stopRecording : _startRecording,
-                          icon: Icon(_recording ? Icons.stop : Icons.mic),
-                          label: Text(_recording ? loc.button_stop_recording : loc.button_record_audio),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50)),
-                        ),
-                        if (_audioQuestionFile != null) ...[
-                          const SizedBox(height: 6),
-                          Text(loc.label_audio_attached, style: const TextStyle(color: Colors.green)),
-                        ],
-                        const SizedBox(height: 10),
-                        if (_imageFile != null || _webImage != null)
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: _imageFile != null ? Image.file(_imageFile!, height: 250, fit: BoxFit.cover) : Image.memory(_webImage!, height: 250, fit: BoxFit.cover),
-                          ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: _sendQuestion,
-                          child: Text(loc.button_send_question),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green[700], foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 50)),
-                        ),
-                        const SizedBox(height: 30),
-                        Text(loc.tab_unanswered, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green[700])),
-                        const SizedBox(height: 10),
-                        if (unanswered.isEmpty) Text(loc.noPreviousDiagnoses, style: TextStyle(color: Colors.grey[600])),
-                        ...unanswered.map((q) => _buildQuestionCard(q)).toList(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+  final loc = AppLocalizations.of(context)!;
+
+  return Scaffold(
+
+    appBar: AppBar(
+      title: Text(loc.farmer_page_title),
+      backgroundColor: Colors.green[700],
+    ),
+
+    backgroundColor: Colors.grey[100],
+
+    body: _loading
+        ? const Center(
+            child: CircularProgressIndicator(
+              color: Colors.green,
             ),
-    );
-  }
+          )
+
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                Expanded(
+                  flex: 1,
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
+
+                      Text(
+                        loc.tab_answered,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      if (answered.isEmpty)
+                        Text(
+                          loc.noPreviousDiagnoses,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+
+                      ...answered
+                          .map((q) =>
+                              _buildQuestionCard(q, answered: true))
+                          .toList(),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 20),
+
+                Expanded(
+                  flex: 2,
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
+
+                      TextField(
+                        controller: _questionController,
+                        decoration: InputDecoration(
+                          labelText: loc.label_write_question,
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      ElevatedButton.icon(
+                        onPressed: _pickImage,
+                        icon: const Icon(Icons.add_a_photo),
+                        label: Text(loc.button_pick_image),
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          foregroundColor: Colors.white,
+                          minimumSize:
+                              const Size(double.infinity, 50),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      ElevatedButton.icon(
+
+                        onPressed:
+                            _recording
+                                ? _stopRecording
+                                : _startRecording,
+
+                        icon: Icon(
+                            _recording
+                                ? Icons.stop
+                                : Icons.mic),
+
+                        label: Text(
+                          _recording
+                              ? loc.button_stop_recording
+                              : loc.button_record_audio,
+                        ),
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          foregroundColor: Colors.white,
+                          minimumSize:
+                              const Size(double.infinity, 50),
+                        ),
+                      ),
+
+                      if (_audioQuestionFile != null) ...[
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          loc.label_audio_attached,
+                          style:
+                              const TextStyle(color: Colors.green),
+                        ),
+                      ],
+
+                      const SizedBox(height: 10),
+
+                      if (_imageFile != null ||
+                          _webImage != null)
+
+                        ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(16),
+
+                          child: _imageFile != null
+                              ? Image.file(
+                                  _imageFile!,
+                                  height: 250,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.memory(
+                                  _webImage!,
+                                  height: 250,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+
+                      const SizedBox(height: 10),
+
+                      ElevatedButton(
+
+                        onPressed: _sendQuestion,
+
+                        child:
+                            Text(loc.button_send_question),
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[700],
+                          foregroundColor: Colors.white,
+                          minimumSize:
+                              const Size(double.infinity, 50),
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      Text(
+                        loc.tab_unanswered,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      if (unanswered.isEmpty)
+                        Text(
+                          loc.noPreviousDiagnoses,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+
+                      ...unanswered
+                          .map((q) =>
+                              _buildQuestionCard(q))
+                          .toList(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+  );
+}
 }
