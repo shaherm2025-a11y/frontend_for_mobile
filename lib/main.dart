@@ -1832,30 +1832,29 @@ Future<void> _sendQuestion() async {
     _loading = true;
     _progress = 0;
   });
+showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (context) {
 
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
+    return StatefulBuilder(
+      builder: (context, setStateDialog) {
 
-      return StatefulBuilder(
-        builder: (context, setStateDialog) {
+        return AlertDialog(
+          title: Text(loc.uploading),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
 
-          return AlertDialog(
-            title: Text(loc.uploading),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+              LinearProgressIndicator(
+                value: _progress,
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(10),
+              ),
 
-                LinearProgressIndicator(
-                  value: _progress,
-                  minHeight: 8,
-				  borderRadius: BorderRadius.circular(10),
-                 ),
+              const SizedBox(height: 10),
 
-                const SizedBox(height: 10),
-
-                Text("${(_progress * 100).toStringAsFixed(0)} %")
+              Text("${(_progress * 100).toStringAsFixed(0)} %")
 
             ],
           ),
@@ -2236,7 +2235,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
                       await _audioPlayer.stop();
                       await _audioPlayer.play(DeviceFileSource(filePath));
-                      );
+                     
                     }
                   }
                 },
