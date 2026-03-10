@@ -1868,7 +1868,9 @@ showDialog(
 
     FormData formData = FormData.fromMap({
       "farmer_id": _farmerId.toString(),
-      "question": _questionController.text.trim(),
+      "question": _questionController.text.trim().isEmpty
+       ? " "
+       : _questionController.text.trim(),
     });
 
     if (imageBytes != null) {
@@ -1901,12 +1903,19 @@ showDialog(
       data: formData,
 
       onSendProgress: (sent, total) {
-        if (total <= 0) return; 
-          setState(() {
-            _progress = sent / total;
-          });
-       
-      },
+
+       if (total > 0) {
+        setState(() {
+       _progress = sent / total;
+      });
+      } else {
+      // في حال لم يعرف الحجم الكلي
+        setState(() {
+       _progress = 0.5; // مجرد حركة مؤقتة
+      });
+    }
+
+     },
     );
 
     if (response.statusCode == 200) {
