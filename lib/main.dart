@@ -1833,28 +1833,35 @@ Future<void> _sendQuestion() async {
     _progress = 0;
   });
 showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setStateDialog) {
-          return AlertDialog(
-            title: Text(loc.uploading),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LinearProgressIndicator(
-                  value: _progress,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                const SizedBox(height: 10),
-                Text("${(_progress * 100).toStringAsFixed(0)} %"),
-              ],
-            ),
-          );
-        });
+  context: context,
+  barrierDismissible: false,
+  builder: (context) {
+
+    return StatefulBuilder(
+      builder: (context, setStateDialog) {
+
+        return AlertDialog(
+          title: Text(loc.uploading),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+              LinearProgressIndicator(
+                value: _progress,
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(10),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text("${(_progress * 100).toStringAsFixed(0)} %"),
+            ],
+          ),
+        );
       },
     );
+  },
+);
   try {
 
     final dio = Dio();
@@ -1894,11 +1901,11 @@ showDialog(
       data: formData,
 
       onSendProgress: (sent, total) {
-        if (total != 0) {
+        if (total <= 0) return; 
           setState(() {
             _progress = sent / total;
           });
-        }
+       
       },
     );
 
