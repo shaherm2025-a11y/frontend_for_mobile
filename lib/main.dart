@@ -1717,41 +1717,16 @@ Future<void> _fetchQuestions() async {
 
 Future<String?> _getOrDownloadImage(int questionId) async {
 
-  // ���� �� ����� �������� �����
   final localPath = await LocalDB.getImagePath(questionId);
 
   if (localPath != null && await File(localPath).exists()) {
     return localPath;
   }
 
-  try {
+  final downloadedPath = await _downloadQuestionImage(questionId);
 
-    final url =
-        "${AppConstants.baseUrl}/expert_question_image/$questionId";
-
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-
-      final dir = await getApplicationDocumentsDirectory();
-
-      final filePath = '${dir.path}/question_$questionId.jpg';
-
-      final file = File(filePath);
-
-      await file.writeAsBytes(response.bodyBytes);
-
-      // ?? ���� ������ �� ����� ��������
-      await LocalDB.updateQuestionImagePath(
-        questionId,
-        filePath,
-      );
-
-      return filePath;
-    }
-
-  } catch (e) {
-    print("Image download error: $e");
+  if (downloadedPath != null) {
+    return downloadedPath;
   }
 
   return null;
@@ -1873,8 +1848,8 @@ Future<void> _sendQuestion() async {
               children: [
 
                 LinearProgressIndicator(
-                value: _progress,
-                minHeight: 8,
+                  value: _progress,
+                  minHeight: 8,
 				  borderRadius: BorderRadius.circular(10),
                  ),
 
@@ -2064,7 +2039,11 @@ Future<void> _playExpertAudio(int questionId) async {
 
   final response = await http.get(Uri.parse(url));
 
-  if (response.statusCode == 200) {
+  if (response.statusCode != 200 || response.bodyBytes.isEmpty) {
+    debugPrint("No answer audio for $questionId");
+    return;
+   }
+
 
     // ����� ������
     await _saveAnswerAudioLocally(
@@ -2089,32 +2068,44 @@ Future<void> _playExpertAudio(int questionId) async {
           DeviceFileSource(newPath));
       await _audioPlayer.resume();
     }
-  }
+  
 }
 
 Future<String?> _downloadQuestionImage(int questionId) async {
-  final url =
-      "${AppConstants.baseUrl}/expert_question_image/$questionId";
+  try {
+    final url =
+        "${AppConstants.baseUrl}/expert_question_image/$questionId";
 
-  final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url));
 
-  if (response.statusCode == 200) {
+    if (response.statusCode != 200) {
+      debugPrint("No image for question $questionId");
+      return null;
+    }
+
+    if (response.bodyBytes.isEmpty) {
+      debugPrint("Empty image for question $questionId");
+      return null;
+    }
+
     final dir = await getApplicationDocumentsDirectory();
-    final imagePath =
-        '${dir.path}/question_$questionId.png';
+    final imagePath = '${dir.path}/question_$questionId.jpg';
 
-    await File(imagePath).writeAsBytes(response.bodyBytes);
+    final file = File(imagePath);
+    await file.writeAsBytes(response.bodyBytes);
 
-    // ����� ��� ���� ����� ����
     await LocalDB.updateQuestionImagePath(
-        questionId, imagePath);
+      questionId,
+      imagePath,
+    );
 
     return imagePath;
+
+  } catch (e) {
+    debugPrint("Image download error: $e");
+    return null;
   }
-
-  return null;
 }
-
 Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
   final loc = AppLocalizations.of(context)!;
 
@@ -2218,35 +2209,33 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                   } else {
 
                     final url =
-                        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+                     "${AppConstants.baseUrl}/expert_question_audio/$questionId";
 
-                    final response =
-                        await http.get(Uri.parse(url));
+                     final response = await http.get(Uri.parse(url));
 
-                    if (response.statusCode == 200) {
+                     if (response.statusCode != 200 || response.bodyBytes.isEmpty) {
+                       debugPrint("No question audio for $questionId");
+                       return;
+                      }
 
-                      final dir =
-                          await getApplicationDocumentsDirectory();
+                     final dir = await getApplicationDocumentsDirectory();
+                     final filePath = '${dir.path}/question_$questionId.m4a';
 
-                      final filePath =
-                          '${dir.path}/question_$questionId.m4a';
+                     final file = File(filePath);
+                     await file.writeAsBytes(response.bodyBytes);
 
-                      final file = File(filePath);
-                      await file.writeAsBytes(response.bodyBytes);
-
-                      await prefs.setString(
-                        "question_audio_$questionId",
-                        filePath,
-                      );
+                     await prefs.setString(
+                    "question_audio_$questionId",
+                    filePath,
+                     );
 
                       await LocalDB.updateQuestionAudioPath(
-                        questionId,
-                        filePath,
+                       questionId,
+                       filePath,
                       );
 
                       await _audioPlayer.stop();
-                      await _audioPlayer.play(
-                        DeviceFileSource(filePath),
+                      await _audioPlayer.play(DeviceFileSource(filePath));
                       );
                     }
                   }
