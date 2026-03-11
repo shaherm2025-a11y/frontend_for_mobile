@@ -142,4 +142,22 @@ static Future<void> updateQuestionImagePath(
   );
 }
 
+static Future<void> updateAnswerAudioPath(
+  int questionId,
+  String audioPath,
+) async {
+
+  final db = await database;
+
+  await db.update(
+    "questions",
+    {
+      "answer_audio_path": audioPath,
+    },
+    where: "id = ?",
+    whereArgs: [questionId],
+  );
+
+}
+
 }
