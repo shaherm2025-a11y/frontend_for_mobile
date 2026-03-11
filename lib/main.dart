@@ -2035,10 +2035,14 @@ Future<void> _saveAnswerAudioLocally(
   await prefs.setString("answer_audio_$questionId", filePath);
   
   // ?? ��� ������ ����� �� ����� �������� �������
-  await LocalDB.updateAnswer(
+  //await LocalDB.updateAnswer(
+  //  questionId,
+  //  "",        // �� ����� �� ����
+  //  filePath,  // ���� �����
+ // );
+  await LocalDB.updateAnswerAudioPath(
     questionId,
-    "",        // �� ����� �� ����
-    filePath,  // ���� �����
+    filePath,
   );
 }
 
