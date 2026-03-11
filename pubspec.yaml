@@ -61,6 +61,7 @@ flutter:
     - assets/images/seasons.jpg
     - assets/images/books.jpg
     - assets/images/support.jpg
+    - assets/images/no_image.png
    
     
     # ========== Database & JSON ==========
