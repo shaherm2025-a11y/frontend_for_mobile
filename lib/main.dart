@@ -1646,6 +1646,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     await _fetchQuestions();
   }
   
+  void Function(void Function())? _setStateDialog;
 
 Future<void> _fetchQuestions() async {
 
@@ -1836,24 +1837,21 @@ showDialog(
   context: context,
   barrierDismissible: false,
   builder: (context) {
-
     return StatefulBuilder(
       builder: (context, setStateDialog) {
+
+        _setStateDialog = setStateDialog;
 
         return AlertDialog(
           title: Text(loc.uploading),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
               LinearProgressIndicator(
                 value: _progress,
                 minHeight: 8,
-                borderRadius: BorderRadius.circular(10),
               ),
-
               const SizedBox(height: 10),
-
               Text("${(_progress * 100).toStringAsFixed(0)} %"),
             ],
           ),
@@ -1904,18 +1902,13 @@ showDialog(
 
       onSendProgress: (sent, total) {
 
-       if (total > 0) {
-        setState(() {
-       _progress = sent / total;
-      });
-      } else {
-      // في حال لم يعرف الحجم الكلي
-        setState(() {
-       _progress = 0.5; // مجرد حركة مؤقتة
-      });
-    }
+      if (total <= 0) return;
 
-     },
+      _setStateDialog?.call(() {
+      _progress = sent / total;
+      });
+
+      },
     );
 
     if (response.statusCode == 200) {
