@@ -2165,37 +2165,56 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
           ),
 
           const SizedBox(height: 6),
+// ===== عرض الصورة =====
 
-          FutureBuilder<String?>(
-            future: _getOrDownloadImage(questionId),
-            builder: (context, snapshot) {
+if (q["image_path"] != null && q["image_path"].toString().isNotEmpty) {
+  return Image.file(
+    File(q["image_path"]),
+    height: 130,
+    fit: BoxFit.cover,
+  );
+}
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                  height: 130,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
+// ===== إذا كانت الصورة موجودة في السيرفر =====
+if (q["has_image"] == true) {
+  return FutureBuilder<String?>(
+    future: _getOrDownloadImage(questionId),
+    builder: (context, snapshot) {
 
-              if (snapshot.hasData && snapshot.data != null) {
-                return Image.file(
-                  File(snapshot.data!),
-                  height: 130,
-                  fit: BoxFit.cover,
-                );
-              }
-
-              return SizedBox(
-                height: 130,
-                child: Center(
-                  child: Text(loc.label_no_image),
-                ),
-              );
-            },
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const SizedBox(
+          height: 130,
+          child: Center(
+            child: CircularProgressIndicator(),
           ),
+        );
+      }
 
+      if (snapshot.hasData && snapshot.data != null) {
+        return Image.file(
+          File(snapshot.data!),
+          height: 130,
+          fit: BoxFit.cover,
+        );
+      }
+
+      return SizedBox(
+        height: 130,
+        child: Center(
+          child: Text(loc.label_no_image),
+        ),
+      );
+    },
+  );
+}
+
+// ===== إذا لا توجد صورة =====
+return SizedBox(
+  height: 130,
+  child: Center(
+    child: Text(loc.label_no_image),
+  ),
+);
           const SizedBox(height: 6),
 
           Row(
