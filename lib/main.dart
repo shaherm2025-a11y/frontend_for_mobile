@@ -2245,7 +2245,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
         fit: BoxFit.cover,
       )
 
-    : (q["has_image"] == true)
+    : (q["has_image"] == 1 || q["has_image"] == true)
 
         ? FutureBuilder<String?>(
             future: _getOrDownloadImage(questionId),
