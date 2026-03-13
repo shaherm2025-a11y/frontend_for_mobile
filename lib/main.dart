@@ -1726,7 +1726,17 @@ Future<void> _fetchQuestions() async {
 
       });
 
-     
+     // تحميل صورة السؤال إذا كانت موجودة في السيرفر
+      if (q["has_image"] == 1) {
+
+        final localImage = existing?["image_path"];
+
+      if (localImage == null || !await File(localImage).exists()) {
+
+       await _downloadQuestionImage(q["id"]);
+
+      }
+     }
 
       // ===== تحميل صوت السؤال =====
       if (q["question_has_audio"] == 1) {
