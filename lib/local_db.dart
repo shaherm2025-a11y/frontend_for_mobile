@@ -28,6 +28,9 @@ class LocalDB {
             image_path TEXT,
             question_audio_path TEXT,
             answer_audio_path TEXT,
+			has_image INTEGER,
+			question_has_audio INTEGER,
+			answer_has_audio INTEGER,
             status INTEGER
           )
         ''');

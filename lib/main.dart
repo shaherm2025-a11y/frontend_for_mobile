@@ -1677,7 +1677,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
 
 Future<void> _fetchQuestions() async {
 
-  // ? ���� �� ������ ����� (��� ����)
+  // تحميل البيانات المحلية أولاً (عرض سريع)
   final localData = await LocalDB.getQuestions();
 
   setState(() {
@@ -1690,58 +1690,90 @@ Future<void> _fetchQuestions() async {
         .toList();
   });
 
-  // ? ����� ���� ����� �� �������
   if (_farmerId == null) return;
 
   try {
+
     final uri = Uri.parse(
         "${AppConstants.baseUrl}/get_farmer_questions/$_farmerId");
 
     final response = await http.get(uri);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode != 200) return;
 
-      final List data = json.decode(response.body);
+    final List data = json.decode(response.body);
 
-      for (var q in data) {
+    for (var q in data) {
 
-       final existing = await LocalDB.getQuestionById(q["id"]);
+      final existing =
+          await LocalDB.getQuestionById(q["id"]);
 
-       await LocalDB.insertQuestion({
-       "id": q["id"],
-       "question": q["question"],
-       "answer": q["answer"],
-       "image_path": existing?["image_path"],
-       "question_audio_path": existing?["question_audio_path"],
-       "answer_audio_path": existing?["answer_audio_path"],
-       "status": q["status"]
+      await LocalDB.insertQuestion({
+
+        "id": q["id"],
+        "question": q["question"],
+        "answer": q["answer"],
+
+        "image_path": existing?["image_path"],
+        "question_audio_path": existing?["question_audio_path"],
+        "answer_audio_path": existing?["answer_audio_path"],
+
+        "has_image": q["has_image"],
+        "question_has_audio": q["question_has_audio"],
+        "answer_has_audio": q["answer_has_audio"],
+
+        "status": q["status"]
+
       });
 
-       // تحميل صورة السؤال
-      if (existing == null || existing["image_path"] == null) {
-        await _downloadQuestionImage(q["id"]);
+     
+
+      // ===== تحميل صوت السؤال =====
+      if (q["question_has_audio"] == 1) {
+
+        final localAudio =
+            existing?["question_audio_path"];
+
+        if (localAudio == null ||
+            !await File(localAudio).exists()) {
+
+          await _downloadQuestionAudio(q["id"]);
+        }
       }
 
-      // تحميل صوت الإجابة
-      if (q["status"] == 1) {
-        await _downloadAnswerAudio(q["id"]);
+      // ===== تحميل صوت الإجابة =====
+      if (q["answer_has_audio"] == 1) {
+
+        final localAnswerAudio =
+            existing?["answer_audio_path"];
+
+        if (localAnswerAudio == null ||
+            !await File(localAnswerAudio).exists()) {
+
+          await _downloadAnswerAudio(q["id"]);
+        }
       }
-     }
-      // ? ����� ������� ��� ��������
-      final updatedLocal = await LocalDB.getQuestions();
-
-      setState(() {
-        answered = updatedLocal
-            .where((q) => q['status'] == 1)
-            .toList();
-
-        unanswered = updatedLocal
-            .where((q) => q['status'] == 0)
-            .toList();
-      });
     }
-  } catch (_) {
-    // �� ��� �� ���� ������ ���� ���� ��� ������
+
+    // إعادة تحميل البيانات من SQLite بعد التحديث
+    final updatedLocal = await LocalDB.getQuestions();
+
+    setState(() {
+
+      answered = updatedLocal
+          .where((q) => q['status'] == 1)
+          .toList();
+
+      unanswered = updatedLocal
+          .where((q) => q['status'] == 0)
+          .toList();
+
+    });
+
+  } catch (e) {
+
+    debugPrint("Fetch error: $e");
+
   }
 }
 
@@ -1831,6 +1863,42 @@ Future<void> _stopRecording() async {
   setState(() {
     _recording = false;
   });
+}
+
+Future<String?> _downloadQuestionAudio(int questionId) async {
+
+  try {
+
+    final url =
+        "${AppConstants.baseUrl}/expert_question_audio/$questionId";
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode != 200 ||
+        response.bodyBytes.isEmpty) {
+      return null;
+    }
+
+    final dir = await getApplicationDocumentsDirectory();
+
+    final path = "${dir.path}/question_$questionId.m4a";
+
+    final file = File(path);
+
+    await file.writeAsBytes(response.bodyBytes);
+
+    await LocalDB.updateQuestionAudioPath(
+        questionId,
+        path);
+
+    return path;
+
+  } catch (e) {
+
+    debugPrint("Question audio download error: $e");
+
+    return null;
+  }
 }
 Future<void> _sendQuestion() async {
   final loc = AppLocalizations.of(context)!;
