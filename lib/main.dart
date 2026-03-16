@@ -2584,7 +2584,7 @@ Widget build(BuildContext context) {
                      ),
                     ],
                    ),
-                  ]
+                  ],
                       const SizedBox(height: 10),
 
                       if (_imageFile != null ||
