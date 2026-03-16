@@ -828,6 +828,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get label_answer_audio => 'رد الخبير';
 
   @override
+  String get label_delete_audio => 'حذف';
+
+  @override
   String get label_no_image => 'لا توجد صورة';
 
   @override

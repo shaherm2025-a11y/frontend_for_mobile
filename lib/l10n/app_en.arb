@@ -338,6 +338,7 @@
   "label_play_answer_audio": "play answer audio",
   "label_question_audio": "question",
   "label_answer_audio": "expert reply",
+  "label_delete_audio": "Delet",
   "label_no_image": "no image found",
   "enterQuestion": "enter question",
    "uploading":"upload file"

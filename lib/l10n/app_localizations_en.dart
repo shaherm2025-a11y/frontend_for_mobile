@@ -804,6 +804,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get label_answer_audio => 'expert reply';
 
   @override
+  String get label_delete_audio => 'Delet';
+
+  @override
   String get label_no_image => 'no image found';
 
   @override

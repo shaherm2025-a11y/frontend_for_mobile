@@ -332,6 +332,7 @@
   "label_play_answer_audio": "سماع الرد",
   "label_question_audio": "الاستفسار",
   "label_answer_audio": "رد الخبير",
+  "label_delete_audio": "حذف",
   "label_no_image": "لا توجد صورة",
   "uploading":"يتم رفع الملف"
 

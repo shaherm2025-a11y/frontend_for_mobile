@@ -1580,6 +1580,12 @@ abstract class AppLocalizations {
   /// **'expert reply'**
   String get label_answer_audio;
 
+  /// No description provided for @label_delete_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Delet'**
+  String get label_delete_audio;
+
   /// No description provided for @label_no_image.
   ///
   /// In en, this message translates to:
