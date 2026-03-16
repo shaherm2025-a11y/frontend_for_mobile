@@ -2295,7 +2295,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
             ),
           ),
           const SizedBox(height: 6),
-
+         if (q["has_audio"] == 1 || q["question_audio_path"] != null) ...[
           Row(
             children: [
               Text(
@@ -2379,7 +2379,9 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                 },
               ),
             ],
+			
           ),
+		  ],
 
           if (answered && answerText.isNotEmpty) ...[
 
@@ -2389,6 +2391,8 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
               "${loc.label_answer} $answerText",
               style: const TextStyle(color: Colors.green),
             ),
+
+			if (q["has_answer_audio"] == 1 || q["answer_audio_path"] != null) ...[
 
             Row(
               children: [
@@ -2409,6 +2413,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                 ),
               ],
             ),
+		   ],
           ],
         ],
       ),
@@ -2542,15 +2547,44 @@ Widget build(BuildContext context) {
 
                       if (_audioQuestionFile != null) ...[
 
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 10),
 
-                        Text(
-                          loc.label_audio_attached,
-                          style:
-                              const TextStyle(color: Colors.green),
-                        ),
-                      ],
+                       Row(
+                        children: [
 
+                        const Icon(Icons.mic, color: Colors.green),
+
+                       const SizedBox(width: 8),
+
+                       Expanded(
+                        child: Text(loc.label_audio_attached),
+                       ),
+
+                      // تشغيل الصوت
+                       IconButton(
+                       icon: const Icon(Icons.play_arrow, color: Colors.blue),
+                       tooltip: loc.label_play_question_audio,
+                       onPressed: () async {
+                       await _audioPlayer.stop();
+                       await _audioPlayer.play(
+                       DeviceFileSource(_audioQuestionFile!.path),
+                       );
+                      },
+                      ),
+
+                     // حذف الصوت
+                     IconButton(
+                     icon: const Icon(Icons.delete, color: Colors.red),
+                     tooltip: loc.label_delete_audio,
+                     onPressed: () {
+                     setState(() {
+                      _audioQuestionFile = null;
+                       });
+                      },
+                     ),
+                    ],
+                   ),
+                  ]
                       const SizedBox(height: 10),
 
                       if (_imageFile != null ||
