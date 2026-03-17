@@ -2386,7 +2386,11 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
           ),
 		  ],
 
-          if (answered && answerText.isNotEmpty) ...[
+          if (answered &&
+             (answerText.isNotEmpty ||
+             q["answer_audio_path"] != null ||
+             q["has_answer_audio"] == 1 ||
+             q["has_answer_audio"] == true)) ...[
 
             const SizedBox(height: 6),
 
@@ -2395,11 +2399,10 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
               style: const TextStyle(color: Colors.green),
             ),
 
-			if (answered &&
-               ((q["answer_audio_path"] != null &&
+			 if ((q["answer_audio_path"] != null &&
                 q["answer_audio_path"].toString().isNotEmpty) ||
                 q["has_answer_audio"] == 1 ||
-                q["has_answer_audio"] == true)) ...[
+                q["has_answer_audio"] == true) ...[
 
             Row(
               children: [
