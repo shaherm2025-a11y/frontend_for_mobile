@@ -1716,8 +1716,10 @@ Future<void> _fetchQuestions() async {
 
         "image_path": existing?["image_path"],
         "question_audio_path": existing?["question_audio_path"],
-        "answer_audio_path": existing?["answer_audio_path"],
-
+        "answer_audio_path":
+           q["answer_has_audio"] == 1
+             ? existing?["answer_audio_path"]
+             : null,
         "has_image": q["has_image"],
         "question_has_audio": q["question_has_audio"],
         "answer_has_audio": q["answer_has_audio"],
@@ -1752,19 +1754,20 @@ Future<void> _fetchQuestions() async {
       }
 
       // ===== تحميل صوت الإجابة =====
-      if (q["answer_has_audio"] == 1) {
+     if (q["answer_has_audio"] == 1) {
 
-        final localAnswerAudio =
-            existing?["answer_audio_path"];
+       final question =
+       await LocalDB.getQuestionById(q["id"]);
 
-        if (localAnswerAudio == null ||
-            !await File(localAnswerAudio).exists()) {
+       final localAnswerAudio =
+       question?["answer_audio_path"];
 
-          await _downloadAnswerAudio(q["id"]);
-        }
-      }
-    }
+     if (localAnswerAudio == null ||
+       !await File(localAnswerAudio).exists()) {
 
+       await _downloadAnswerAudio(q["id"]);
+       }
+     }
     // إعادة تحميل البيانات من SQLite بعد التحديث
     final updatedLocal = await LocalDB.getQuestions();
 
@@ -2387,22 +2390,23 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 		  ],
 
           if (answered &&
-             (answerText.isNotEmpty ||
-             q["answer_audio_path"] != null ||
-             q["answer_has_audio"] == 1 ||
-             q["answer_has_audio"] == true)) ...[
+              (answerText.isNotEmpty ||
+              q["answer_has_audio"] == 1 ||
+             (q["answer_audio_path"] != null &&
+              q["answer_audio_path"].toString().isNotEmpty))) ...[
 
-            const SizedBox(height: 6),
+             const SizedBox(height: 6),
 
-            Text(
-              "${loc.label_answer} $answerText",
-              style: const TextStyle(color: Colors.green),
-            ),
+            // عرض نص الرد فقط إذا كان موجود
+            if (answerText.isNotEmpty)
+              Text(
+               "${loc.label_answer} $answerText",
+               style: const TextStyle(color: Colors.green),
+               ),
 
-			 if ((q["answer_audio_path"] != null &&
-                q["answer_audio_path"].toString().isNotEmpty) ||
-                q["answer_has_audio"] == 1 ||
-                q["answer_has_audio"] == true) ...[
+			 if (q["answer_has_audio"] == 1 ||
+                (q["answer_audio_path"] != null &&
+                q["answer_audio_path"].toString().isNotEmpty)) ...[
 
             Row(
               children: [
