@@ -1674,20 +1674,14 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   }
   
   void Function(void Function())? _setStateDialog;
-
 Future<void> _fetchQuestions() async {
 
   // تحميل البيانات المحلية أولاً (عرض سريع)
   final localData = await LocalDB.getQuestions();
 
   setState(() {
-    answered = localData
-        .where((q) => q['status'] == 1)
-        .toList();
-
-    unanswered = localData
-        .where((q) => q['status'] == 0)
-        .toList();
+    answered = localData.where((q) => q['status'] == 1).toList();
+    unanswered = localData.where((q) => q['status'] == 0).toList();
   });
 
   if (_farmerId == null) return;
@@ -1695,7 +1689,8 @@ Future<void> _fetchQuestions() async {
   try {
 
     final uri = Uri.parse(
-        "${AppConstants.baseUrl}/get_farmer_questions/$_farmerId");
+      "${AppConstants.baseUrl}/get_farmer_questions/$_farmerId"
+    );
 
     final response = await http.get(uri);
 
@@ -1716,10 +1711,12 @@ Future<void> _fetchQuestions() async {
 
         "image_path": existing?["image_path"],
         "question_audio_path": existing?["question_audio_path"],
+
         "answer_audio_path":
-           q["answer_has_audio"] == 1
-             ? existing?["answer_audio_path"]
-             : null,
+            q["answer_has_audio"] == 1
+                ? existing?["answer_audio_path"]
+                : null,
+
         "has_image": q["has_image"],
         "question_has_audio": q["question_has_audio"],
         "answer_has_audio": q["answer_has_audio"],
@@ -1728,17 +1725,17 @@ Future<void> _fetchQuestions() async {
 
       });
 
-     // تحميل صورة السؤال إذا كانت موجودة في السيرفر
+      // ===== تحميل صورة السؤال =====
       if (q["has_image"] == 1) {
 
         final localImage = existing?["image_path"];
 
-      if (localImage == null || !await File(localImage).exists()) {
+        if (localImage == null ||
+            !await File(localImage).exists()) {
 
-       await _downloadQuestionImage(q["id"]);
-
+          await _downloadQuestionImage(q["id"]);
+        }
       }
-     }
 
       // ===== تحميل صوت السؤال =====
       if (q["question_has_audio"] == 1) {
@@ -1754,20 +1751,23 @@ Future<void> _fetchQuestions() async {
       }
 
       // ===== تحميل صوت الإجابة =====
-     if (q["answer_has_audio"] == 1) {
+      if (q["answer_has_audio"] == 1) {
 
-       final question =
-       await LocalDB.getQuestionById(q["id"]);
+        final question =
+            await LocalDB.getQuestionById(q["id"]);
 
-       final localAnswerAudio =
-       question?["answer_audio_path"];
+        final localAnswerAudio =
+            question?["answer_audio_path"];
 
-     if (localAnswerAudio == null ||
-       !await File(localAnswerAudio).exists()) {
+        if (localAnswerAudio == null ||
+            !await File(localAnswerAudio).exists()) {
 
-       await _downloadAnswerAudio(q["id"]);
-       }
-     }
+          await _downloadAnswerAudio(q["id"]);
+        }
+      }
+
+    } // ← هذا القوس كان مفقود (إغلاق for)
+
     // إعادة تحميل البيانات من SQLite بعد التحديث
     final updatedLocal = await LocalDB.getQuestions();
 
@@ -2388,47 +2388,49 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 			
           ),
 		  ],
+if (answered &&
+   (answerText.isNotEmpty ||
+    q["answer_has_audio"] == 1 ||
+    (q["answer_audio_path"] != null &&
+     q["answer_audio_path"].toString().isNotEmpty))) ...[
 
-          if (answered &&
-              (answerText.isNotEmpty ||
-              q["answer_has_audio"] == 1 ||
-             (q["answer_audio_path"] != null &&
-              q["answer_audio_path"].toString().isNotEmpty))) ...[
+  const SizedBox(height: 6),
 
-             const SizedBox(height: 6),
+  // عرض نص الرد فقط إذا كان موجود
+  if (answerText.isNotEmpty)
+    Text(
+      "${loc.label_answer} $answerText",
+      style: const TextStyle(color: Colors.green),
+    ),
 
-            // عرض نص الرد فقط إذا كان موجود
-            if (answerText.isNotEmpty)
-              Text(
-               "${loc.label_answer} $answerText",
-               style: const TextStyle(color: Colors.green),
-               ),
+  // عرض صوت الرد إذا كان موجود
+  if (q["answer_has_audio"] == 1 ||
+      (q["answer_audio_path"] != null &&
+       q["answer_audio_path"].toString().isNotEmpty)) ...[
 
-			 if (q["answer_has_audio"] == 1 ||
-                (q["answer_audio_path"] != null &&
-                q["answer_audio_path"].toString().isNotEmpty)) ...[
+    Row(
+      children: [
+        Text(
+          loc.label_answer_audio,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
 
-            Row(
-              children: [
-                Text(
-                  loc.label_answer_audio,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
+        const SizedBox(width: 8),
 
-                const SizedBox(width: 8),
+        IconButton(
+          icon: const Icon(Icons.play_circle_fill),
+          tooltip: loc.label_play_answer_audio,
+          onPressed: () => _playExpertAudio(questionId),
+        ),
+      ],
+    ),
 
-                IconButton(
-                  icon: const Icon(Icons.play_circle_fill),
-                  tooltip: loc.label_play_answer_audio,
-                  onPressed: () => _playExpertAudio(questionId),
-                ),
-              ],
-            ),
-		   ],
-          ],
+  ],
+
+],,
         ],
       ),
     ),
