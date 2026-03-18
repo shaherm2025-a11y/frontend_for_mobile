@@ -1711,12 +1711,7 @@ Future<void> _fetchQuestions() async {
 
         "image_path": existing?["image_path"],
         "question_audio_path": existing?["question_audio_path"],
-
-        "answer_audio_path":
-            q["answer_has_audio"] == 1
-                ? existing?["answer_audio_path"]
-                : null,
-
+        "answer_audio_path": q["answer_has_audio"] == 1 ? existing?["answer_audio_path"] : null,
         "has_image": q["has_image"],
         "question_has_audio": q["question_has_audio"],
         "answer_has_audio": q["answer_has_audio"],
