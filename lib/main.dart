@@ -1643,7 +1643,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   try {
 
     final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/answer_$questionId.mp3');
+    final file = File('${dir.path}/answer_$questionId.m4a');
 
     if (await file.exists()) return;
 
@@ -1702,6 +1702,7 @@ Future<void> _fetchQuestions() async {
 
       final existing =
           await LocalDB.getQuestionById(q["id"]);
+		  String? answerAudioPath = existing?["answer_audio_path"];
 
       await LocalDB.insertQuestion({
 
@@ -1711,9 +1712,7 @@ Future<void> _fetchQuestions() async {
 
         "image_path": existing?["image_path"],
         "question_audio_path": existing?["question_audio_path"],
-        "answer_audio_path": (q["answer_has_audio"] == 1 && existing?["answer_audio_path"] != null)
-           ? existing!["answer_audio_path"] as String
-           : null,
+        "answer_audio_path": existing?["answer_audio_path"],
         "has_image": q["has_image"],
         "question_has_audio": q["question_has_audio"],
         "answer_has_audio": q["answer_has_audio"],
@@ -1750,20 +1749,16 @@ Future<void> _fetchQuestions() async {
       // ===== تحميل صوت الإجابة =====
       if (q["answer_has_audio"] == 1) {
 
-        final question =
-            await LocalDB.getQuestionById(q["id"]);
+    if (answerAudioPath == null ||
+        !await File(answerAudioPath).exists()) {
 
-        final localAnswerAudio =
-            question?["answer_audio_path"];
+      await _downloadAnswerAudio(q["id"]);
+    }
 
-        if (localAnswerAudio == null ||
-            !await File(localAnswerAudio).exists()) {
+  }
 
-          await _downloadAnswerAudio(q["id"]);
-        }
-      }
 
-    } // ← هذا القوس كان مفقود (إغلاق for)
+    } 
 
     // إعادة تحميل البيانات من SQLite بعد التحديث
     final updatedLocal = await LocalDB.getQuestions();
