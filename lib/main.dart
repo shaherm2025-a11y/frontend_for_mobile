@@ -2383,23 +2383,22 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 if (answered &&
    (answerText.isNotEmpty ||
     q["answer_has_audio"] == 1 ||
+    q["answer_has_audio"] == "1" ||
     (q["answer_audio_path"] != null &&
      q["answer_audio_path"].toString().isNotEmpty))) ...[
 
   const SizedBox(height: 6),
 
-  // عرض نص الرد فقط إذا كان موجود
   if (answerText.isNotEmpty)
     Text(
       "${loc.label_answer} $answerText",
       style: const TextStyle(color: Colors.green),
     ),
 
-  // عرض صوت الرد إذا كان موجود
-  if (q["answer_has_audio"] == 1 ||
+  if ((q["answer_has_audio"] == 1 ||
+       q["answer_has_audio"] == "1") ||
       (q["answer_audio_path"] != null &&
        q["answer_audio_path"].toString().isNotEmpty)) ...[
-
     Row(
       children: [
         Text(
