@@ -1742,7 +1742,7 @@ Future<void> _fetchQuestions() async {
       }
 
       // ===== تحميل صوت السؤال =====
-      if (q["question_has_audio"] == 1) {
+      if (q["question_has_audio"] == true || q["question_has_audio"] == 1) {
 
         final localAudio =
             existing?["question_audio_path"];
@@ -1755,7 +1755,7 @@ Future<void> _fetchQuestions() async {
       }
 
       // ===== تحميل صوت الإجابة =====
-      if (q["answer_has_audio"] == 1) {
+      if (q["answer_has_audio"] == true || q["answer_has_audio"] == 1) {
 
     if (answerAudioPath == null ||
         !await File(answerAudioPath).exists()) {
