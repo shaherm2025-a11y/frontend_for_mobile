@@ -1639,7 +1639,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     _loadFarmerIdAndData();
   }
   
-  Future<void> _downloadAnswerAudio(int questionId) async {
+ Future<void> _downloadAnswerAudio(int questionId) async {
   try {
 
     final dir = await getApplicationDocumentsDirectory();
@@ -1659,13 +1659,21 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
         questionId,
         file.path,
       );
+
+      // 🔴 تحديث الواجهة بعد حفظ الصوت
+      final updatedLocal = await LocalDB.getQuestions();
+
+      setState(() {
+        answered = updatedLocal.where((q) => q['status'] == 1).toList();
+        unanswered = updatedLocal.where((q) => q['status'] == 0).toList();
+      });
+
     }
 
   } catch (e) {
     debugPrint("Answer audio download error: $e");
   }
 }
-  
   
   Future<void> _loadFarmerIdAndData() async {
     final prefs = await SharedPreferences.getInstance();
