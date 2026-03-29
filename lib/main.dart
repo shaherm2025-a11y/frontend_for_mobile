@@ -281,6 +281,13 @@ void main() async {
   await Firebase.initializeApp();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+  
+  // ✅ تحميل اللغة أولاً
+  final prefs = await SharedPreferences.getInstance();
+  String lang = prefs.getString("lang") ?? "ar";
+
+  // 🔴 أهم سطر في الحل
+  DatabaseHelper.appLanguageCode = lang;
 
 
   if (kIsWeb) {
@@ -368,13 +375,22 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
-  void _setLocale(Locale locale) {
-    setState(() {
-      _locale = locale;
-      DatabaseHelper.appLanguageCode = locale.languageCode;
-    });
-  }
+ // void _setLocale(Locale locale) {
+   // setState(() {
+   //   _locale = locale;
+   //   DatabaseHelper.appLanguageCode = locale.languageCode;
+   // });
+ // }
+void _setLocale(Locale locale) async {
+  final prefs = await SharedPreferences.getInstance();
 
+  await prefs.setString("lang", locale.languageCode); // ✅ حفظ
+
+  setState(() {
+    _locale = locale;
+    DatabaseHelper.appLanguageCode = locale.languageCode;
+  });
+}
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
