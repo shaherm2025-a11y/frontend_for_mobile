@@ -1690,6 +1690,44 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     debugPrint("Answer audio download error: $e");
   }
 }
+
+Future<void> _downloadAnswerImage(int questionId) async {
+  try {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/answer_$questionId.jpg');
+
+    if (await file.exists()) return;
+
+    final url =
+        "${AppConstants.baseUrl}/expert_answer_image/$questionId";
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200 &&
+        response.bodyBytes.isNotEmpty) {
+
+      await file.writeAsBytes(response.bodyBytes);
+
+      await LocalDB.updateAnswerImagePath(
+        questionId,
+        file.path,
+      );
+
+      // 🔥 تحديث الواجهة
+      final updatedLocal = await LocalDB.getQuestions();
+
+      setState(() {
+        answered =
+            updatedLocal.where((q) => q['status'] == 1).toList();
+        unanswered =
+            updatedLocal.where((q) => q['status'] == 0).toList();
+      });
+    }
+
+  } catch (e) {
+    debugPrint("Answer image download error: $e");
+  }
+}// ===== تحميل صوت الإجابة =====
   
   Future<void> _loadFarmerIdAndData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -1780,7 +1818,17 @@ Future<void> _fetchQuestions() async {
     }
 
   }
+   // ===== تحميل صورة الإجابة =====
+if (q["answer_has_image"] == true || q["answer_has_image"] == 1) {
 
+  final existingImage = existing?["answer_image_path"];
+
+  if (existingImage == null ||
+      !await File(existingImage).exists()) {
+
+    await _downloadAnswerImage(q["id"]);
+  }
+}
 
     } 
 
@@ -2407,20 +2455,35 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 if (answered &&
    (answerText.isNotEmpty ||
     (q["answer_audio_path"] != null &&
-     q["answer_audio_path"].toString().isNotEmpty))) ...[
+     q["answer_audio_path"].toString().isNotEmpty) ||
+    (q["answer_image_path"] != null &&
+     q["answer_image_path"].toString().isNotEmpty))) ...[
 
   const SizedBox(height: 6),
 
+  // 🖼️ صورة الرد
+  if (q["answer_image_path"] != null &&
+      q["answer_image_path"].toString().isNotEmpty)
+    Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Image.file(
+        File(q["answer_image_path"]),
+        height: 130,
+        width: double.infinity,
+        fit: BoxFit.cover,
+      ),
+    ),
+
+  // ✍️ نص الرد
   if (answerText.isNotEmpty)
     Text(
       "${loc.label_answer} $answerText",
       style: const TextStyle(color: Colors.green),
     ),
 
-  if (answered &&
-    (q["answer_audio_path"] != null &&
-     q["answer_audio_path"].toString().isNotEmpty)) ...[
-
+  // 🔊 صوت الرد
+  if (q["answer_audio_path"] != null &&
+      q["answer_audio_path"].toString().isNotEmpty)
     Row(
       children: [
         Text(
@@ -2430,19 +2493,13 @@ if (answered &&
             color: Colors.green,
           ),
         ),
-
         const SizedBox(width: 8),
-
         IconButton(
           icon: const Icon(Icons.play_circle_fill),
-          tooltip: loc.label_play_answer_audio,
           onPressed: () => _playExpertAudio(questionId),
         ),
       ],
     ),
-
-  ],
-
 ],
         ],
       ),

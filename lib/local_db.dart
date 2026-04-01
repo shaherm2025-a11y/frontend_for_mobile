@@ -31,6 +31,8 @@ class LocalDB {
 			has_image INTEGER,
 			question_has_audio INTEGER,
 			answer_has_audio INTEGER,
+			answer_image_path TEXT,
+			answer_image INTEGER,
             status INTEGER
           )
         ''');
@@ -162,5 +164,14 @@ static Future<void> updateAnswerAudioPath(
   );
 
 }
+static Future<void> updateAnswerImagePath(int id, String path) async {
+  final db = await database;
 
+  await db.update(
+    'questions',
+    {"answer_image_path": path},
+    where: "id = ?",
+    whereArgs: [id],
+  );
+}
 }
