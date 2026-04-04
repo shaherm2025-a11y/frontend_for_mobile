@@ -27,7 +27,7 @@ android {
         create("release") {
             storeFile = file("key.jks")
             storePassword = "farmer_app_ibn_2030"
-            keyAlias = "upload"
+            keyAlias = "mohammed"
             keyPassword = "farmer_app_ibn_2030"
         }
     }
