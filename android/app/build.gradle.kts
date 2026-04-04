@@ -2,25 +2,49 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
-	id("com.google.gms.google-services")
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.plant_diagnosis_fixed"
-    compileSdk = 36
+    compileSdk = 34
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.plant_diagnosis_fixed"
-        minSdk = flutter.minSdkVersion
-        targetSdk = 36
+        minSdk = 21
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
+
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("key.jks")
+            storePassword = "123456"
+            keyAlias = "upload"
+            keyPassword = "123456"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
 
     compileOptions {
-	    isCoreLibraryDesugaringEnabled = true
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -28,16 +52,8 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
-    buildTypes {
-        release {
-            // مؤقتًا نوقع بالـ debug key عشان يشتغل
-            signingConfig = signingConfigs.getByName("debug")
-            isMinifyEnabled = false
-            isShrinkResources = false
-        }
-    }
 }
+
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
