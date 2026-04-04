@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.plant_diagnosis_fixed"
-    compileSdk = 36   
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
@@ -26,9 +26,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("key.jks")
-            storePassword = "farmer_app_ibn_2030"
-            keyAlias = "upload"
-            keyPassword = "farmer_app_ibn_2030"
+            storePassword = System.getenv("STORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
         }
     }
 
