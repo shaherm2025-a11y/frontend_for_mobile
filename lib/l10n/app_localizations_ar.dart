@@ -798,7 +798,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get label_answer => 'الإجابة:';
 
   @override
-  String get filter_comment => 'Filter by current farmer';
+  String get filter_comment => 'تصفية بواسطة المزارع الحالي';
 
   @override
   String get previousQuestions => 'الأسئلة المجابة سابقًا';
@@ -834,7 +834,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get label_no_image => 'لا توجد صورة';
 
   @override
-  String get enterQuestion => 'enter question';
+  String get enterQuestion => 'ادخل السؤال';
 
   @override
   String get uploading => 'يتم رفع الملف';

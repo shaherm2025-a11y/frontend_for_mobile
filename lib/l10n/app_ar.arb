@@ -334,6 +334,8 @@
   "label_answer_audio": "رد الخبير",
   "label_delete_audio": "حذف",
   "label_no_image": "لا توجد صورة",
+  "filter_comment": "تصفية بواسطة المزارع الحالي",
+  "enterQuestion": "ادخل السؤال",
   "uploading":"يتم رفع الملف"
 
 

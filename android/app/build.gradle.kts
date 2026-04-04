@@ -26,9 +26,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("key.jks")
-            storePassword = "123456"
+            storePassword = "farmer_app_ibn_2030"
             keyAlias = "upload"
-            keyPassword = "123456"
+            keyPassword = "farmer_app_ibn_2030"
         }
     }
 
