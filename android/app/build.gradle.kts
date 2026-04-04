@@ -7,13 +7,13 @@ plugins {
 
 android {
     namespace = "com.example.plant_diagnosis_fixed"
-    compileSdk = 34
+    compileSdk = 36   
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.plant_diagnosis_fixed"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
