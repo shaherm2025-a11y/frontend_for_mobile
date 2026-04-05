@@ -32,8 +32,7 @@ jobs:
       # ⭐ هنا نضيف keystore
       - name: Decode keystore
         run: |
-          echo "${{ secrets.KEYSTORE }}" > key.txt
-          base64 -d key.txt > android/app/key.jks
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/key.jks
 
       - name: Build APK
         run: flutter build apk --release
