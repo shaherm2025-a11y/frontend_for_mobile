@@ -69,10 +69,10 @@ class DatabaseHelper {
             0;
 
     if (cropsCount == 0) {
-      print('📌 SQLite فارغة، سيتم استيراد البيانات من JSON');
+      debugPrint('📌 SQLite فارغة، سيتم استيراد البيانات من JSON');
       await importDataFromJson();
     } else {
-      print('📌 بيانات SQLite موجودة بالفعل، لا حاجة للاستيراد');
+      debugPrint('📌 بيانات SQLite موجودة بالفعل، لا حاجة للاستيراد');
     }
   }
 
@@ -117,7 +117,7 @@ class DatabaseHelper {
       }
     }
 
-    print('✅ تم استيراد البيانات بنجاح إلى SQLite');
+    debugPrint('✅ تم استيراد البيانات بنجاح إلى SQLite');
   }
 
   // ======== استعلامات ========

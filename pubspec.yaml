@@ -35,16 +35,18 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   dio: ^5.4.0
   
+  uuid: any
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
- # flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.0
  # path_provider: ^2.0.15
  # dio: ^6.1.2
   flutter_cache_manager: ^3.3.0
  # cached_network_image: ^3.2.3
 
+#  plant_diagnosis_fixed: any
 flutter_icons:
   android: true
   ios: true

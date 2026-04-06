@@ -5,9 +5,9 @@ Future<void> clearSharedPreferences() async {
   try {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    print("✅ تم مسح كل بيانات SharedPreferences");
+    debugPrint("✅ تم مسح كل بيانات SharedPreferences");
   } catch (e) {
-    print("❌ حدث خطأ أثناء مسح SharedPreferences: $e");
+    debugPrint("❌ حدث خطأ أثناء مسح SharedPreferences: $e");
   }
 }
 

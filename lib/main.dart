@@ -1,24 +1,19 @@
 import 'dart:io';
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/services.dart';
 import 'l10n/app_localizations.dart';
 import 'utils/localization_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:plant_diagnosis_app/utils/localization_helper.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'utils/device_id_helper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -36,9 +31,10 @@ import 'package:dio/dio.dart';
 
 
 
+
+
 // �����
 
-import 'package:uuid/uuid.dart';
 
 class AppConstants {
   //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
@@ -78,7 +74,7 @@ class DatabaseHelper {
   // �� ������� �����ɿ ��� �� ������ �� assets
   bool exists = await File(path).exists();
   if (!exists) {
-    print("? ��� ����� �������� ���� ���...");
+    debugPrint("? ��� ����� �������� ���� ���...");
     await Directory(dbPath).create(recursive: true);
 
     ByteData data = await rootBundle.load("assets/plantix_final.db");
@@ -86,7 +82,7 @@ class DatabaseHelper {
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
     await File(path).writeAsBytes(bytes, flush: true);
-    print("? ��� ��� ������� �����");
+    debugPrint("? ��� ��� ������� �����");
   }
 
   // ���� �������
@@ -114,7 +110,7 @@ class DatabaseHelper {
     final db = await getDatabase();
     return await db.query(
       'crops',
-      columns: ['id', nameCol + ' as name', 'name_en'],
+      columns: ['id', '$nameCol as name', 'name_en'],
     );
   }
 
@@ -195,14 +191,6 @@ class DatabaseHelper {
 
 }
 
-Future<void> _initFCM() async {
-  final prefs = await SharedPreferences.getInstance();
-  final farmerId = prefs.getInt('farmer_id');
-
-  if (farmerId == null) return;
-
-  await registerFCMToken(farmerId);
-}
 
 Future<void> registerFCMToken(int farmerId) async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -244,7 +232,7 @@ Future<int?> ensureAutoLogin() async {
   final prefs = await SharedPreferences.getInstance();
   final existingId = prefs.getInt('farmer_id');
   if (existingId != null) {
-    print("? Farmer already logged in: $existingId");
+    debugPrint("? Farmer already logged in: $existingId");
     return existingId;
   }
 
@@ -253,19 +241,19 @@ Future<int?> ensureAutoLogin() async {
 	//final deviceId = await DeviceIdHelper.getDeviceId();
     final uri = Uri.parse('${AppConstants.baseUrl}/auto_login'); // �� ������ ������ �����
     final response = await http.post(uri, body: {'device_id': deviceId});
-    print (deviceId);
+    debugPrint (deviceId);
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final farmerId = data['farmer_id'];
       await prefs.setInt('farmer_id', farmerId);
-      print("? Farmer registered/logged in automatically: $farmerId");
+      debugPrint("? Farmer registered/logged in automatically: $farmerId");
       return farmerId;
     } else {
-      print("?? ��� ������� �������: ${response.statusCode}");
+      debugPrint("?? ��� ������� �������: ${response.statusCode}");
       return null;
     }
   } catch (e) {
-    print("? ��� �� autoLogin: $e");
+    debugPrint("? ��� �� autoLogin: $e");
     return null;
   }
 }
@@ -353,6 +341,7 @@ class _MyAppState extends State<MyApp> {
 
     // ������� ����� ����� ��� �������
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+	  if (!mounted) return;
       if (message.notification != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -415,10 +404,10 @@ class SplashScreen extends StatefulWidget {
   final int? initialFarmerId;
 
   const SplashScreen({
-    required this.onLocaleChange,
-    required this.initialFarmerId,
-    Key? key,
-  }) : super(key: key);
+  super.key,
+  required this.onLocaleChange,
+  required this.initialFarmerId,
+   });
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -555,7 +544,7 @@ class _SplashScreenState extends State<SplashScreen>
                       icon: Icons.search,
                       onPressed: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => DiagnosisPage()));
+                            MaterialPageRoute(builder: (_) => const DiagnosisPage()));
                       },
                       animation: _slideAnimations[0],
                     ),
@@ -564,7 +553,7 @@ class _SplashScreenState extends State<SplashScreen>
                       icon: Icons.person,
                       onPressed: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => FarmerQuestionsPage()));
+                            MaterialPageRoute(builder: (_) => const FarmerQuestionsPage()));
                       },
                       animation: _slideAnimations[1],
                     ),
@@ -637,7 +626,7 @@ class _SplashScreenState extends State<SplashScreen>
 
 // ================== Diagnosis Page ==================
 class DiagnosisPage extends StatefulWidget {
-  const DiagnosisPage({Key? key}) : super(key: key);
+ const DiagnosisPage({super.key});
 
   @override
   State<DiagnosisPage> createState() => _DiagnosisPageState();
@@ -681,7 +670,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       final data = await fetchPreviousDiagnoses();
       setState(() => previousDiagnoses = data);
     } catch (e) {
-      print("?? Error fetching previous diagnoses: $e");
+      debugPrint("?? Error fetching previous diagnoses: $e");
     }
   }
 
@@ -775,7 +764,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 
     await diagnoseAndSave(fileBytes, fileName);
   } catch (e) {
-    print("Error picking image: $e");
+    debugPrint("Error picking image: $e");
   }
 }
 
@@ -806,11 +795,12 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       final data = json.decode(respStr);
       final diseaseId = data['disease_name'];
       final confidence = data['confidence'];
+	  if (!mounted) return;
 
       final diseaseMap = LocalizationHelper.getDiseaseMap(context);
       final localizedDisease = diseaseMap[diseaseId] ?? diseaseId;
       final treatment = diseaseMap["${diseaseId}_treatment"] ?? "";
-
+      if (!mounted) return;
       setState(() {
         _disease = localizedDisease;
         _confidence = confidence != null ? (confidence) : null;
@@ -820,19 +810,17 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       
 
       await _loadPreviousDiagnoses();
-  //  } 
-	//catch (e) {
-    //  print("?? Error diagnosing or saving: $e");
-    //  setState(() => _disease = "��� ��� ����� �������");
-    //} 
+  
 	}catch (e, st) {
-      print("? Diagnose error: $e");
-      print(st);
+      debugPrint("? Diagnose error: $e");
+      debugPrint(st.toString());
            }
 
 	finally {
+     if (mounted) {
       setState(() => _loading = false);
-    }
+      }
+     }
   }
 
   Future<List<Map<String, dynamic>>> fetchPreviousDiagnoses() async {
@@ -1034,7 +1022,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 // ================== Weather Widget ==================
 
 class WeatherWidget extends StatefulWidget {
-  const WeatherWidget({Key? key}) : super(key: key);
+  const WeatherWidget({super.key});
 
   @override
   State<WeatherWidget> createState() => _WeatherWidgetState();
@@ -1071,14 +1059,18 @@ class _WeatherWidgetState extends State<WeatherWidget> {
         }
       }
 
+
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      ),
       );
 
       final lat = position.latitude;
       final lon = position.longitude;
 
       // ?? ����� �� ������� �������
+	  if (!mounted) return;
       final locale = Localizations.localeOf(context).languageCode;
       final langParam = locale == "ar" ? "ar" : "en";
 
@@ -1094,6 +1086,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
       final now = DateTime.now();
       final formatter = DateFormat('EEEE� d MMMM', locale == "ar" ? 'ar' : 'en');
       final dateStr = formatter.format(now);
+	  if (!mounted) return;
 
       setState(() {
         _city = data["name"];
@@ -1212,7 +1205,7 @@ Widget build(BuildContext context) {
 // ================== Pests & Diseases Page ==================
 
 class PestsDiseasesPage extends StatefulWidget {
-  const PestsDiseasesPage({Key? key}) : super(key: key);
+  const PestsDiseasesPage({super.key});
 
   @override
   State<PestsDiseasesPage> createState() => _PestsDiseasesPageState();
@@ -1284,7 +1277,7 @@ class _PestsDiseasesPageState extends State<PestsDiseasesPage> {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
-              value: selectedCropId,
+              initialValue: selectedCropId,
               items: crops.map((crop) {
                 final imageName = crop['name_en']?.toString() ?? '';
                 final cropName = Localizations.localeOf(context).languageCode ==
@@ -1373,10 +1366,10 @@ class DiseaseDetailsPage extends StatelessWidget {
   final Map<String, dynamic> details;
 
   const DiseaseDetailsPage({
-    Key? key,
+    super.key,
     required this.disease,
     required this.details,
-  }) : super(key: key);
+  });
 
   Widget _buildDetailSection(String title, String? content) {
     if (content == null || content.isEmpty) return const SizedBox.shrink();
@@ -1625,7 +1618,7 @@ class AwarenessPage extends StatelessWidget {
 // ================== Farmer Questions Page (Final - With Unanswered Section) ==================
 
 class FarmerQuestionsPage extends StatefulWidget {
-  const FarmerQuestionsPage({Key? key}) : super(key: key);
+  const FarmerQuestionsPage({super.key});
 
   @override
   State<FarmerQuestionsPage> createState() => _FarmerQuestionsPageState();
@@ -1896,10 +1889,11 @@ Future<String?> _getOrDownloadImage(int questionId) async {
     Uint8List imageBytes = await pickedFile.readAsBytes();
 
     setState(() {
-      if (kIsWeb)
+      if (kIsWeb){
         _webImage = imageBytes;
-      else
+      }else {
         _imageFile = File(pickedFile.path);
+		}
     });
   }
   
@@ -2005,7 +1999,7 @@ Future<void> _sendQuestion() async {
       _webImage == null &&
       _questionController.text.trim().isEmpty &&
       _audioQuestionFile == null) {
-
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(loc.enterQuestion)),
     );
@@ -2022,6 +2016,7 @@ Future<void> _sendQuestion() async {
     imageBytes = await compressImage(original);
     imageName = _imageFile!.path.split("/").last;
   }
+  if (!mounted) return;
 
   setState(() {
     _loading = true;
@@ -2104,7 +2099,7 @@ showDialog(
 
       },
     );
-
+    if (!mounted) return;
     if (response.statusCode == 200) {
 
       final data = response.data;
@@ -2149,7 +2144,7 @@ showDialog(
           "id": questionId,
           "question": _questionController.text.trim(),
           "answer": "",
-          "image_path": imagePath ?? "",
+          "image_path": imagePath.isNotEmpty ? imagePath : "",
           "question_audio_path": audioPath,
           "answer_audio_path": null,
           "status": 0
@@ -2157,7 +2152,8 @@ showDialog(
       }
 
       _questionController.clear();
-
+      
+	  if (!mounted) return;
       setState(() {
         _imageFile = null;
         _webImage = null;
@@ -2165,26 +2161,21 @@ showDialog(
       });
 
       await _fetchQuestions();
-
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(loc.snackbar_question_sent)),
       );
     }
 
   } finally {
-
-    Navigator.pop(context);
-
-    setState(() {
+    if (mounted) {
+       Navigator.pop(context);
+       setState(() {
       _loading = false;
       _progress = 0;
-    });
+     });
+   }
   }
-}
-
-Future<String?> _getLocalAnswerAudioPath(int questionId) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString("answer_audio_$questionId");
 }
 
 Future<void> _saveAnswerAudioLocally(
@@ -2603,7 +2594,7 @@ Widget build(BuildContext context) {
                         ),
 
                       ...answered.map((q) =>
-                          _buildQuestionCard(q, answered: true)).toList(),
+                          _buildQuestionCard(q, answered: true)),
                     ],
                   ),
                 ),
@@ -2708,12 +2699,13 @@ Widget build(BuildContext context) {
 
                       ElevatedButton(
                         onPressed: _sendQuestion,
-                        child: Text(loc.button_send_question),
+                       
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green[700],
                           foregroundColor: Colors.white,
                           minimumSize: const Size(double.infinity, 50),
                         ),
+						child: Text(loc.button_send_question),
                       ),
 
                       const SizedBox(height: 20),
@@ -2726,8 +2718,8 @@ Widget build(BuildContext context) {
                         ),
 
                       ...unanswered
-                          .map((q) => _buildQuestionCard(q))
-                          .toList(),
+                          .map((q) => _buildQuestionCard(q)),
+          
                     ],
                   ),
                 ),

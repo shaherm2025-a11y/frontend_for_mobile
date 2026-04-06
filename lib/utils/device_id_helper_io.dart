@@ -9,20 +9,22 @@ Future<String> getDeviceId() async {
 
   // إذا كان هناك معرف مخزن مسبقًا نعيده
   String? id = prefs.getString(key);
-  if (id != null) return id;
+  if (id != null && id.isNotEmpty) return id;
 
   String newId;
   final info = DeviceInfoPlugin();
 
   if (Platform.isAndroid) {
     final android = await info.androidInfo;
-    newId = android.id ?? const Uuid().v4();
+    newId = android.id.isNotEmpty ? android.id : const Uuid().v4();
   } else if (Platform.isIOS) {
     final ios = await info.iosInfo;
-    newId = ios.identifierForVendor ?? const Uuid().v4();
+    newId = (ios.identifierForVendor != null && ios.identifierForVendor!.isNotEmpty)
+        ? ios.identifierForVendor!
+        : const Uuid().v4();
   } else if (Platform.isWindows) {
     final win = await info.windowsInfo;
-    newId = win.deviceId ?? const Uuid().v4();
+    newId = win.deviceId.isNotEmpty ? win.deviceId : const Uuid().v4();
   } else {
     newId = const Uuid().v4();
   }
