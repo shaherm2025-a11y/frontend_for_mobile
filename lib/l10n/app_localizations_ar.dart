@@ -771,13 +771,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get previousDiagnos => 'التشخيصات السابقة';
 
   @override
-  String get farmer_page_title => 'واجهة المزارع';
+  String get farmer_page_title => 'واجهة استشارات المزارع';
 
   @override
-  String get tab_unanswered => 'الاستشارات التي لم يتم الرد عليها';
+  String get tab_unanswered => 'استشارات لم يتم الرد عليها';
 
   @override
-  String get tab_answered => 'الاستشارات التي تم الرد عليها';
+  String get tab_answered => 'استشارات تم الرد عليها';
 
   @override
   String get label_write_question => 'اكتب السؤال هنا';
@@ -837,5 +837,5 @@ class AppLocalizationsAr extends AppLocalizations {
   String get enterQuestion => 'ادخل السؤال';
 
   @override
-  String get uploading => 'يتم رفع الملف';
+  String get uploading => 'جاري الارسال';
 }

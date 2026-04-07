@@ -307,9 +307,9 @@
   "tryAgain": "إعادة المحاولة",
   "noPreviousDiagnoses": "لا توجد تشخيصات سابقة",
   "previousDiagnos": "التشخيصات السابقة",
-  "farmer_page_title": "واجهة المزارع",
-  "tab_unanswered": "الاستشارات التي لم يتم الرد عليها",
-  "tab_answered": "الاستشارات التي تم الرد عليها",
+  "farmer_page_title": "واجهة استشارات المزارع",
+  "tab_unanswered": "استشارات لم يتم الرد عليها",
+  "tab_answered": "استشارات تم الرد عليها",
   
   
   "previousQuestions": "الأسئلة المجابة سابقًا",
@@ -336,7 +336,7 @@
   "label_no_image": "لا توجد صورة",
   "filter_comment": "تصفية بواسطة المزارع الحالي",
   "enterQuestion": "ادخل السؤال",
-  "uploading":"يتم رفع الملف"
+  "uploading":"جاري الارسال"
 
 
 }
