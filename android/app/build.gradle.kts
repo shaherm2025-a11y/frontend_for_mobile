@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.plant_diagnosis_fixed"
-        minSdk = flutter.minSdkVersion
+        minSdk = 21
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
