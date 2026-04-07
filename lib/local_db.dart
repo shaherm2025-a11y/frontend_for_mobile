@@ -69,9 +69,9 @@ class LocalDB {
 
   static Future<List<Map<String, dynamic>>> getQuestions() async {
     final db = await database;
-    return await db.query("questions");
+    return await db.query("questions",orderBy: "id DESC");
   }
-
+  
   static Future<void> updateAnswer(
       int id, String answer, String? answerAudioPath) async {
     final db = await database;

@@ -2190,12 +2190,7 @@ Future<void> _saveAnswerAudioLocally(
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString("answer_audio_$questionId", filePath);
   
-  // ?? ��� ������ ����� �� ����� �������� �������
-  //await LocalDB.updateAnswer(
-  //  questionId,
-  //  "",        // �� ����� �� ����
-  //  filePath,  // ���� �����
- // );
+  
   await LocalDB.updateAnswerAudioPath(
     questionId,
     filePath,
