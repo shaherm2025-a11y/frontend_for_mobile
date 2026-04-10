@@ -364,12 +364,7 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
- // void _setLocale(Locale locale) {
-   // setState(() {
-   //   _locale = locale;
-   //   DatabaseHelper.appLanguageCode = locale.languageCode;
-   // });
- // }
+ 
 void _setLocale(Locale locale) async {
   final prefs = await SharedPreferences.getInstance();
 
@@ -1660,10 +1655,12 @@ void _showFullImage(String path) {
   );
 }
 
-Future<Uint8List?> compressImage(Uint8List bytes) async {
+Future<Uint8List?> compressImage(String path) async {
   return await FlutterImageCompress.compressWithList(
-    bytes,
-    quality: 60,
+     path,
+     minWidth: 512,
+     minHeight: 512,
+     quality: 60,
   );
 }
  
@@ -2010,12 +2007,22 @@ Future<void> _sendQuestion() async {
   String imageName = "question_image.png";
 
   if (_webImage != null) {
-    imageBytes = _webImage!;
-  } else if (_imageFile != null) {
-    Uint8List original = await _imageFile!.readAsBytes();
-    imageBytes = await compressImage(original);
-    imageName = _imageFile!.path.split("/").last;
+  imageBytes = _webImage!;
+} else if (_imageFile != null) {
+  final compressedBytes =
+      await compressImage(_imageFile!.path);
+
+  if (compressedBytes == null) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("فشل ضغط الصورة")),
+    );
+    return;
   }
+
+  imageBytes = compressedBytes;
+  imageName = _imageFile!.path.split("/").last;
+}
   if (!mounted) return;
 
   setState(() {
