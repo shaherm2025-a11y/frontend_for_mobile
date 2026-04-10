@@ -393,7 +393,7 @@ void _setLocale(Locale locale) async {
     );
   }
 }
-// ================== Splash Screen ==================
+// ================== Splash Screen ================
 class SplashScreen extends StatefulWidget {
   final Function(Locale) onLocaleChange;
   final int? initialFarmerId;
