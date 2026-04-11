@@ -259,6 +259,27 @@ Future<int?> ensureAutoLogin() async {
 }
 
 
+Future<void> _recoverLostData() async {
+  final LostDataResponse response =
+      await picker.retrieveLostData();
+
+  if (response.isEmpty) return;
+
+  final file = response.file;
+  if (file != null) {
+    final compressedBytes =
+        await _compressImageFile(file.path);
+
+    if (compressedBytes == null) return;
+
+    setState(() {
+      _imageFile = File(file.path);
+      _webImage = null;
+    });
+
+    await diagnoseAndSave(compressedBytes, file.name);
+  }
+}
 
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -642,6 +663,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   void initState() {
     super.initState();
     _loadPreviousDiagnoses();
+	_recoverLostData();
   }
   
  
@@ -669,7 +691,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 
  
    Future<void> pickImage() async {
-  try {
+   try {
     // ============ 1) WEB ============
     if (kIsWeb) {
       final result = await FilePicker.platform.pickFiles(
@@ -1654,6 +1676,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   void initState() {
     super.initState();
     _loadFarmerIdAndData();
+	_recoverLostData();
 	
   }
  
