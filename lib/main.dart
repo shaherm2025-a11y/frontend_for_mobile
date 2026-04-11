@@ -259,27 +259,6 @@ Future<int?> ensureAutoLogin() async {
 }
 
 
-Future<void> _recoverLostData() async {
-  final LostDataResponse response =
-      await picker.retrieveLostData();
-
-  if (response.isEmpty) return;
-
-  final file = response.file;
-  if (file != null) {
-    final compressedBytes =
-        await _compressImageFile(file.path);
-
-    if (compressedBytes == null) return;
-
-    setState(() {
-      _imageFile = File(file.path);
-      _webImage = null;
-    });
-
-    await diagnoseAndSave(compressedBytes, file.name);
-  }
-}
 
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -666,7 +645,28 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 	_recoverLostData();
   }
   
- 
+ Future<void> _recoverLostData() async {
+  final LostDataResponse response =
+      await picker.retrieveLostData();
+
+  if (response.isEmpty) return;
+
+  final file = response.file;
+  if (file != null) {
+    final compressedBytes =
+        await _compressImageFile(file.path);
+
+    if (compressedBytes == null) return;
+
+    setState(() {
+      _imageFile = File(file.path);
+      _webImage = null;
+    });
+
+    await diagnoseAndSave(compressedBytes, file.name);
+  }
+}
+
  Future<Uint8List?> _compressImageFile(String path) async {
   if (kIsWeb || Platform.isWindows) {
     return await File(path).readAsBytes();
@@ -1679,7 +1679,42 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
 	_recoverLostData();
 	
   }
- 
+ Future<void> _recoverLostData() async {
+  final LostDataResponse response =
+      await picker.retrieveLostData();
+
+  if (response.isEmpty) return;
+
+  final file = response.file;
+
+  if (file != null) {
+    // ===== WEB =====
+    if (kIsWeb) {
+      final bytes = await file.readAsBytes();
+
+      setState(() {
+        _webImage = bytes;
+        _imageFile = null;
+      });
+
+      return;
+    }
+
+    // ===== ANDROID / iOS =====
+    final compressedBytes =
+        await compressImage(file.path);
+
+    if (compressedBytes == null) return;
+
+    setState(() {
+      _imageFile = File(file.path); // فقط للمسار
+      _webImage = null;
+    });
+
+    // ❌ لا ترسل الصورة هنا
+    // سيتم إرسالها لاحقاً عند الضغط على زر "إرسال"
+  }
+}
 void _showFullImage(String path) {
   showDialog(
     context: context,
