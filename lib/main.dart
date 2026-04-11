@@ -721,9 +721,17 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       XFile? pickedFile;
 
       if (option == "camera") {
-        pickedFile = await picker.pickImage(source: ImageSource.camera);
+        pickedFile = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 60,   // 🔥 مهم جداً
+        maxWidth: 1024,
+       );
       } else {
-        pickedFile = await picker.pickImage(source: ImageSource.gallery);
+        pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 60,
+        maxWidth: 1024,
+       );
       }
 
       if (pickedFile == null) return;
@@ -1646,6 +1654,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   void initState() {
     super.initState();
     _loadFarmerIdAndData();
+	
   }
  
 void _showFullImage(String path) {
@@ -1887,7 +1896,7 @@ Future<String?> _getOrDownloadImage(int questionId) async {
 
   Future<void> _pickImage() async {
   final pickedFile =
-      await picker.pickImage(source: ImageSource.gallery);
+      await picker.pickImage( source: ImageSource.gallery, imageQuality: 60, maxWidth: 1024,);
 
   if (pickedFile == null) return;
 
