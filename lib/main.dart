@@ -641,8 +641,8 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   @override
   void initState() {
     super.initState();
-    _loadPreviousDiagnoses();
 	_recoverLostData();
+	_loadPreviousDiagnoses();
   }
   
  Future<void> _recoverLostData() async {
