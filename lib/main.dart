@@ -645,20 +645,18 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   }
   
  
-  Future<Uint8List> _compressImage(Uint8List bytes) async {
-  // ����� ����� ��� Windows (��� �����)
+ Future<Uint8List?> _compressImageFile(String path) async {
   if (kIsWeb || Platform.isWindows) {
-    return bytes;
+    return await File(path).readAsBytes();
   }
 
-  return await FlutterImageCompress.compressWithList(
-    bytes,
+  return await FlutterImageCompress.compressWithFile(
+    path,
     minWidth: 512,
     minHeight: 512,
     quality: 75,
-    );
-  }
-
+  );
+}
 
   Future<void> _loadPreviousDiagnoses() async {
     try {
@@ -730,14 +728,16 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 
       if (pickedFile == null) return;
 
-      Uint8List imageBytes = await pickedFile.readAsBytes();
+      final compressedBytes =
+      await _compressImageFile(pickedFile.path);
 
+      if (compressedBytes == null) return;
       setState(() {
-        _imageFile = File(pickedFile!.path);
-        _webImage = null;
+         _imageFile = File(pickedFile!.path);
+         _webImage = null;
       });
 
-      await diagnoseAndSave(imageBytes, pickedFile.name);
+      await diagnoseAndSave(compressedBytes, pickedFile.name);
       return;
     }
 
@@ -749,15 +749,20 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
     if (result == null) return;
 
     final file = File(result.files.first.path!);
-    final fileBytes = await file.readAsBytes();
+    //final fileBytes = await file.readAsBytes();
     final fileName = file.path.split('/').last;
+	
+
+   final compressedBytes =
+    await _compressImageFile(file.path);
+
+    if (compressedBytes == null) return;
 
     setState(() {
-      _imageFile = file;
-      _webImage = null;
+     _imageFile = file;
+     _webImage = null;
     });
-
-    await diagnoseAndSave(fileBytes, fileName);
+   await diagnoseAndSave(compressedBytes, fileName);
   } catch (e) {
     debugPrint("Error picking image: $e");
   }
@@ -772,7 +777,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
     });
 
     try {
-	  imageBytes = await _compressImage(imageBytes);
+	 // imageBytes = await _compressImage(imageBytes);
 
       final prefs = await SharedPreferences.getInstance();
       final farmerId = prefs.getInt('farmer_id') ?? 0;
@@ -876,7 +881,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: _imageFile != null
-                              ? Image.file(_imageFile!, height: 300, fit: BoxFit.cover)
+                              ? Image.file(_imageFile!, height: 300, fit: BoxFit.cover,   cacheWidth: 800)
                               : Image.memory(_webImage!, height: 300, fit: BoxFit.cover),
                         ),
                       const SizedBox(height: 20),
@@ -1649,14 +1654,14 @@ void _showFullImage(String path) {
     builder: (_) => Dialog(
       backgroundColor: Colors.black,
       child: InteractiveViewer(
-        child: Image.file(File(path)),
+        child: Image.file(File(path),  cacheWidth: 1200 ),
       ),
     ),
   );
 }
 
 Future<Uint8List?> compressImage(String path) async {
-  return await FlutterImageCompress.compressWithList(
+  return await FlutterImageCompress.compressWithFile(
      path,
      minWidth: 512,
      minHeight: 512,
@@ -1881,18 +1886,34 @@ Future<String?> _getOrDownloadImage(int questionId) async {
 }
 
   Future<void> _pickImage() async {
-    XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile == null) return;
-    Uint8List imageBytes = await pickedFile.readAsBytes();
+  final pickedFile =
+      await picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedFile == null) return;
+
+  // ===== WEB =====
+  if (kIsWeb) {
+    final bytes = await pickedFile.readAsBytes();
 
     setState(() {
-      if (kIsWeb){
-        _webImage = imageBytes;
-      }else {
-        _imageFile = File(pickedFile.path);
-		}
+      _webImage = bytes;
+      _imageFile = null;
     });
+
+    return;
   }
+
+  // ===== ANDROID / iOS =====
+  final compressedBytes =
+      await compressImage(_imageFile?.path ?? pickedFile.path);
+
+  if (compressedBytes == null) return;
+
+  setState(() {
+    _imageFile = File(pickedFile.path); // فقط للمسار
+    _webImage = null;
+  });
+}
   
    // ================= AUDIO =================
 Future<void> _startRecording() async {
@@ -2440,6 +2461,8 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                       height: 160,
                       width: double.infinity,
                       fit: BoxFit.cover,
+					  cacheWidth: 800,
+
                     ),
                   )
                 : (q["has_image"] == 1 || q["has_image"] == true)
@@ -2466,6 +2489,8 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                                 height: 160,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
+								cacheWidth: 800,
+
                               ),
                             );
                           }
@@ -2546,6 +2571,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                     height: 160,
                     width: double.infinity,
                     fit: BoxFit.cover,
+					cacheWidth: 800,
                   ),
                 ),
               ),
@@ -2694,6 +2720,8 @@ Widget build(BuildContext context) {
                                   _webImage!,
                                   height: 250,
                                   fit: BoxFit.cover,
+								  cacheWidth: 800,
+
                                 ),
                         ),
 
