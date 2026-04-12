@@ -661,9 +661,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   double? _confidence;
   String? _treatment;
   final picker = ImagePicker();
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString("last_page", "diagnosis");
-
+  
   List<Map<String, dynamic>> previousDiagnoses = [];
 
   @override
@@ -673,6 +671,11 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
 	_loadPreviousDiagnoses();
   }
   
+  Future<void> _saveLastPage() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("last_page", "diagnosis");
+}
+
  Future<void> _recoverLostData() async {
   final LostDataResponse response =
       await picker.retrieveLostData();
@@ -769,7 +772,7 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       if (option == null) return;
 
       XFile? pickedFile;
-
+      await _saveLastPage();
       if (option == "camera") {
         pickedFile = await picker.pickImage(
         source: ImageSource.camera,
@@ -1699,8 +1702,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   List<Map<String, dynamic>> answered = [];
   List<Map<String, dynamic>> unanswered = [];
   int? _farmerId;
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString("last_page", "questions");
+  
   @override
   void initState() {
     super.initState();
@@ -1743,6 +1745,10 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     // ❌ لا ترسل الصورة هنا
     // سيتم إرسالها لاحقاً عند الضغط على زر "إرسال"
   }
+}
+Future<void> _saveLastPage() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("last_page", "questions");
 }
 void _showFullImage(String path) {
   showDialog(
@@ -1982,6 +1988,7 @@ Future<String?> _getOrDownloadImage(int questionId) async {
 }
 
   Future<void> _pickImage() async {
+  await _saveLastPage();
   final pickedFile =
       await picker.pickImage( source: ImageSource.gallery, imageQuality: 60, maxWidth: 1024,);
 
