@@ -20,7 +20,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
-//import 'package:just_audio/just_audio.dart';
+
 import 'package:record/record.dart';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -37,9 +37,7 @@ import 'package:dio/dio.dart';
 
 
 class AppConstants {
-  //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
-//static const String baseUrl = "http://localhost:8000";
-  //static const String baseUrl = "https://mohashaher-plant-diag-final-server.hf.space";
+
  static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
 }
 
