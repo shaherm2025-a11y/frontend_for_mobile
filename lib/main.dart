@@ -417,6 +417,29 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _buttonsController;
   late List<Animation<Offset>> _slideAnimations;
   late int? farmerId;
+  
+  Future<void> _handleNavigationAfterRestart() async {
+  final prefs = await SharedPreferences.getInstance();
+  final lastPage = prefs.getString("last_page");
+
+  if (lastPage == null) return;
+
+  await prefs.remove("last_page");
+
+  if (!mounted) return;
+
+  if (lastPage == "diagnosis") {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const DiagnosisPage()),
+    );
+  } else if (lastPage == "questions") {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const FarmerQuestionsPage()),
+    );
+  }
+}
 
   @override
   void initState() {
@@ -450,6 +473,9 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     _buttonsController.forward();
+	WidgetsBinding.instance.addPostFrameCallback((_) {
+    _handleNavigationAfterRestart();
+    });
   }
 
   @override
@@ -635,6 +661,8 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
   double? _confidence;
   String? _treatment;
   final picker = ImagePicker();
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("last_page", "diagnosis");
 
   List<Map<String, dynamic>> previousDiagnoses = [];
 
@@ -1671,7 +1699,8 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   List<Map<String, dynamic>> answered = [];
   List<Map<String, dynamic>> unanswered = [];
   int? _farmerId;
-
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("last_page", "questions");
   @override
   void initState() {
     super.initState();
