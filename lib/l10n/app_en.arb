@@ -341,7 +341,13 @@
   "label_delete_audio": "Delet",
   "label_no_image": "no image found",
   "enterQuestion": "enter question",
-   "uploading":"upload file"
+   "uploading":"upload file",
+   "settings": "Settings",
+  "howToUse": "How to use the app",
+  "privacyPolicy": "Privacy Policy",
+
+  "helpContent": "1- Take or upload a plant image.\n\n2- Get AI-based diagnosis.\n\n3- Ask agricultural experts.\n\n4- Check notifications for replies.\n\n5- Browse plant diseases library."
+
 
   
 

@@ -28,6 +28,8 @@ import 'local_db.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
+import 'privacy_policy_page.dart';
+import 'help_page.dart';
 
 
 
@@ -482,6 +484,45 @@ class _SplashScreenState extends State<SplashScreen>
     _buttonsController.dispose();
     super.dispose();
   }
+  
+  void _showSettingsMenu() {
+  final t = AppLocalizations.of(context)!;
+
+  showModalBottomSheet(
+    context: context,
+    builder: (_) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: Text(t.howToUse),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HelpPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: Text(t.privacyPolicy),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PrivacyPolicyPage(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _buildAnimatedButton(
       {required String text,
@@ -514,7 +555,10 @@ class _SplashScreenState extends State<SplashScreen>
     final t = AppLocalizations.of(context)!;
 
     return Scaffold(
-      body: Container(
+     body: Stack(
+      children: [
+
+        Container(
         width: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -638,6 +682,24 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ),
       ),
+     ],  
+	Positioned(
+     top: 40,
+     left: Localizations.localeOf(context).languageCode == 'en'
+        ? 10
+        : null,
+     right: Localizations.localeOf(context).languageCode == 'ar'
+        ? 10
+        : null,
+     child: CircleAvatar(
+       backgroundColor: Colors.white,
+        child: IconButton(
+          icon: const Icon(Icons.settings, color: Colors.green),
+          onPressed: _showSettingsMenu,
+        ),
+      ),
+    ),	
+   ),
     );
   }
 }

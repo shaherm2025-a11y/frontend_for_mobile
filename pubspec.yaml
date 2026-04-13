@@ -64,7 +64,9 @@ flutter:
     - assets/images/books.jpg
     - assets/images/support.jpg
     - assets/images/no_image.png
-   
+    #=========== privacy policy =============
+    - assets/privacy/privacy_ar.html  
+    - assets/privacy/privacy_en.html    
     
     # ========== Database & JSON ==========
     - assets/plantix_final.db

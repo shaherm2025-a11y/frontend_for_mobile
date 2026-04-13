@@ -838,4 +838,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uploading => 'جاري الارسال';
+
+  @override
+  String get settings => 'الإعدادات';
+
+  @override
+  String get howToUse => 'طريقة استخدام التطبيق';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get helpContent =>
+      '1- قم بتصوير ورقة النبات أو رفع صورة.\n\n2- احصل على التشخيص باستخدام الذكاء الاصطناعي.\n\n3- يمكنك إرسال استفسار للخبراء.\n\n4- تابع الإشعارات لمعرفة الردود.\n\n5- تصفح مكتبة الأمراض الزراعية.';
 }

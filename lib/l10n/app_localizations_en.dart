@@ -814,4 +814,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploading => 'upload file';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get howToUse => 'How to use the app';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get helpContent =>
+      '1- Take or upload a plant image.\n\n2- Get AI-based diagnosis.\n\n3- Ask agricultural experts.\n\n4- Check notifications for replies.\n\n5- Browse plant diseases library.';
 }

@@ -1603,6 +1603,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'upload file'**
   String get uploading;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @howToUse.
+  ///
+  /// In en, this message translates to:
+  /// **'How to use the app'**
+  String get howToUse;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @helpContent.
+  ///
+  /// In en, this message translates to:
+  /// **'1- Take or upload a plant image.\n\n2- Get AI-based diagnosis.\n\n3- Ask agricultural experts.\n\n4- Check notifications for replies.\n\n5- Browse plant diseases library.'**
+  String get helpContent;
 }
 
 class _AppLocalizationsDelegate
