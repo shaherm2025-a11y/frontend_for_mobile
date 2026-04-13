@@ -550,160 +550,175 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+@override
+Widget build(BuildContext context) {
+  final t = AppLocalizations.of(context)!;
 
-    return Scaffold(
-     body: Stack(
+  return Scaffold(
+    body: Stack(
       children: [
 
+        // 🔹 الخلفية + المحتوى
         Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFE8F5E9), Color(0xFFFFFFFF)], // 🌿 خلفية مريحة
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFE8F5E9), Color(0xFFFFFFFF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // ✅ Logo
-                    CircleAvatar(
-                      radius: 70,
-                      backgroundColor: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Image.asset("assets/logo.png", fit: BoxFit.contain),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
 
-                    // ✅ Welcome text
-                    Text(
-                      t.welcomeText,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                        letterSpacing: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 35),
-
-                    // ✅ Buttons with slide animation
-                    _buildAnimatedButton(
-                      text: t.diagnosePlant,
-                      icon: Icons.search,
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const DiagnosisPage()));
-                      },
-                      animation: _slideAnimations[0],
-                    ),
-                    _buildAnimatedButton(
-                      text: t.contactExperts,
-                      icon: Icons.person,
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const FarmerQuestionsPage()));
-                      },
-                      animation: _slideAnimations[1],
-                    ),
-                    _buildAnimatedButton(
-                      text: t.pestsDiseases, // ✅ مترجم بدل النص الثابت
-                      icon: Icons.bug_report,
-                      onPressed: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const PestsDiseasesPage()),
-                        );
-                        },
-                      animation: _slideAnimations[2],
-                    ),
-
-                    _buildAnimatedButton(
-                      text: t.awarenessGuide,
-                      icon: Icons.menu_book,
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => AwarenessPage()));
-                      },
-                      animation: _slideAnimations[3],
-                    ),
-                    _buildAnimatedButton(
-                      text: t.changeLanguage,
-                      icon: Icons.language,
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                            title: Text(t.changeLanguage),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListTile(
-                                  leading: const Icon(Icons.language),
-                                  title: const Text('English'),
-                                  onTap: () {
-                                    widget.onLocaleChange(const Locale('en'));
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.language),
-                                  title: const Text('العربية'),
-                                  onTap: () {
-                                    widget.onLocaleChange(const Locale('ar'));
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
+                      // ✅ Logo
+                      CircleAvatar(
+                        radius: 70,
+                        backgroundColor: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Image.asset(
+                            "assets/logo.png",
+                            fit: BoxFit.contain,
                           ),
-                        );
-                      },
-                      animation: _slideAnimations[4],
-                    ),
-                  ],
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+
+                      // ✅ Welcome text
+                      Text(
+                        t.welcomeText,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                          letterSpacing: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 35),
+
+                      // ✅ Buttons
+                      _buildAnimatedButton(
+                        text: t.diagnosePlant,
+                        icon: Icons.search,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const DiagnosisPage()),
+                          );
+                        },
+                        animation: _slideAnimations[0],
+                      ),
+
+                      _buildAnimatedButton(
+                        text: t.contactExperts,
+                        icon: Icons.person,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const FarmerQuestionsPage()),
+                          );
+                        },
+                        animation: _slideAnimations[1],
+                      ),
+
+                      _buildAnimatedButton(
+                        text: t.pestsDiseases,
+                        icon: Icons.bug_report,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const PestsDiseasesPage()),
+                          );
+                        },
+                        animation: _slideAnimations[2],
+                      ),
+
+                      _buildAnimatedButton(
+                        text: t.awarenessGuide,
+                        icon: Icons.menu_book,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => AwarenessPage()),
+                          );
+                        },
+                        animation: _slideAnimations[3],
+                      ),
+
+                      _buildAnimatedButton(
+                        text: t.changeLanguage,
+                        icon: Icons.language,
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: Text(t.changeLanguage),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: const Icon(Icons.language),
+                                    title: const Text('English'),
+                                    onTap: () {
+                                      widget.onLocaleChange(const Locale('en'));
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.language),
+                                    title: const Text('العربية'),
+                                    onTap: () {
+                                      widget.onLocaleChange(const Locale('ar'));
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        animation: _slideAnimations[4],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-	 
-   ),
-    Positioned(
-     top: 40,
-     left: Localizations.localeOf(context).languageCode == 'en'
-        ? 10
-        : null,
-     right: Localizations.localeOf(context).languageCode == 'ar'
-        ? 10
-        : null,
-     child: CircleAvatar(
-       backgroundColor: Colors.white,
-        child: IconButton(
-          icon: const Icon(Icons.settings, color: Colors.green),
-          onPressed: _showSettingsMenu,
+
+        // 🔹 زر الإعدادات (فوق)
+        Positioned(
+          top: 40,
+          left: Localizations.localeOf(context).languageCode == 'en' ? 10 : null,
+          right: Localizations.localeOf(context).languageCode == 'ar' ? 10 : null,
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: IconButton(
+              icon: const Icon(Icons.settings, color: Colors.green),
+              onPressed: _showSettingsMenu,
+            ),
+          ),
         ),
-      ),
-    ),	
-     ],  
-	
-    );
-  }
+
+      ],
+    ),
+  );
+}
 }
 
 
