@@ -30,7 +30,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
 import 'privacy_policy_page.dart';
 import 'help_page.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 
@@ -682,8 +682,7 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ),
       ),
-     ],  
-	Positioned(
+	  Positioned(
      top: 40,
      left: Localizations.localeOf(context).languageCode == 'en'
         ? 10
@@ -700,6 +699,8 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     ),	
    ),
+     ],  
+	
     );
   }
 }
