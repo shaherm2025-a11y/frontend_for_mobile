@@ -15,7 +15,7 @@ class HelpPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Text(
-          t.helpContent,
+          t.appUsageDetails,
           style: const TextStyle(
             fontSize: 16,
             height: 1.7,

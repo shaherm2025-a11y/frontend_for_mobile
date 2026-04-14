@@ -346,12 +346,8 @@
   "howToUse": "How to use the app",
   "privacyPolicy": "Privacy Policy",
 
-  "helpContent": "1- Take or upload a plant image.\n\n2- Get AI-based diagnosis.\n\n3- Ask agricultural experts.\n\n4- Check notifications for replies.\n\n5- Browse plant diseases library."
-
-
+  "appUsageDetails": "The main screen contains five buttons:\n\n1- Plant Diagnosis\n- Opens AI diagnosis using a plant leaf image.\n- The app may request location access to display weather and temperature.\n- To diagnose: choose image → camera or gallery.\n- Using a pre-saved image is recommended.\n- You can send the same image to experts for verification.\n- Results appear instantly with confidence and treatment.\n\n2- Ask Experts\n- Send questions to verify diagnosis or ask about plant issues.\n- Supports text, image, and voice messages.\n- Write in \"Enter your message\" field.\n- Add image via \"Pick Image\".\n- Record voice and stop when finished.\n- You can review or delete audio before sending.\n- Sent questions appear under \"Pending\".\n- After reply, they move to \"Answered\" with notification.\n\n3- Pests & Diseases\n- Contains detailed disease database.\n- Includes symptoms, causes, treatment, prevention.\n- Select crop → stage → disease.\n\n4- Awareness Guide\n- Provides short educational agricultural content.\n\n5- Change Language\n- Supports Arabic and English.\n- Applies to entire app.\n\nSettings Button (top of screen):\n- Contains Privacy Policy and App Usage Guide."
   
-
-
 }
 
 
