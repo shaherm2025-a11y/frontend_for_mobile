@@ -825,6 +825,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicy => 'Privacy Policy';
 
   @override
-  String get appUsageDetails =>
-      'The main screen contains five buttons:\n\n1- Plant Diagnosis\n- Opens AI diagnosis using a plant leaf image.\n- The app may request location access to display weather and temperature.\n- To diagnose: choose image → camera or gallery.\n- Using a pre-saved image is recommended.\n- You can send the same image to experts for verification.\n- Results appear instantly with confidence and treatment.\n\n2- Ask Experts\n- Send questions to verify diagnosis or ask about plant issues.\n- Supports text, image, and voice messages.\n- Write in \"Enter your message\" field.\n- Add image via \"Pick Image\".\n- Record voice and stop when finished.\n- You can review or delete audio before sending.\n- Sent questions appear under \"Pending\".\n- After reply, they move to \"Answered\" with notification.\n\n3- Pests & Diseases\n- Contains detailed disease database.\n- Includes symptoms, causes, treatment, prevention.\n- Select crop → stage → disease.\n\n4- Awareness Guide\n- Provides short educational agricultural content.\n\n5- Change Language\n- Supports Arabic and English.\n- Applies to entire app.\n\nSettings Button (top of screen):\n- Contains Privacy Policy and App Usage Guide.';
+  String get howToUseApp => 'How the App Works';
+
+  @override
+  String get help_intro => 'The main screen consists of five buttons:';
+
+  @override
+  String get help_diagnosis =>
+      'Opens AI diagnosis using plant images.\n\nThe app may request location permission.\n\nTo diagnose:\n- Pick image\n- Camera or gallery (recommended)\n\nYou can send the same image to experts.\n\nResult appears instantly with accuracy and treatment.';
+
+  @override
+  String get help_experts =>
+      'Farmers can send:\n- Text\n- Image\n- Voice\n\nYou can review or delete audio.\n\nAfter sending:\n- Appears in pending\n- Notification on reply\n- Reply appears (text or audio)';
+
+  @override
+  String get help_pests =>
+      'Contains detailed info:\n\nSymptoms - Causes - Organic control - Chemical control - Prevention\n\nSelect crop → stage → disease.';
+
+  @override
+  String get help_awareness => 'Provides short awareness content.';
+
+  @override
+  String get help_language =>
+      'Supports Arabic and English with instant switch.';
+
+  @override
+  String get help_settings =>
+      'Settings button to open privacy policy and help.';
 }
