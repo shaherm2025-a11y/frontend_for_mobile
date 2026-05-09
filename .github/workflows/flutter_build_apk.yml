@@ -1,4 +1,4 @@
-name: Flutter Build APK
+name: Build AAB
 
 on:
   push:
@@ -34,11 +34,12 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/key.jks
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build AAB
+        run: flutter build appbundle --release
 
-      - name: Upload APK
+
+      - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: app-release
+          path: build/app/outputs/bundle/release/app-release.aab
