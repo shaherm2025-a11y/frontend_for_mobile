@@ -31,7 +31,7 @@ import 'package:dio/dio.dart';
 import 'privacy_policy_page.dart';
 import 'help_page.dart';
 import 'package:plant_diagnosis_app/l10n/app_localizations.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -1630,16 +1630,43 @@ class AwarenessPage extends StatelessWidget {
               ],
             ),
           ),
-          _buildTile(
-            icon: Icons.menu_book,
-            title: t.resources,
-            imagePath: 'assets/images/books.jpg',
-            content: [
-              'FAO: https://www.fao.org',
-              'PlantVillage: https://plantvillage.psu.edu',
-              t.youtubeChannels,
-            ],
+          _buildTileWithWidget(
+  icon: Icons.menu_book,
+  title: t.resources,
+  imagePath: 'assets/images/books.jpg',
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      InkWell(
+        onTap: () => _openUrl('https://www.fao.org'),
+        child: const Text(
+          'FAO: https://www.fao.org',
+          style: TextStyle(
+            color: Colors.blue,
+            decoration: TextDecoration.underline,
           ),
+        ),
+      ),
+
+      const SizedBox(height: 8),
+
+      InkWell(
+        onTap: () => _openUrl('https://plantvillage.psu.edu'),
+        child: const Text(
+          'PlantVillage: https://plantvillage.psu.edu',
+          style: TextStyle(
+            color: Colors.blue,
+            decoration: TextDecoration.underline,
+          ),
+        ),
+      ),
+
+      const SizedBox(height: 8),
+
+      Text(t.youtubeChannels),
+    ],
+  ),
+),
           _buildTile(
             icon: Icons.support_agent,
             title: t.needHelp,
@@ -1774,6 +1801,16 @@ class AwarenessPage extends StatelessWidget {
       child: Text(text, style: const TextStyle(fontSize: 15)),
     );
   }
+  Future<void> _openUrl(String url) async {
+  final Uri uri = Uri.parse(url);
+
+  if (!await launchUrl(
+    uri,
+    mode: LaunchMode.externalApplication,
+  )) {
+    throw Exception('Could not launch $url');
+  }
+}
 }
 
 
