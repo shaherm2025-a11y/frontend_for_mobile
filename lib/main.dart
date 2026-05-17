@@ -1709,30 +1709,55 @@ class AwarenessPage extends StatelessWidget {
   }
 
   Widget _diseaseTable(AppLocalizations t) {
-    return Table(
-      border: TableBorder.all(color: Colors.grey),
-      columnWidths: const {
-        0: FractionColumnWidth(0.25),
-        1: FractionColumnWidth(0.35),
-        2: FractionColumnWidth(0.4),
-      },
-      children: [
-        TableRow(
-          decoration: const BoxDecoration(color: Color(0xFFDEFDE0)),
-          children: [
-            _tableCell(t.disease),
-            _tableCell(t.symptoms),
-            _tableCell(t.treatment),
-          ],
+  return Table(
+    border: TableBorder.all(color: Colors.grey),
+    columnWidths: const {
+      0: FractionColumnWidth(0.25),
+      1: FractionColumnWidth(0.35),
+      2: FractionColumnWidth(0.4),
+    },
+    children: [
+      TableRow(
+        decoration: const BoxDecoration(
+          color: Color(0xFFDEFDE0),
         ),
-        _diseaseRow('البياض الدقيقي', 'طبقة بيضاء على الأوراق', 'تهوية جيدة + رش بالكبريت'),
-        _diseaseRow('اللفحة المتأخرة', 'بقع سوداء على الطماطم', 'مبيد نحاسي + إزالة المصاب'),
-        _diseaseRow('التعفن الجذري', 'اصفرار وموت تدريجي', 'تحسين التصريف + تقليل الري'),
-        _diseaseRow('المن', 'حشرات صغيرة تمتص العصارة', 'بخاخ النيم + ماء وصابون'),
-      ],
-    );
-  }
+        children: [
+          _tableCell(t.disease),
+          _tableCell(t.symptoms),
+          _tableCell(t.treatment),
+        ],
+      ),
 
+      // Powdery mildew
+      _diseaseRow(
+        t.powderyMildew,
+        t.powderyMildewSymptoms,
+        t.powderyMildewTreatment,
+      ),
+
+      // Late blight
+      _diseaseRow(
+        t.lateBlight,
+        t.lateBlightSymptoms,
+        t.lateBlightTreatment,
+      ),
+
+      // Root rot
+      _diseaseRow(
+        t.rootRot,
+        t.rootRotSymptoms,
+        t.rootRotTreatment,
+      ),
+
+      // Aphids
+      _diseaseRow(
+        t.aphids,
+        t.aphidsSymptoms,
+        t.aphidsTreatment,
+      ),
+    ],
+  );
+}
   TableRow _diseaseRow(String a, String b, String c) {
     return TableRow(
       children: [
