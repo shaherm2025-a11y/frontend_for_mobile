@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeText.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to the Plant Diagnosis App!'**
+  /// **'Welcome to the Smart Agricultural Assistant App!'**
   String get welcomeText;
 
   /// No description provided for @diagnosePlant.

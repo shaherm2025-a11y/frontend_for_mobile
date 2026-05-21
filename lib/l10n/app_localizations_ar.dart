@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get welcomeText => 'مرحبًا بك في تطبيق تشخيص النباتات!';
+  String get welcomeText => 'مرحباً بك في تطبيق المساعد الزراعي الذكي';
 
   @override
   String get diagnosePlant => 'تشخيص النبات';
