@@ -1,40 +1,21 @@
 {
   "project_info": {
-    "project_number": "160545783993",
-    "project_id": "expertsapp-6d278",
-    "storage_bucket": "expertsapp-6d278.firebasestorage.app"
+    "project_number": "365358715803",
+    "project_id": "testmyapp-b265b",
+    "storage_bucket": "testmyapp-b265b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:160545783993:android:5bd6614c6da1a6b1c0db68",
+        "mobilesdk_app_id": "1:365358715803:android:9719856a3246ee5ab2073e",
         "android_client_info": {
-          "package_name": "com.example.experts_app"
+          "package_name": "com.mohammed.SmartAgriAssistant"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD29GA2ZkJUOq0J_AoVXLN1U_yYyR4wei4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:160545783993:android:6268f002d420ff1ec0db68",
-        "android_client_info": {
-          "package_name": "com.example.plant_diagnosis_fixed"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD29GA2ZkJUOq0J_AoVXLN1U_yYyR4wei4"
+          "current_key": "AIzaSyDvx4j9eNGU1fm1yaotZqJLzNoYC6QogIk"
         }
       ],
       "services": {

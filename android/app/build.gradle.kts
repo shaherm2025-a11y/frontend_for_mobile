@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.plant_diagnosis_fixed"
+    namespace = "com.mohammed.SmartAgriAssistant"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
-        applicationId = "com.example.plant_diagnosis_fixed"
+        applicationId = "com.mohammed.SmartAgriAssistant"
         minSdk = 21
         targetSdk = 36
         versionCode = 1
