@@ -1200,7 +1200,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
 
       final position = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
-      accuracy: LocationAccuracy.high,
+      accuracy: LocationAccuracy.low,
       ),
       );
 
