@@ -1056,6 +1056,26 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
                                   Text("${loc.treatment}: $_treatment",
                                       style: const TextStyle(
                                           fontSize: 16, color: Colors.black87)),
+								const SizedBox(height: 15),
+
+                                Center(
+                                child: ElevatedButton.icon(
+                                icon: const Icon(Icons.support_agent),
+                                label: const Text("استشارة خبير"),
+                                style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                 ),
+                                onPressed: () {
+                                Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                builder: (context) => const FarmerQuestionsPage(),
+                                ),
+                                );
+                                },
+                                ), 
+                                ),		  
                               ],
                             ),
                           ),
