@@ -2849,6 +2849,8 @@ Widget build(BuildContext context) {
 
   return DefaultTabController(
     length: 2,
+	initialIndex: 1, // فتح تبويب غير المجابة افتراضياً
+
     child: Scaffold(
       appBar: AppBar(
         title: Text(loc.farmer_page_title),
