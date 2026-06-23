@@ -1852,6 +1852,7 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   bool _recording = false;
   final AudioRecorder _recorder = AudioRecorder();
   final AudioPlayer _audioPlayer = AudioPlayer(); // ����� ��� ������
+  Map<String, dynamic>? _replyToQuestion;
   
   bool _loading = false;
   double _progress = 0;
@@ -2046,6 +2047,7 @@ Future<void> _fetchQuestions() async {
         "id": q["id"],
         "question": q["question"],
         "answer": q["answer"],
+		"parent_question_id": q["parent_question_id"],
 
         "image_path": existing?["image_path"],
         "question_audio_path": existing?["question_audio_path"],
@@ -2348,7 +2350,9 @@ showDialog(
       "question": _questionController.text.trim().isEmpty
        ? " "
        : _questionController.text.trim(),
-    });
+       if (_replyToQuestion != null)
+         "parent_question_id":
+          _replyToQuestion!["id"].toString(),    });
 
     if (imageBytes != null) {
       formData.files.add(
@@ -2434,6 +2438,7 @@ showDialog(
           "id": questionId,
           "question": _questionController.text.trim(),
           "answer": "",
+		  "parent_question_id": _replyToQuestion?["id"],
           "image_path": imagePath.isNotEmpty ? imagePath : "",
           "question_audio_path": audioPath,
           "answer_audio_path": null,
@@ -2445,6 +2450,8 @@ showDialog(
       
 	  if (!mounted) return;
       setState(() {
+	    _replyToQuestion = null;
+
         _imageFile = null;
         _webImage = null;
         _audioQuestionFile = null;
@@ -2599,6 +2606,92 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+		  if (q["parent_question_id"] != null)
+
+  FutureBuilder<Map<String, dynamic>?>(
+    future: _getParentQuestion(
+        q["parent_question_id"]),
+    builder: (context, snapshot) {
+
+      if (!snapshot.hasData) {
+        return const SizedBox();
+      }
+
+      final parent = snapshot.data!;
+
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(
+          bottom: 12,
+        ),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.green.shade50,
+          borderRadius:
+              BorderRadius.circular(10),
+          border: Border(
+            right: BorderSide(
+              color: Colors.green,
+              width: 4,
+            ),
+          ),
+        ),
+
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+          children: [
+
+            const Row(
+              children: [
+
+                Icon(
+                  Icons.reply,
+                  color: Colors.green,
+                  size: 18,
+                ),
+
+                SizedBox(width: 6),
+
+                Text(
+                  "متابعة لاستفسار سابق",
+                  style: TextStyle(
+                    fontWeight:
+                        FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            if ((parent["answer"] ?? "")
+                .toString()
+                .isNotEmpty)
+
+              Text(
+                parent["answer"],
+                maxLines: 3,
+                overflow:
+                    TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.black87,
+                ),
+              )
+            else
+
+              Text(
+                parent["question"] ?? "",
+                maxLines: 3,
+                overflow:
+                    TextOverflow.ellipsis,
+              ),
+          ],
+        ),
+      );
+    },
+  ),
 
           // ======================
           // 🟢 نص السؤال
@@ -2837,6 +2930,19 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
                   ),
                 ),
               ),
+			  ElevatedButton.icon(
+               icon: const Icon(Icons.reply),
+               label: const Text("متابعة الاستفسار"),
+               onPressed: () {
+
+              setState(() {
+             _replyToQuestion = q;
+             });
+
+             DefaultTabController.of(context)?.animateTo(1);
+
+             },
+            )
           ],
         ],
       ),
@@ -2897,6 +3003,62 @@ Widget build(BuildContext context) {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+					  if (_replyToQuestion != null)
+  Container(
+    width: double.infinity,
+    margin: const EdgeInsets.only(bottom: 10),
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: Colors.green.shade50,
+      border: Border(
+        right: BorderSide(
+          color: Colors.green,
+          width: 4,
+        ),
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
+      children: [
+
+        Row(
+          children: [
+
+            const Icon(Icons.reply),
+
+            const SizedBox(width: 10),
+
+            const Expanded(
+              child: Text(
+                "متابعة لرد الخبير",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                setState(() {
+                  _replyToQuestion = null;
+                });
+              },
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 8),
+
+        Text(
+          _replyToQuestion!["answer"] ?? "",
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    ),
+  ),
 
                       // ===== إدخال السؤال =====
                       TextField(

@@ -18,7 +18,7 @@ class LocalDB {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE questions (
@@ -33,10 +33,25 @@ class LocalDB {
 			answer_has_audio INTEGER,
 			answer_image_path TEXT,
 			answer_image INTEGER,
+		    parent_question_id INTEGER,
             status INTEGER
           )
         ''');
       },
+	   onUpgrade: (db, oldVersion, newVersion) async {
+
+    if (oldVersion < 2) {
+
+      await db.execute(
+        "ALTER TABLE questions ADD COLUMN parent_question_id INTEGER"
+      );
+
+      await db.execute(
+        "ALTER TABLE questions ADD COLUMN parent_answer TEXT"
+      );
+    }
+  },
+);
     );
   }
 
@@ -60,6 +75,8 @@ class LocalDB {
         "question": data["question"],
         "answer": data["answer"],
         "status": data["status"],
+		"parent_question_id": data["parent_question_id"],
+        "parent_answer": data["parent_answer"],
       },
       where: "id = ?",
       whereArgs: [data["id"]],
