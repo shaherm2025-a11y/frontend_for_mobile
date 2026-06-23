@@ -12,49 +12,42 @@ class LocalDB {
     return _db!;
   }
 
-  static Future<Database> _initDB() async {
-    Directory dir = await getApplicationDocumentsDirectory();
-    String path = join(dir.path, "farmer_local.db");
+ static Future<Database> _initDB() async {
+  Directory dir = await getApplicationDocumentsDirectory();
+  String path = join(dir.path, "farmer_local.db");
 
-    return await openDatabase(
-      path,
-      version: 2,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE questions (
-            id INTEGER PRIMARY KEY,
-            question TEXT,
-            answer TEXT,
-            image_path TEXT,
-            question_audio_path TEXT,
-            answer_audio_path TEXT,
-			has_image INTEGER,
-			question_has_audio INTEGER,
-			answer_has_audio INTEGER,
-			answer_image_path TEXT,
-			answer_image INTEGER,
-		    parent_question_id INTEGER,
-            status INTEGER
-          )
-        ''');
-      },
-	   onUpgrade: (db, oldVersion, newVersion) async {
+  return await openDatabase(
+    path,
+    version: 2,
+    onCreate: (db, version) async {
+      await db.execute('''
+        CREATE TABLE questions (
+          id INTEGER PRIMARY KEY,
+          question TEXT,
+          answer TEXT,
+          image_path TEXT,
+          question_audio_path TEXT,
+          answer_audio_path TEXT,
+          has_image INTEGER,
+          question_has_audio INTEGER,
+          answer_has_audio INTEGER,
+          answer_image_path TEXT,
+          answer_image INTEGER,
+          parent_question_id INTEGER,
+          status INTEGER
+        )
+      ''');
+    },
+    onUpgrade: (db, oldVersion, newVersion) async {
+      if (oldVersion < 2) {
+        await db.execute(
+          "ALTER TABLE questions ADD COLUMN parent_question_id INTEGER",
+        );
 
-    if (oldVersion < 2) {
-
-      await db.execute(
-        "ALTER TABLE questions ADD COLUMN parent_question_id INTEGER"
-      );
-
-      await db.execute(
-        "ALTER TABLE questions ADD COLUMN parent_answer TEXT"
-      );
-    }
-  },
-);
-    );
-  }
-
+      }
+    },
+  );
+}
  static Future<void> insertQuestion(Map<String, dynamic> data) async {
   final db = await database;
 

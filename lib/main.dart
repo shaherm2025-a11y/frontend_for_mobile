@@ -1906,6 +1906,14 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
     // سيتم إرسالها لاحقاً عند الضغط على زر "إرسال"
   }
 }
+Future<Map<String, dynamic>?> _getParentQuestion(
+    int? parentQuestionId) async {
+
+  if (parentQuestionId == null) return null;
+
+  return await LocalDB.getQuestionById(
+      parentQuestionId);
+}
 Future<void> _saveLastPage() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString("last_page", "questions");
