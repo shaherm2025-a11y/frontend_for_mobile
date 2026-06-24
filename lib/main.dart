@@ -2979,10 +2979,6 @@ Widget build(BuildContext context) {
   final loc = AppLocalizations.of(context)!;
 
   return Scaffold(
-    length: 2,
-	initialIndex: 1, // فتح تبويب غير المجابة افتراضياً
-
-    child: Scaffold(
       appBar: AppBar(
         title: Text(loc.farmer_page_title),
         backgroundColor: Colors.green[700],
@@ -3208,6 +3204,6 @@ Widget build(BuildContext context) {
                 ),
               ],
             ),
-    ),
+    );
 }
 }
