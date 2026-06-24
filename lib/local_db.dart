@@ -69,7 +69,6 @@ class LocalDB {
         "answer": data["answer"],
         "status": data["status"],
 		"parent_question_id": data["parent_question_id"],
-        "parent_answer": data["parent_answer"],
       },
       where: "id = ?",
       whereArgs: [data["id"]],
