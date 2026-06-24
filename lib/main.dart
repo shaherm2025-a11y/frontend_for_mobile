@@ -1844,7 +1844,10 @@ class FarmerQuestionsPage extends StatefulWidget {
   State<FarmerQuestionsPage> createState() => _FarmerQuestionsPageState();
 }
 
-class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
+class _FarmerQuestionsPageState
+    extends State<FarmerQuestionsPage>
+    with SingleTickerProviderStateMixin {
+
   File? _imageFile;
   Uint8List? _webImage;
   
@@ -1862,14 +1865,28 @@ class _FarmerQuestionsPageState extends State<FarmerQuestionsPage> {
   List<Map<String, dynamic>> answered = [];
   List<Map<String, dynamic>> unanswered = [];
   int? _farmerId;
+  late TabController _tabController;
+
   
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(
+     length: 2,
+     vsync: this,
+     initialIndex: 1,
+  );
+
     _loadFarmerIdAndData();
 	_recoverLostData();
 	
   }
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
  Future<void> _recoverLostData() async {
   final LostDataResponse response =
       await picker.retrieveLostData();
@@ -2947,7 +2964,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
              _replyToQuestion = q;
              });
 
-             DefaultTabController.of(context)?.animateTo(1);
+             _tabController.animateTo(1);
 
              },
             )
@@ -2961,7 +2978,7 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 Widget build(BuildContext context) {
   final loc = AppLocalizations.of(context)!;
 
-  return DefaultTabController(
+  return Scaffold(
     length: 2,
 	initialIndex: 1, // فتح تبويب غير المجابة افتراضياً
 
@@ -2970,6 +2987,7 @@ Widget build(BuildContext context) {
         title: Text(loc.farmer_page_title),
         backgroundColor: Colors.green[700],
         bottom: TabBar(
+		  controller: _tabController,
           tabs: [
             Tab(text: loc.tab_answered),
             Tab(text: loc.tab_unanswered),
@@ -2984,6 +3002,7 @@ Widget build(BuildContext context) {
               child: CircularProgressIndicator(color: Colors.green),
             )
           : TabBarView(
+		      controller: _tabController,
               children: [
 
                 // ================== التبويب الأول (المجابة) ==================
@@ -3190,6 +3209,5 @@ Widget build(BuildContext context) {
               ],
             ),
     ),
-  );
 }
 }
