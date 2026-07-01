@@ -2073,6 +2073,8 @@ Future<void> _fetchQuestions() async {
         "question": q["question"],
         "answer": q["answer"],
 		"parent_question_id": q["parent_question_id"],
+		"answer_image": q["answer_has_image"],
+        "answer_image_path": existing?["answer_image_path"],
 
         "image_path": existing?["image_path"],
         "question_audio_path": existing?["question_audio_path"],
@@ -2467,6 +2469,12 @@ showDialog(
           "image_path": imagePath.isNotEmpty ? imagePath : "",
           "question_audio_path": audioPath,
           "answer_audio_path": null,
+		  "answer_image_path": null,
+		  "has_image": imagePath.isNotEmpty ? 1 : 0,
+		  "question_has_audio": audioPath != null ? 1 : 0,
+		  "answer_has_audio": 0,
+		  "answer_image": 0,
+		  
           "status": 0
         });
       }
@@ -2635,10 +2643,12 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
   FutureBuilder<Map<String, dynamic>?>(
     future: _getParentQuestion(
-        q["parent_question_id"]),
+      q["parent_question_id"],
+    ),
     builder: (context, snapshot) {
 
-      if (!snapshot.hasData) {
+      if (!snapshot.hasData ||
+          snapshot.data == null) {
         return const SizedBox();
       }
 
@@ -2654,14 +2664,10 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
           color: Colors.green.shade50,
           borderRadius:
               BorderRadius.circular(10),
-          border: Border(
-            right: BorderSide(
-              color: Colors.green,
-              width: 4,
-            ),
+          border: Border.all(
+            color: Colors.green.shade300,
           ),
         ),
-
         child: Column(
           crossAxisAlignment:
               CrossAxisAlignment.start,
@@ -2669,15 +2675,12 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
             const Row(
               children: [
-
                 Icon(
                   Icons.reply,
-                  color: Colors.green,
                   size: 18,
+                  color: Colors.green,
                 ),
-
                 SizedBox(width: 6),
-
                 Text(
                   "متابعة لاستفسار سابق",
                   style: TextStyle(
@@ -2689,29 +2692,100 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
               ],
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
 
             if ((parent["answer"] ?? "")
                 .toString()
+                .trim()
                 .isNotEmpty)
-
               Text(
                 parent["answer"],
                 maxLines: 3,
                 overflow:
                     TextOverflow.ellipsis,
                 style: const TextStyle(
-                  color: Colors.black87,
+                  fontSize: 13,
                 ),
-              )
-            else
-
-              Text(
-                parent["question"] ?? "",
-                maxLines: 3,
-                overflow:
-                    TextOverflow.ellipsis,
               ),
+
+            const SizedBox(height: 8),
+
+            Row(
+              children: [
+
+                if (parent["answer_image_path"] != null &&
+                    parent["answer_image_path"]
+                        .toString()
+                        .isNotEmpty &&
+                    File(parent["answer_image_path"])
+                        .existsSync())
+                  GestureDetector(
+                    onTap: () {
+                      _showFullImage(
+                        parent[
+                            "answer_image_path"],
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius:
+                          BorderRadius.circular(
+                              8),
+                      child: Image.file(
+                        File(
+                          parent[
+                              "answer_image_path"],
+                        ),
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                if (parent["answer_image_path"] != null &&
+                    parent["answer_image_path"]
+                        .toString()
+                        .isNotEmpty &&
+                    File(parent["answer_image_path"])
+                        .existsSync())
+                  const SizedBox(width: 10),
+
+                if (parent["answer_audio_path"] != null &&
+                    parent["answer_audio_path"]
+                        .toString()
+                        .isNotEmpty &&
+                    File(parent["answer_audio_path"])
+                        .existsSync())
+                  IconButton(
+                    icon: const Icon(
+                      Icons.play_circle_fill,
+                      color: Colors.green,
+                      size: 36,
+                    ),
+                    onPressed: () async {
+
+                      try {
+
+                        await _audioPlayer.stop();
+
+                        await _audioPlayer.play(
+                          DeviceFileSource(
+                            parent[
+                                "answer_audio_path"],
+                          ),
+                        );
+
+                      } catch (e) {
+
+                        debugPrint(
+                          "خطأ تشغيل صوت الاقتباس: $e",
+                        );
+
+                      }
+                    },
+                  ),
+              ],
+            ),
           ],
         ),
       );
