@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<key>NSCameraUsageDescription</key>
-<string>نحتاج إلى الكاميرا لتصوير النبات وتشخيص الأمراض.</string>
-
-<key>NSPhotoLibraryUsageDescription</key>
-<string>نحتاج للوصول إلى الصور لاختيار صورة النبات.</string>
-
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>نحتاج لحفظ الصور داخل الجهاز.</string>
-
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>نحتاج إلى موقعك لعرض الطقس الزراعي.</string>
-
-<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-<string>نحتاج إلى الموقع أثناء استخدام التطبيق.</string>
-
-<key>NSMicrophoneUsageDescription</key>
-<string>نحتاج إلى الميكروفون لتسجيل الأسئلة الصوتية.</string>
 <dict>
+    <key>NSCameraUsageDescription</key>
+    <string>نحتاج إلى الكاميرا لتصوير النبات وتشخيص الأمراض.</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>نحتاج للوصول إلى الصور لاختيار صورة النبات.</string>
+
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>نحتاج لحفظ الصور داخل الجهاز.</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
