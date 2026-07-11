@@ -19,7 +19,7 @@ import 'utils/device_id_helper.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-
+import 'firebase_options.dart';
 
 import 'package:record/record.dart';
 
@@ -30,7 +30,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
 import 'privacy_policy_page.dart';
 import 'help_page.dart';
-import 'package:plant_diagnosis_app/l10n/app_localizations.dart';
+//import 'package:plant_diagnosis_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -261,12 +261,16 @@ Future<int?> ensureAutoLogin() async {
 
 
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
 }
   
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
 
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
   
