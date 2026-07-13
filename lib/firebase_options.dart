@@ -17,23 +17,26 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
+        return ios;
+      case TargetPlatform.macOS:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
+          'DefaultFirebaseOptions have not been configured for macos - '
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
-      case TargetPlatform.macOS:
-        return macos;
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -46,30 +49,20 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCVQaJYhRmAWPBtWQF9h3iCXvYEdi_NhDs',
-    appId: '1:160545783993:web:ecddc9c640a6e7eac0db68',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyD29GA2ZkJUOq0J_AoVXLN1U_yYyR4wei4',
+    appId: '1:160545783993:android:8e4bc0399f0caf02c0db68',
     messagingSenderId: '160545783993',
     projectId: 'expertsapp-6d278',
-    authDomain: 'expertsapp-6d278.firebaseapp.com',
     storageBucket: 'expertsapp-6d278.firebasestorage.app',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
+  static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBmkW7euMAKa3_34_AQUpRLxb2ashCToe4',
-    appId: '1:160545783993:ios:37de0d023a38315cc0db68',
+    appId: '1:160545783993:ios:134467c6baefee2ec0db68',
     messagingSenderId: '160545783993',
     projectId: 'expertsapp-6d278',
     storageBucket: 'expertsapp-6d278.firebasestorage.app',
-    iosBundleId: 'com.example.plantDiagnosisFixed',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCVQaJYhRmAWPBtWQF9h3iCXvYEdi_NhDs',
-    appId: '1:160545783993:web:baf2ec1c12533f77c0db68',
-    messagingSenderId: '160545783993',
-    projectId: 'expertsapp-6d278',
-    authDomain: 'expertsapp-6d278.firebaseapp.com',
-    storageBucket: 'expertsapp-6d278.firebasestorage.app',
+    iosBundleId: 'com.mohammed.SmartAgriAssistant.RunnerTests',
   );
 }

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mohammed.SmartAgriAssistant"
-        minSdk = 21
+        minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = 5
         versionName = "5.0"
