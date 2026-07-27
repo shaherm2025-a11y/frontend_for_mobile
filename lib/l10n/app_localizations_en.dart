@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get welcomeText => 'Welcome to the Smart Agricultural Assistant App!';
+  String get welcomeText => 'Agri Eye App';
 
   @override
   String get diagnosePlant => 'Diagnose Plant';

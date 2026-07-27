@@ -3264,6 +3264,28 @@ Widget build(BuildContext context) {
                         ),
 						child: Text(loc.button_send_question),
                       ),
+					  
+					  const SizedBox(height: 8),
+
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.orange),
+                        ),
+                     child: const Text(
+                    "ويمكنك ايضاً الاتصال بالرقم المجاني للاستفسار: 8000810",
+                   textAlign: TextAlign.center,
+                   style: TextStyle(
+                   fontSize: 15,
+                   fontWeight: FontWeight.bold,
+                   color: Colors.red,
+                      ),
+                    ),
+                   ),
+
 
                       const SizedBox(height: 20),
 
