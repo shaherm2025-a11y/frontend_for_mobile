@@ -37,6 +37,7 @@ dependencies:
   dio: ^5.4.0
   url_launcher: ^6.3.0
   uuid: any
+  package_info_plus: ^9.0.0
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:

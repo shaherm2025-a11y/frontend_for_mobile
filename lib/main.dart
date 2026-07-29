@@ -32,6 +32,8 @@ import 'privacy_policy_page.dart';
 import 'help_page.dart';
 //import 'package:plant_diagnosis_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 
 
 
@@ -63,33 +65,35 @@ class DatabaseHelper {
       isArabic ? 'alternative_treatment' : 'alternative_treatment_en';
 
   
-  static Future<Database> getDatabase() async {
+ static Future<Database> getDatabase() async {
   if (_db != null) return _db!;
+
   if (kIsWeb) throw Exception("Web uses JSON, not SQLite");
 
-  // ������ ������ ������ �������� ��� �������
+  await checkDatabaseUpdate();
+
   String dbPath = await getDatabasesPath();
   String path = p.join(dbPath, "plantix_final.db");
 
-  // �� ������� �����ɿ ��� �� ������ �� assets
   bool exists = await File(path).exists();
+
   if (!exists) {
-    debugPrint("? ��� ����� �������� ���� ���...");
     await Directory(dbPath).create(recursive: true);
 
     ByteData data = await rootBundle.load("assets/plantix_final.db");
-    List<int> bytes =
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    List<int> bytes = data.buffer.asUint8List(
+      data.offsetInBytes,
+      data.lengthInBytes,
+    );
 
     await File(path).writeAsBytes(bytes, flush: true);
-    debugPrint("? ��� ��� ������� �����");
+
+    debugPrint("تم نسخ قاعدة البيانات");
   }
 
-  // ���� �������
   _db = await openDatabase(path, readOnly: false);
   return _db!;
 }
-
 
   // ================= Web JSON =================
   static Map<int, dynamic> _jsonData = {};
@@ -188,6 +192,39 @@ class DatabaseHelper {
               : d['alternative_treatment_en'],
         }).toList();
   }
+  
+  static Future<void> checkDatabaseUpdate() async {
+  if (kIsWeb) return;
+
+  final prefs = await SharedPreferences.getInstance();
+  final packageInfo = await PackageInfo.fromPlatform();
+
+  String currentVersion = packageInfo.version;
+  String savedVersion = prefs.getString("app_version") ?? "";
+
+  if (savedVersion != currentVersion) {
+
+    // إغلاق قاعدة البيانات إذا كانت مفتوحة
+    if (_db != null) {
+      await _db!.close();
+      _db = null;
+    }
+
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, "plantix_final.db");
+
+    if (await File(path).exists()) {
+      await File(path).delete();
+      debugPrint("تم حذف قاعدة البيانات القديمة");
+    }
+
+    // حفظ الإصدار الحالي حتى لا تتكرر العملية
+    await prefs.setString("app_version", currentVersion);
+
+    debugPrint("تم تحديث قاعدة البيانات للإصدار $currentVersion");
+  }
+}
+}
 
 }
 
