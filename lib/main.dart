@@ -226,7 +226,6 @@ class DatabaseHelper {
 }
 }
 
-}
 
 
 Future<void> registerFCMToken(int farmerId) async {
