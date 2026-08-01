@@ -309,7 +309,22 @@ void main() async {
 );
 
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
-  
+  FirebaseMessaging.onMessageOpenedApp.listen(
+  (RemoteMessage message) async {
+
+    if (message.data["type"] == "app_update") {
+
+      final uri = Uri.parse(
+        "https://play.google.com/store/apps/details?id=com.mohammed.SmartAgriAssistant",
+      );
+
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  },
+);
   // ✅ تحميل اللغة أولاً
   final prefs = await SharedPreferences.getInstance();
   String lang = prefs.getString("lang") ?? "ar";
@@ -354,6 +369,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initFCM();
+	checkForUpdate();
   }
   Future<void> _initFCM() async {
 
@@ -373,6 +389,10 @@ class _MyAppState extends State<MyApp> {
     if (token != null) {
       await _sendTokenToServer(farmerId, token);
     }
+	// الاشتراك في إشعارات تحديث التطبيق
+    await FirebaseMessaging.instance.subscribeToTopic(
+       "farmer_app_updates",
+    );
 
     // ����� ������ ��� ����
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
@@ -381,18 +401,56 @@ class _MyAppState extends State<MyApp> {
 
     // ������� ����� ����� ��� �������
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-	  if (!mounted) return;
-      if (message.notification != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              message.notification!.title ?? "����� ����",
-            ),
+
+     if (!mounted) return;
+
+      // إشعار تحديث التطبيق
+      if (message.data["type"] == "app_update") {
+
+         ScaffoldMessenger.of(context).showSnackBar(   
+         SnackBar(
+         content: Text(
+           message.notification?.body ??
+           "يتوفر تحديث جديد للتطبيق",
           ),
-        );
+          duration: const Duration(seconds: 5),
+          ),
+         );
+
+        return;
+       }
+
+      // بقية الإشعارات
+      if (message.notification != null) {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+           message.notification!.title ??
+            "إشعار جديد",
+          ),
+         ),
+       );
       }
-    });
-  }
+     });
+  Future<void> checkForUpdate() async {
+
+       try {
+
+        AppUpdateInfo info =
+            await InAppUpdate.checkForUpdate();
+
+         if (info.updateAvailability ==
+           UpdateAvailability.updateAvailable) {
+
+           await InAppUpdate.performImmediateUpdate();
+         }
+
+       } catch (e) {
+         debugPrint("Update error: $e");
+       }
+     }	 
+    }
 
   Future<void> _sendTokenToServer(int farmerId, String token) async {
     await http.post(
