@@ -33,6 +33,7 @@ import 'help_page.dart';
 //import 'package:plant_diagnosis_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:in_app_update/in_app_update.dart';
 
 
 
@@ -365,6 +366,24 @@ class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('ar');
   int? farmerId;
 
+  Future<void> checkForUpdate() async {
+
+       try {
+
+        AppUpdateInfo info =
+            await InAppUpdate.checkForUpdate();
+
+         if (info.updateAvailability ==
+           UpdateAvailability.updateAvailable) {
+
+           await InAppUpdate.performImmediateUpdate();
+         }
+
+       } catch (e) {
+         debugPrint("Update error: $e");
+       }
+     }	 
+
   @override
   void initState() {
     super.initState();
@@ -433,24 +452,10 @@ class _MyAppState extends State<MyApp> {
        );
       }
      });
-  Future<void> checkForUpdate() async {
-
-       try {
-
-        AppUpdateInfo info =
-            await InAppUpdate.checkForUpdate();
-
-         if (info.updateAvailability ==
-           UpdateAvailability.updateAvailable) {
-
-           await InAppUpdate.performImmediateUpdate();
-         }
-
-       } catch (e) {
-         debugPrint("Update error: $e");
-       }
-     }	 
+  
     }
+	
+  	
 
   Future<void> _sendTokenToServer(int farmerId, String token) async {
     await http.post(
