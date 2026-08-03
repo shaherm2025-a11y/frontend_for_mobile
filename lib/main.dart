@@ -2781,160 +2781,161 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-		  if (q["parent_question_id"] != null)
-
-  FutureBuilder<Map<String, dynamic>?>(
-    future: _getParentQuestion(
-      q["parent_question_id"],
-    ),
-    builder: (context, snapshot) {
-
-      if (!snapshot.hasData ||
-          snapshot.data == null) {
-        return const SizedBox();
-      }
-
-      final parent = snapshot.data!;
-
-      return Container(
-        width: double.infinity,
-        margin: const EdgeInsets.only(
-          bottom: 12,
-        ),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.green.shade50,
-          borderRadius:
-              BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.green.shade300,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-
-            const Row(
-              children: [
-                Icon(
-                  Icons.reply,
-                  size: 18,
-                  color: Colors.green,
-                ),
-                SizedBox(width: 6),
-                Text(
-                  "متابعة لاستفسار سابق",
-                  style: TextStyle(
-                    fontWeight:
-                        FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            if ((parent["answer"] ?? "")
-                .toString()
-                .trim()
-                .isNotEmpty)
-              Text(
-                parent["answer"],
-                maxLines: 3,
-                overflow:
-                    TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 13,
-                ),
-              ),
-
-            const SizedBox(height: 8),
-
- FutureBuilder<List<String>>(
-  future: LocalDB.getAnswerImages(parent["id"]),
-  builder: (context, snapshot) {
-
-    if (!snapshot.hasData ||
-        snapshot.data!.isEmpty) {
-      return const SizedBox();
-    }
-
-    final images = snapshot.data!;
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: images.map((imagePath) {
-
-        final file = File(imagePath);
-
-        if (!file.existsSync()) {
+if (q["parent_question_id"] != null)
+  ...[
+    FutureBuilder<Map<String, dynamic>?>(
+      future: _getParentQuestion(
+        q["parent_question_id"],
+      ),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data == null) {
           return const SizedBox();
         }
 
-        return GestureDetector(
-          onTap: () {
-            _showFullImage(imagePath);
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              file,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
+        final parent = snapshot.data!;
+
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.green.shade50,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.green.shade300,
             ),
           ),
-        );
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
-      }).toList(),
-    );
-  },
-),
-                if (parent["answer_audio_path"] != null &&
-                    parent["answer_audio_path"]
-                        .toString()
-                        .isNotEmpty &&
-                    File(parent["answer_audio_path"])
-                        .existsSync())
-                  IconButton(
-                    icon: const Icon(
-                      Icons.play_circle_fill,
-                      color: Colors.green,
-                      size: 36,
-                    ),
-                    onPressed: () async {
-
-                      try {
-
-                        await _audioPlayer.stop();
-
-                        await _audioPlayer.play(
-                          DeviceFileSource(
-                            parent[
-                                "answer_audio_path"],
-                          ),
-                        );
-
-                      } catch (e) {
-
-                        debugPrint(
-                          "خطأ تشغيل صوت الاقتباس: $e",
-                        );
-
-                      }
-                    },
+              // =========================
+              // عنوان الاستفسار المقتبس
+              // =========================
+              const Row(
+                children: [
+                  Icon(
+                    Icons.reply,
+                    size: 18,
+                    color: Colors.green,
                   ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  ),
+                  SizedBox(width: 6),
+                  Text(
+                    "متابعة لاستفسار سابق",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
 
+              const SizedBox(height: 8),
+
+              // =========================
+              // نص رد الخبير الأب
+              // =========================
+              if ((parent["answer"] ?? "")
+                  .toString()
+                  .trim()
+                  .isNotEmpty)
+                Text(
+                  parent["answer"].toString(),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                  ),
+                ),
+
+              const SizedBox(height: 8),
+
+              // =========================
+              // صور رد الخبير الأب
+              // =========================
+              FutureBuilder<List<String>>(
+                future: LocalDB.getAnswerImages(
+                  parent["id"],
+                ),
+                builder: (context, imageSnapshot) {
+
+                  if (!imageSnapshot.hasData ||
+                      imageSnapshot.data!.isEmpty) {
+                    return const SizedBox();
+                  }
+
+                  final images = imageSnapshot.data!;
+
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: images.map((imagePath) {
+
+                      final file = File(imagePath);
+
+                      if (!file.existsSync()) {
+                        return const SizedBox();
+                      }
+
+                      return GestureDetector(
+                        onTap: () {
+                          _showFullImage(imagePath);
+                        },
+                        child: ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(8),
+                          child: Image.file(
+                            file,
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+
+                    }).toList(),
+                  );
+                },
+              ),
+
+              // =========================
+              // صوت رد الخبير الأب
+              // =========================
+              if (parent["answer_audio_path"] != null &&
+                  parent["answer_audio_path"]
+                      .toString()
+                      .isNotEmpty &&
+                  File(
+                    parent["answer_audio_path"],
+                  ).existsSync())
+                IconButton(
+                  icon: const Icon(
+                    Icons.play_circle_fill,
+                    color: Colors.green,
+                    size: 36,
+                  ),
+                  onPressed: () async {
+                    try {
+                      await _audioPlayer.stop();
+
+                      await _audioPlayer.play(
+                        DeviceFileSource(
+                          parent["answer_audio_path"],
+                        ),
+                      );
+                    } catch (e) {
+                      debugPrint(
+                        "خطأ تشغيل صوت الاقتباس: $e",
+                      );
+                    }
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    ),
+  ],
           // ======================
           // 🟢 نص السؤال
           // ======================
