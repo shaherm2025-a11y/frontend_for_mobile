@@ -2095,43 +2095,83 @@ Future<Uint8List?> compressImage(String path) async {
   }
 }
 
-Future<void> _downloadAnswerImage(int questionId) async {
+Future<void> _downloadAnswerImages(int questionId) async {
   try {
+    final response = await http.get(
+      Uri.parse(
+        "${AppConstants.baseUrl}/expert_answer_images/$questionId",
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      debugPrint(
+        "Failed to get answer images: ${response.statusCode}",
+      );
+      return;
+    }
+
+    final List images = jsonDecode(response.body);
+
+    // حذف الصور القديمة لهذا السؤال من SQLite
+    await LocalDB.clearAnswerImages(questionId);
+
     final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/answer_$questionId.jpg');
 
-    if (await file.exists()) return;
+    for (final img in images) {
+      final imageId = img["id"];
 
-    final url =
-        "${AppConstants.baseUrl}/expert_answer_image/$questionId";
+      final imageResponse = await http.get(
+        Uri.parse(
+          "${AppConstants.baseUrl}/expert_answer_image/$imageId",
+        ),
+      );
 
-    final response = await http.get(Uri.parse(url));
+      if (imageResponse.statusCode != 200 ||
+          imageResponse.bodyBytes.isEmpty) {
+        debugPrint(
+          "Failed to download image id: $imageId",
+        );
+        continue;
+      }
 
-    if (response.statusCode == 200 &&
-        response.bodyBytes.isNotEmpty) {
+      final file = File(
+        '${dir.path}/answer_${questionId}_$imageId.jpg',
+      );
 
-      await file.writeAsBytes(response.bodyBytes);
+      await file.writeAsBytes(
+        imageResponse.bodyBytes,
+      );
 
-      await LocalDB.updateAnswerImagePath(
+      await LocalDB.insertAnswerImage(
         questionId,
         file.path,
       );
 
-      // 🔥 تحديث الواجهة
-      final updatedLocal = await LocalDB.getQuestions();
-
-      setState(() {
-        answered =
-            updatedLocal.where((q) => q['status'] == 1).toList();
-        unanswered =
-            updatedLocal.where((q) => q['status'] == 0).toList();
-      });
+      debugPrint(
+        "Saved answer image: ${file.path}",
+      );
     }
 
+    // تحديث الواجهة
+    final updatedLocal =
+        await LocalDB.getQuestions();
+
+    setState(() {
+      answered = updatedLocal
+          .where((q) => q['status'] == 1)
+          .toList();
+
+      unanswered = updatedLocal
+          .where((q) => q['status'] == 0)
+          .toList();
+    });
   } catch (e) {
-    debugPrint("Answer image download error: $e");
+    debugPrint(
+      "Answer images download error: $e",
+    );
   }
-}// ===== تحميل صوت الإجابة =====
+}
+// ===== تحميل صوت الإجابة =====
   
   Future<void> _loadFarmerIdAndData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -2225,17 +2265,16 @@ Future<void> _fetchQuestions() async {
     }
 
   }
-   // ===== تحميل صورة الإجابة =====
-if (q["answer_has_image"] == true || q["answer_has_image"] == 1) {
+  // ===== تحميل صور إجابة الخبير =====
+    if ((q["answer_image_count"] ?? 0) > 0) {
 
-  final existingImage = existing?["answer_image_path"];
+       final answerImages =
+         await LocalDB.getAnswerImages(q["id"]);
 
-  if (existingImage == null ||
-      !await File(existingImage).exists()) {
-
-    await _downloadAnswerImage(q["id"]);
-  }
-}
+    if (answerImages.isEmpty) {
+        await _downloadAnswerImages(q["id"]);
+      }
+     }
 
     } 
 
@@ -2813,46 +2852,47 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
 
             const SizedBox(height: 8),
 
-            Row(
-              children: [
+ FutureBuilder<List<String>>(
+  future: LocalDB.getAnswerImages(parent["id"]),
+  builder: (context, snapshot) {
 
-                if (parent["answer_image_path"] != null &&
-                    parent["answer_image_path"]
-                        .toString()
-                        .isNotEmpty &&
-                    File(parent["answer_image_path"])
-                        .existsSync())
-                  GestureDetector(
-                    onTap: () {
-                      _showFullImage(
-                        parent[
-                            "answer_image_path"],
-                      );
-                    },
-                    child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(
-                              8),
-                      child: Image.file(
-                        File(
-                          parent[
-                              "answer_image_path"],
-                        ),
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
+    if (!snapshot.hasData ||
+        snapshot.data!.isEmpty) {
+      return const SizedBox();
+    }
 
-                if (parent["answer_image_path"] != null &&
-                    parent["answer_image_path"]
-                        .toString()
-                        .isNotEmpty &&
-                    File(parent["answer_image_path"])
-                        .existsSync())
-                  const SizedBox(width: 10),
+    final images = snapshot.data!;
 
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: images.map((imagePath) {
+
+        final file = File(imagePath);
+
+        if (!file.existsSync()) {
+          return const SizedBox();
+        }
+
+        return GestureDetector(
+          onTap: () {
+            _showFullImage(imagePath);
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(
+              file,
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+
+      }).toList(),
+    );
+  },
+),
                 if (parent["answer_audio_path"] != null &&
                     parent["answer_audio_path"]
                         .toString()
@@ -3116,22 +3156,50 @@ Widget _buildQuestionCard(Map<String, dynamic> q, {bool answered = false}) {
             const SizedBox(height: 10),
 
             // 🖼️ صورة الرد (مع تكبير)
-            if (q["answer_image_path"] != null &&
-                q["answer_image_path"].toString().isNotEmpty)
-              GestureDetector(
-                onTap: () =>
-                    _showFullImage(q["answer_image_path"]),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.file(
-                    File(q["answer_image_path"]),
-                    height: 160,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-					cacheWidth: 800,
-                  ),
-                ),
+            FutureBuilder<List<String>>(
+  future: LocalDB.getAnswerImages(q["id"]),
+  builder: (context, snapshot) {
+
+    if (!snapshot.hasData ||
+        snapshot.data!.isEmpty) {
+      return const SizedBox();
+    }
+
+    final images = snapshot.data!;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: images.map((imagePath) {
+
+          final file = File(imagePath);
+
+          if (!file.existsSync()) {
+            return const SizedBox();
+          }
+
+          return GestureDetector(
+            onTap: () {
+              _showFullImage(imagePath);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.file(
+                file,
+                width: 110,
+                height: 110,
+                fit: BoxFit.cover,
               ),
+            ),
+          );
+
+        }).toList(),
+      ),
+    );
+  },
+),
 			  ElevatedButton.icon(
                icon: const Icon(Icons.reply),
                label: const Text("متابعة الاستفسار"),
