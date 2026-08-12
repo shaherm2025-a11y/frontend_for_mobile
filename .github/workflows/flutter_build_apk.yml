@@ -1,4 +1,4 @@
-name: Flutter Build APK
+name: Build AAB
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
@@ -23,27 +23,29 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
           flutter-version: '3.35.5'
 
       - name: Install dependencies
         run: flutter pub get
 
+      # ⭐ هنا نضيف keystore
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/key.jks
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build AAB
+        run: flutter build appbundle --release
 
-      - name: Upload APK
+
+      - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-
+          name: app-release
+          path: build/app/outputs/bundle/release/app-release.aab
+          
       - name: Upload mapping.txt
         uses: actions/upload-artifact@v4
         with:
           name: mapping-file
-          path: build/app/outputs/mapping/release/mapping.txt
+          path: build/app/outputs/mapping/release/mapping.txt    
