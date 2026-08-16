@@ -48,4 +48,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mapping-file
-          path: build/app/outputs/mapping/release/mapping.txt    
+          path: build/app/outputs/mapping/release/mapping.txt
