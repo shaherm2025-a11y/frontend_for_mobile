@@ -2889,6 +2889,8 @@ if (q["parent_question_id"] != null)
                             width: 70,
                             height: 70,
                             fit: BoxFit.cover,
+							 cacheWidth: 140,
+                             cacheHeight: 140,
                           ),
                         ),
                       );
@@ -3192,6 +3194,8 @@ if (q["parent_question_id"] != null)
                 width: 110,
                 height: 110,
                 fit: BoxFit.cover,
+				cacheWidth: 220,
+                cacheHeight: 220,
               ),
             ),
           );
