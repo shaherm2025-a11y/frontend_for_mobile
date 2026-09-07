@@ -1,35 +1,23 @@
-import 'dart:io';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-
 Future<String> getDeviceId() async {
   final prefs = await SharedPreferences.getInstance();
-  const key = 'device_id';
 
-  // إذا كان هناك معرف مخزن مسبقًا نعيده
-  String? id = prefs.getString(key);
-  if (id != null && id.isNotEmpty) return id;
+  const key = 'installation_uuid';
 
-  String newId;
-  final info = DeviceInfoPlugin();
+  // إذا كان UUID موجودًا مسبقًا، نعيد استخدامه
+  final existingUuid = prefs.getString(key);
 
-  if (Platform.isAndroid) {
-    final android = await info.androidInfo;
-    newId = android.id.isNotEmpty ? android.id : const Uuid().v4();
-  } else if (Platform.isIOS) {
-    final ios = await info.iosInfo;
-    newId = (ios.identifierForVendor != null && ios.identifierForVendor!.isNotEmpty)
-        ? ios.identifierForVendor!
-        : const Uuid().v4();
-  } else if (Platform.isWindows) {
-    final win = await info.windowsInfo;
-    newId = win.deviceId.isNotEmpty ? win.deviceId : const Uuid().v4();
-  } else {
-    newId = const Uuid().v4();
+  if (existingUuid != null && existingUuid.isNotEmpty) {
+    return existingUuid;
   }
 
-  // نحفظ المعرف للاستخدام لاحقًا
-  await prefs.setString(key, newId);
-  return newId;
+  // إنشاء UUID جديد خاص بهذا التثبيت
+  final newUuid = const Uuid().v4();
+
+  await prefs.setString(key, newUuid);
+  
+  return newUuid;
 }

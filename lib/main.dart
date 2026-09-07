@@ -42,8 +42,8 @@ import 'package:in_app_update/in_app_update.dart';
 
 
 class AppConstants {
- //static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
- static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
+ static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
+ //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
 }
 
 
@@ -267,34 +267,85 @@ Future<void> registerFCMToken(int farmerId) async {
 /// ����� ������ �������� �� ������� �������� ��� ����� ������
 Future<int?> ensureAutoLogin() async {
   final prefs = await SharedPreferences.getInstance();
-  final existingId = prefs.getInt('farmer_id');
-  if (existingId != null) {
-    debugPrint("? Farmer already logged in: $existingId");
-    return existingId;
-  }
 
   try {
-    final deviceId = await getDeviceId();
-	//final deviceId = await DeviceIdHelper.getDeviceId();
-    final uri = Uri.parse('${AppConstants.baseUrl}/auto_login'); // �� ������ ������ �����
-    final response = await http.post(uri, body: {'device_id': deviceId});
-    debugPrint (deviceId);
+    // مهم جدًا:
+    // نقرأ farmer_id القديم قبل أن نستبدله بالـ farmer_id الجديد
+    final oldFarmerId = prefs.getInt('farmer_id');
+
+    // UUID ثابت لهذا التثبيت
+    final installationUuid = await getDeviceId();
+
+    final uri = Uri.parse(
+      '${AppConstants.baseUrl}/auto_login',
+    );
+
+    final body = <String, String>{
+      'installation_uuid': installationUuid,
+    };
+
+    // إذا كان هناك farmer_id قديم، نرسله للسيرفر
+    // لربط الحساب الجديد ببيانات الحساب القديم
+    if (oldFarmerId != null) {
+      body['old_farmer_id'] = oldFarmerId.toString();
+    }
+
+    debugPrint("================================");
+    debugPrint("AUTO LOGIN");
+    debugPrint("installation_uuid: $installationUuid");
+    debugPrint("old_farmer_id: $oldFarmerId");
+    debugPrint("================================");
+
+    final response = await http.post(
+      uri,
+      body: body,
+    );
+
+    debugPrint("AUTO LOGIN STATUS: ${response.statusCode}");
+    debugPrint("AUTO LOGIN RESPONSE: ${response.body}");
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+
       final farmerId = data['farmer_id'];
-      await prefs.setInt('farmer_id', farmerId);
-      debugPrint("? Farmer registered/logged in automatically: $farmerId");
-      return farmerId;
-    } else {
-      debugPrint("?? ��� ������� �������: ${response.statusCode}");
-      return null;
+
+      if (farmerId == null) {
+        debugPrint("AUTO LOGIN ERROR: farmer_id is null");
+        return null;
+      }
+
+      final newFarmerId = farmerId is int
+          ? farmerId
+          : int.tryParse(farmerId.toString());
+
+      if (newFarmerId == null) {
+        debugPrint("AUTO LOGIN ERROR: invalid farmer_id");
+        return null;
+      }
+
+      // حفظ الحساب الجديد
+      await prefs.setInt(
+        'farmer_id',
+        newFarmerId,
+      );
+
+      debugPrint(
+        "AUTO LOGIN SUCCESS: farmer_id = $newFarmerId",
+      );
+
+      return newFarmerId;
     }
+
+    debugPrint(
+      "AUTO LOGIN FAILED: ${response.statusCode}",
+    );
+
+    return null;
   } catch (e) {
-    debugPrint("? ��� �� autoLogin: $e");
+    debugPrint("AUTO LOGIN EXCEPTION: $e");
     return null;
   }
 }
-
 
 
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
