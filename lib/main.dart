@@ -441,12 +441,21 @@ class _MyAppState extends State<MyApp> {
     _initFCM();
 	checkForUpdate();
   }
-  Future<void> _initFCM() async {
+ Future<void> _initFCM() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
 
-    final farmerId = widget.initialFarmerId;
-    if (farmerId == null) return;
+    // نأخذ آخر farmer_id تم إنشاؤه/حفظه بعد auto login
+    final farmerId = prefs.getInt('farmer_id');
 
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    debugPrint("FCM: farmer_id from SharedPreferences = $farmerId");
+
+    if (farmerId == null) {
+      debugPrint("FCM ERROR: farmer_id is null");
+      return;
+    }
+
+    final messaging = FirebaseMessaging.instance;
 
     await messaging.requestPermission(
       alert: true,
@@ -454,70 +463,104 @@ class _MyAppState extends State<MyApp> {
       sound: true,
     );
 
-    String? token = await messaging.getToken();
+    final token = await messaging.getToken();
 
-    if (token != null) {
+    debugPrint("FCM TOKEN = $token");
+
+    if (token != null && token.isNotEmpty) {
       await _sendTokenToServer(farmerId, token);
     }
-	// الاشتراك في إشعارات تحديث التطبيق
-    await FirebaseMessaging.instance.subscribeToTopic(
-       "farmer_app_updates",
+
+    // الاشتراك في إشعارات تحديث التطبيق
+    await messaging.subscribeToTopic(
+      "farmer_app_updates",
     );
 
-    // ����� ������ ��� ����
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-      await _sendTokenToServer(farmerId, newToken);
-    });
+    // عند تغير التوكن
+    FirebaseMessaging.instance.onTokenRefresh.listen(
+      (newToken) async {
+        debugPrint("FCM TOKEN REFRESHED = $newToken");
 
-    // ������� ����� ����� ��� �������
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        // نقرأ farmer_id الحالي مرة أخرى
+        final prefs = await SharedPreferences.getInstance();
+        final currentFarmerId = prefs.getInt('farmer_id');
 
-     if (!mounted) return;
+        if (currentFarmerId != null) {
+          await _sendTokenToServer(
+            currentFarmerId,
+            newToken,
+          );
+        }
+      },
+    );
 
-      // إشعار تحديث التطبيق
-      if (message.data["type"] == "app_update") {
+    // الإشعارات عندما يكون التطبيق مفتوحًا
+    FirebaseMessaging.onMessage.listen(
+      (RemoteMessage message) {
+        if (!mounted) return;
 
-         ScaffoldMessenger.of(context).showSnackBar(   
-         SnackBar(
-         content: Text(
-           message.notification?.body ??
-           "يتوفر تحديث جديد للتطبيق",
-          ),
-          duration: const Duration(seconds: 5),
-          ),
-         );
+        // إشعار تحديث التطبيق
+        if (message.data["type"] == "app_update") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                message.notification?.body ??
+                    "يتوفر تحديث جديد للتطبيق",
+              ),
+              duration: const Duration(seconds: 5),
+            ),
+          );
 
-        return;
-       }
+          return;
+        }
 
-      // بقية الإشعارات
-      if (message.notification != null) {
-
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-           message.notification!.title ??
-            "إشعار جديد",
-          ),
-         ),
-       );
-      }
-     });
-  
-    }
-	
+        // بقية الإشعارات
+        if (message.notification != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                message.notification!.title ??
+                    "إشعار جديد",
+              ),
+            ),
+          );
+        }
+      },
+    );
+  } catch (e) {
+    debugPrint("FCM INIT ERROR: $e");
+  }
+}
   	
-
-  Future<void> _sendTokenToServer(int farmerId, String token) async {
-    await http.post(
-      Uri.parse('${AppConstants.baseUrl}/save_fcm_token'),
+Future<void> _sendTokenToServer(
+  int farmerId,
+  String token,
+) async {
+  try {
+    final response = await http.post(
+      Uri.parse(
+        '${AppConstants.baseUrl}/save_fcm_token',
+      ),
       body: {
         'user_id': farmerId.toString(),
         'role': 'farmer',
         'fcm_token': token,
       },
     );
+
+    debugPrint(
+      "SAVE FCM TOKEN: ${response.statusCode}",
+    );
+
+    debugPrint(
+      "SAVE FCM RESPONSE: ${response.body}",
+    );
+  } catch (e) {
+    debugPrint(
+      "SAVE FCM ERROR: $e",
+    );
   }
+}
  
 void _setLocale(Locale locale) async {
   final prefs = await SharedPreferences.getInstance();
