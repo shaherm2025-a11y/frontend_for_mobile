@@ -14,8 +14,8 @@ android {
         applicationId = "com.mohammed.SmartAgriAssistant"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
-        versionCode = 16
-        versionName = "6.10"
+        versionCode = 17
+        versionName = "6.11"
         multiDexEnabled = true
 
         ndk {
