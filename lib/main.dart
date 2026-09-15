@@ -42,8 +42,8 @@ import 'package:in_app_update/in_app_update.dart';
 
 
 class AppConstants {
- static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
- //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
+ //static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
+ static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
 }
 
 
