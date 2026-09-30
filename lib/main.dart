@@ -34,7 +34,7 @@ import 'help_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:in_app_update/in_app_update.dart';
-
+import 'dart:async';
 
 
 
@@ -42,8 +42,8 @@ import 'package:in_app_update/in_app_update.dart';
 
 
 class AppConstants {
- //static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
- static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
+ static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
+ //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
 }
 
 
@@ -2050,10 +2050,14 @@ class _FarmerQuestionsPageState
   
   File? _audioQuestionFile;   // ��� �������
   bool _recording = false;
+  Timer? _recordTimer;
+  int _recordSeconds = 0;
+  int _lastRecordedSeconds = 0;
+  
   final AudioRecorder _recorder = AudioRecorder();
   final AudioPlayer _audioPlayer = AudioPlayer(); // ����� ��� ������
   Map<String, dynamic>? _replyToQuestion;
-  
+
   bool _loading = false;
   double _progress = 0;
   final picker = ImagePicker();
@@ -2080,9 +2084,19 @@ class _FarmerQuestionsPageState
   }
   @override
   void dispose() {
+    _recordTimer?.cancel();
     _tabController.dispose();
     super.dispose();
   }
+  
+  String _formatDuration(int seconds) {
+  final minutes = seconds ~/ 60;
+  final secs = seconds % 60;
+
+  return
+      "${minutes.toString().padLeft(2, '0')}:"
+      "${secs.toString().padLeft(2, '0')}";
+}
 
  Future<void> _recoverLostData() async {
   final LostDataResponse response =
@@ -2360,15 +2374,32 @@ Future<void> _fetchQuestions() async {
 
   }
   // ===== تحميل صور إجابة الخبير =====
-    if ((q["answer_image_count"] ?? 0) > 0) {
+   // ===== مزامنة صور إجابة الخبير =====
+final int serverImageCount =
+    int.tryParse(
+      '${q["answer_image_count"] ?? 0}',
+    ) ??
+    0;
 
-       final answerImages =
-         await LocalDB.getAnswerImages(q["id"]);
+final answerImages =
+    await LocalDB.getAnswerImages(q["id"]);
 
-    if (answerImages.isEmpty) {
-        await _downloadAnswerImages(q["id"]);
-      }
-     }
+final int localImageCount =
+    answerImages.length;
+
+debugPrint(
+  "ANSWER IMAGES - QUESTION ${q["id"]} "
+  "SERVER: $serverImageCount "
+  "LOCAL: $localImageCount",
+);
+
+if (serverImageCount > localImageCount) {
+  debugPrint(
+    "NEW ANSWER IMAGES FOUND - DOWNLOADING...",
+  );
+
+  await _downloadAnswerImages(q["id"]);
+}
 
     } 
 
@@ -2471,9 +2502,24 @@ else {
     );
   }
 
-  setState(() {
-    _recording = true;
-  });
+  _recordSeconds = 0;
+
+_recordTimer?.cancel();
+
+_recordTimer = Timer.periodic(
+  const Duration(seconds: 1),
+  (timer) {
+    if (!mounted) return;
+
+    setState(() {
+      _recordSeconds++;
+    });
+  },
+);
+
+setState(() {
+  _recording = true;
+});
 }
 
 Future<void> _stopRecording() async {
@@ -2494,7 +2540,8 @@ Future<void> _stopRecording() async {
     // ? ��� ����: ���� ������ ������
     debugPrint("Saved audio path: ${savedFile.path}");
   }
-
+_recordTimer?.cancel();
+_lastRecordedSeconds = _recordSeconds;
   setState(() {
     _recording = false;
   });
@@ -3451,53 +3498,148 @@ Widget build(BuildContext context) {
 
                       const SizedBox(height: 10),
 
-                      ElevatedButton.icon(
-                        onPressed: _recording
-                            ? _stopRecording
-                            : _startRecording,
-                        icon: Icon(_recording ? Icons.stop : Icons.mic),
-                        label: Text(
-                          _recording
-                              ? loc.button_stop_recording
-                              : loc.button_record_audio,
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 50),
-                        ),
-                      ),
+                     Container(
+  width: double.infinity,
+  height: 60,
+  decoration: BoxDecoration(
+    color: _recording
+        ? Colors.red.shade50
+        : Colors.orange.shade50,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(
+      color: _recording
+          ? Colors.red
+          : Colors.orange,
+      width: 2,
+    ),
+  ),
+  child: InkWell(
+    borderRadius: BorderRadius.circular(16),
+    onTap: _recording
+        ? _stopRecording
+        : _startRecording,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+
+        AnimatedContainer(
+          duration: const Duration(
+            milliseconds: 300,
+          ),
+          width: 26,
+          height: 26,
+          decoration: BoxDecoration(
+            color: _recording
+                ? Colors.red
+                : Colors.orange,
+            shape: BoxShape.circle,
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        Text(
+          _recording
+              ? _formatDuration(
+                  _recordSeconds,
+                )
+              : "اضغط لتسجيل رسالة صوتية",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: _recording
+                ? Colors.red
+                : Colors.orange,
+          ),
+        ),
+      ],
+    ),
+  ),
+),
 
                       if (_audioQuestionFile != null) ...[
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            const Icon(Icons.mic, color: Colors.green),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(loc.label_audio_attached),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.play_arrow, color: Colors.blue),
-                              onPressed: () async {
-                                await _audioPlayer.stop();
-                                await _audioPlayer.play(
-                                  DeviceFileSource(_audioQuestionFile!.path),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                setState(() {
-                                  _audioQuestionFile = null;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+  const SizedBox(height: 10),
 
+  Container(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.green.shade50,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: Colors.green.shade300,
+      ),
+    ),
+    child: Row(
+      children: [
+
+        const CircleAvatar(
+          backgroundColor: Colors.green,
+          child: Icon(
+            Icons.mic,
+            color: Colors.white,
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+
+              const Text(
+                "تم تسجيل رسالة صوتية",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              Text(
+                "المدة: ${_formatDuration(_lastRecordedSeconds)}",
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        IconButton(
+          icon: const Icon(
+            Icons.play_circle_fill,
+            color: Colors.blue,
+            size: 32,
+          ),
+          onPressed: () async {
+            await _audioPlayer.stop();
+
+            await _audioPlayer.play(
+              DeviceFileSource(
+                _audioQuestionFile!.path,
+              ),
+            );
+          },
+        ),
+
+        IconButton(
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.red,
+          ),
+          onPressed: () {
+            setState(() {
+              _audioQuestionFile = null;
+              _lastRecordedSeconds = 0;
+            });
+          },
+        ),
+      ],
+    ),
+  ),
+],
                       const SizedBox(height: 10),
 
                       if (_imageFile != null || _webImage != null)
