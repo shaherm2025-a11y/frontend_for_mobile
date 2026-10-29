@@ -35,6 +35,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'dart:async';
+import 'services/analytics_service.dart';
 
 
 
@@ -42,8 +43,8 @@ import 'dart:async';
 
 
 class AppConstants {
- static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
- //static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
+// static const String baseUrl = "https://mohashaher-backend-supaspace.hf.space";
+ static const String baseUrl = "https://mohashaher-mobile-backend.hf.space";
 }
 
 
@@ -60,8 +61,6 @@ class DatabaseHelper {
   static String get causeCol => isArabic ? 'cause' : 'cause_en';
   static String get preventiveCol =>
       isArabic ? 'preventive_measures' : 'preventive_measures_en';
-  static String get chemicalCol =>
-      isArabic ? 'chemical_treatment' : 'chemical_treatment_en';
   static String get alternativeCol =>
       isArabic ? 'alternative_treatment' : 'alternative_treatment_en';
 
@@ -140,7 +139,6 @@ class DatabaseHelper {
              d.$symptomsCol AS symptoms,
              d.$causeCol AS cause,
              d.$preventiveCol AS preventive_measures,
-             d.$chemicalCol AS chemical_treatment,
              d.$alternativeCol AS alternative_treatment
       FROM diseases d
       JOIN disease_crop_stage ds ON ds.disease_id = d.id
@@ -186,8 +184,6 @@ class DatabaseHelper {
                   ? d['preventive_measures']
                   : d['preventive_measures_en'])
               .join(", "),
-          'chemical_treatment':
-              isArabic ? d['chemical_treatment'] : d['chemical_treatment_en'],
           'alternative_treatment': isArabic
               ? d['alternative_treatment']
               : d['alternative_treatment_en'],
@@ -399,6 +395,14 @@ void main() async {
   }
   
   final farmerId = await ensureAutoLogin();
+  
+  await AnalyticsService.setFarmerProperties(
+  language: lang,
+  );
+
+  if (farmerId != null) {
+    await AnalyticsService.logLogin();
+  }
 
   runApp(MyApp(initialFarmerId: farmerId));
 }
@@ -566,7 +570,11 @@ void _setLocale(Locale locale) async {
   final prefs = await SharedPreferences.getInstance();
 
   await prefs.setString("lang", locale.languageCode); // ✅ حفظ
-
+  
+  await AnalyticsService.setFarmerProperties(
+   language: locale.languageCode,
+  );
+  
   setState(() {
     _locale = locale;
     DatabaseHelper.appLanguageCode = locale.languageCode;
@@ -1110,6 +1118,8 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       _confidence = null;
       _treatment = null;
     });
+	
+	await AnalyticsService.logDiagnosisStarted();
 
     try {
 	 // imageBytes = await _compressImage(imageBytes);
@@ -1130,6 +1140,13 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       final data = json.decode(respStr);
       final diseaseId = data['disease_name'];
       final confidence = data['confidence'];
+	  if (diseaseId != null &&
+       diseaseId.toString().isNotEmpty &&
+       diseaseId.toString() != 'unknown') {
+       await AnalyticsService.logDiagnosisCompleted(
+       disease: diseaseId.toString(),
+       );
+       }
 	  if (!mounted) return;
 
       final diseaseMap = LocalizationHelper.getDiseaseMap(context);
@@ -1771,8 +1788,6 @@ class DiseaseDetailsPage extends StatelessWidget {
             _buildDetailSection(t.symptoms, disease['symptoms']),
 			_buildDetailSection(
                 t.alternativeTreatment, disease['alternative_treatment']),
-			_buildDetailSection(
-                t.chemicalTreatment, disease['chemical_treatment']),	
             _buildDetailSection(t.cause, disease['cause']),
             _buildDetailSection(
                 t.preventiveMeasures, disease['preventive_measures']),
@@ -2688,7 +2703,20 @@ showDialog(
         ),
       );
     }
+    
+	String questionType;
 
+   if (_audioQuestionFile != null &&
+      imageBytes != null) {
+       questionType = 'voice_image';
+    } else if (_audioQuestionFile != null) {
+        questionType = 'voice';
+     } else if (imageBytes != null) {
+         questionType = 'image';
+       } else {
+         questionType = 'text';
+       }
+	
     final response = await dio.post(
       "${AppConstants.baseUrl}/send_question",
       data: formData,
@@ -2705,12 +2733,15 @@ showDialog(
     );
     if (!mounted) return;
     if (response.statusCode == 200) {
-
+	  
+      await AnalyticsService.logQuestionSent(
+       type: questionType,
+      );
+	  
       final data = response.data;
       final questionId = data["id"];
 
       if (questionId != null) {
-
         final dir = await getApplicationDocumentsDirectory();
         String imagePath;
 
