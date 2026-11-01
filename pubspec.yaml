@@ -32,7 +32,6 @@ dependencies:
   connectivity_plus: ^6.0.3
   path: ^1.8.0
   firebase_core: ^4.0.0
-  firebase_analytics: ^12.6.0
   firebase_messaging: ^16.0.0
   flutter_local_notifications: ^17.1.2
   dio: ^5.4.0
@@ -40,17 +39,14 @@ dependencies:
   uuid: any
   package_info_plus: ^9.0.0
   in_app_update: ^4.2.3
+
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
- # path_provider: ^2.0.15
- # dio: ^6.1.2
   flutter_cache_manager: ^3.3.0
- # cached_network_image: ^3.2.3
 
-#  plant_diagnosis_fixed: any
 flutter_icons:
   android: true
   ios: true
@@ -69,22 +65,16 @@ flutter:
     - assets/images/support.jpg
     - assets/images/no_image.png
     #=========== privacy policy =============
-    - assets/privacy/privacy_ar.html  
-    - assets/privacy/privacy_en.html    
-    
+    - assets/privacy/privacy_ar.html
+    - assets/privacy/privacy_en.html
     # ========== Database & JSON ==========
     - assets/plantix_final.db
     - assets/plant_relational.json
     - assets/crops_ar.json
     - assets/diseases_all.json
-    
-    # logo 
+    # logo
     - assets/logo.png
-
     # ========== image folders ==========
     - assets/disease_images/
     - assets/plantix_icons/
     - assets/icon/app_icon.png
-
-
-

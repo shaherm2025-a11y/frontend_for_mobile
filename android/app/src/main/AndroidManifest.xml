@@ -12,10 +12,6 @@
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
 
-        <!-- تعطيل جمع Advertising ID بواسطة Firebase Analytics -->
-        <meta-data
-            android:name="google_analytics_adid_collection_enabled"
-            android:value="false" />
 
         <activity
             android:name=".MainActivity"

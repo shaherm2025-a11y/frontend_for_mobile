@@ -35,7 +35,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'dart:async';
-import 'services/analytics_service.dart';
 
 
 
@@ -396,14 +395,6 @@ void main() async {
   
   final farmerId = await ensureAutoLogin();
   
-  await AnalyticsService.setFarmerProperties(
-  language: lang,
-  );
-
-  if (farmerId != null) {
-    await AnalyticsService.logLogin();
-  }
-
   runApp(MyApp(initialFarmerId: farmerId));
 }
 
@@ -570,10 +561,6 @@ void _setLocale(Locale locale) async {
   final prefs = await SharedPreferences.getInstance();
 
   await prefs.setString("lang", locale.languageCode); // ✅ حفظ
-  
-  await AnalyticsService.setFarmerProperties(
-   language: locale.languageCode,
-  );
   
   setState(() {
     _locale = locale;
@@ -1119,8 +1106,6 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       _treatment = null;
     });
 	
-	await AnalyticsService.logDiagnosisStarted();
-
     try {
 	 // imageBytes = await _compressImage(imageBytes);
 
@@ -1140,13 +1125,6 @@ class _DiagnosisPageState extends State<DiagnosisPage> {
       final data = json.decode(respStr);
       final diseaseId = data['disease_name'];
       final confidence = data['confidence'];
-	  if (diseaseId != null &&
-       diseaseId.toString().isNotEmpty &&
-       diseaseId.toString() != 'unknown') {
-       await AnalyticsService.logDiagnosisCompleted(
-       disease: diseaseId.toString(),
-       );
-       }
 	  if (!mounted) return;
 
       final diseaseMap = LocalizationHelper.getDiseaseMap(context);
@@ -2733,11 +2711,6 @@ showDialog(
     );
     if (!mounted) return;
     if (response.statusCode == 200) {
-	  
-      await AnalyticsService.logQuestionSent(
-       type: questionType,
-      );
-	  
       final data = response.data;
       final questionId = data["id"];
 
